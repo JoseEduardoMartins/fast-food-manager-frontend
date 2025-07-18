@@ -1,20 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Layout } from '@fast-food/design-system';
 
-const Home: React.FC = () => (
-  <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-    <header
-      style={{
-        padding: '1.5rem 0',
-        background: 'var(--color-primary, #f8b400)',
-        color: '#fff',
-        textAlign: 'center',
+const Home: React.FC = () => {
+  const navigate = useNavigate();
+  return (
+    <Layout
+      headerProps={{
+        onNavigate: (route: string) => navigate(route),
       }}
     >
-      <h1>Fast Food Manager</h1>
-      <nav>{/* Aqui pode entrar um menu futuramente */}</nav>
-    </header>
-
-    <main style={{ flex: 1, maxWidth: 700, margin: '0 auto', padding: '2rem 1rem' }}>
       <h2>Bem-vindo!</h2>
       <p>
         O <strong>Fast Food Manager</strong> é uma plataforma completa para gerenciamento de
@@ -30,12 +25,8 @@ const Home: React.FC = () => (
         <li>Ambiente visual moderno e intuitivo</li>
       </ul>
       <p>Explore o menu para acessar as áreas de gestão conforme seu perfil de acesso.</p>
-    </main>
-
-    <footer style={{ padding: '1rem 0', background: '#222', color: '#fff', textAlign: 'center' }}>
-      &copy; {new Date().getFullYear()} Fast Food Manager. Todos os direitos reservados.
-    </footer>
-  </div>
-);
+    </Layout>
+  );
+};
 
 export default Home;
