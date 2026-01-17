@@ -31,24 +31,24 @@ const features = [
 const Plataforma: React.FC = () => {
   return (
     <Layout>
-      <section className="flex flex-col items-center justify-center min-h-[60vh] w-full text-center px-4">
-        <Title variant="h1" className="mb-4">
+      <section className="flex flex-col items-center justify-center min-h-[80vh] w-full text-center px-4 py-12">
+        <Title variant="h1" className="mb-3 text-foreground font-semibold">
           A Plataforma Completa para o seu Negócio
         </Title>
-        <Label as="p" className="mb-8 text-lg max-w-2xl mx-auto">
+        <Label as="p" className="mb-12 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           Tudo o que você precisa para gerenciar seu restaurante, lanchonete ou franquia, com
           tecnologia de ponta e experiência moderna.
         </Label>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-5xl mb-12">
           {features.map((f) => (
             <div
               key={f.title}
-              className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col items-center"
+              className="bg-background border border-border rounded-2xl p-8 flex flex-col items-start text-left hover:border-gray-300 dark:hover:border-gray-700 transition-colors duration-200"
             >
-              <Title variant="h4" className="mb-2 text-primary">
+              <Title variant="h4" className="mb-3 text-primary font-semibold">
                 {f.title}
               </Title>
-              <Label as="p" className="text-base text-gray-700 dark:text-gray-200">
+              <Label as="p" className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
                 {f.description}
               </Label>
             </div>

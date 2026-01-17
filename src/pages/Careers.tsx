@@ -38,54 +38,54 @@ const vagas = [
 const Carreira: React.FC = () => {
   return (
     <Layout>
-      <section className="flex flex-col items-center justify-center min-h-[60vh] w-full text-center px-4">
-        <Title variant="h1" className="mb-4">
+      <section className="flex flex-col items-center justify-center min-h-[80vh] w-full text-center px-4 py-12">
+        <Title variant="h1" className="mb-3 text-foreground font-semibold">
           Trabalhe com a gente
         </Title>
-        <Label as="p" className="mb-8 text-lg max-w-2xl mx-auto">
+        <Label as="p" className="mb-12 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           Faça parte de um time que valoriza pessoas, tecnologia e inovação. Venha construir o
           futuro do food service com a gente!
         </Label>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mb-16">
           {benefits.map((b) => (
             <div
               key={b.title}
-              className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col items-center"
+              className="bg-background border border-border rounded-2xl p-8 flex flex-col items-start text-left hover:border-gray-300 dark:hover:border-gray-700 transition-colors duration-200"
             >
-              <Title variant="h4" className="mb-2 text-primary">
+              <Title variant="h4" className="mb-3 text-primary font-semibold">
                 {b.title}
               </Title>
-              <Label as="p" className="text-base text-gray-700 dark:text-gray-200">
+              <Label as="p" className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
                 {b.description}
               </Label>
             </div>
           ))}
         </div>
-        <Title variant="h2" className="mb-4">
+        <Title variant="h2" className="mb-6 text-foreground font-semibold">
           Vagas em aberto
         </Title>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl mb-8">
           {vagas.map((vaga) => (
             <div
               key={vaga.cargo}
-              className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col items-start"
+              className="bg-background border border-border rounded-2xl p-8 flex flex-col items-start hover:border-gray-300 dark:hover:border-gray-700 transition-colors duration-200"
             >
-              <Title variant="h4" className="mb-2 text-primary">
+              <Title variant="h4" className="mb-4 text-primary font-semibold">
                 {vaga.cargo}
               </Title>
-              <Label as="p" className="mb-1">
+              <Label as="p" className="mb-2 text-gray-600 dark:text-gray-400">
                 Local: {vaga.local}
               </Label>
-              <Label as="p" className="mb-4">
+              <Label as="p" className="mb-6 text-gray-600 dark:text-gray-400">
                 Tipo: {vaga.tipo}
               </Label>
               <Button className="w-full">Candidatar-se</Button>
             </div>
           ))}
         </div>
-        <Label as="p" className="text-gray-600 dark:text-gray-300">
+        <Label as="p" className="text-gray-600 dark:text-gray-400">
           Não encontrou a vaga ideal? Envie seu currículo para{' '}
-          <a href="mailto:carreiras@fastfood.com" className="text-primary">
+          <a href="mailto:carreiras@fastfood.com" className="text-primary hover:underline font-medium">
             carreiras@fastfood.com
           </a>
         </Label>
