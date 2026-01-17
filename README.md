@@ -60,7 +60,7 @@ O **Fast Food Manager Frontend** é uma aplicação web moderna desenvolvida par
 
 ### UI e Design
 
-- **[@fast-food/design-system 1.18.0](https://www.npmjs.com/package/@fast-food/design-system)** - Design System customizado
+- **[@fast-food/design-system 1.19.0](https://www.npmjs.com/package/@fast-food/design-system)** - Design System customizado
   - Componentes reutilizáveis padronizados
   - Estilos consistentes baseados em Tailwind CSS
   - Suporte a tema claro/escuro
