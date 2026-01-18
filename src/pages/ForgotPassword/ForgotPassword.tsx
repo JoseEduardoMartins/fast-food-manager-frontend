@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { Layout, Title, Label, Input, Button } from '@fast-food/design-system';
 
-const EsqueceuSenha: React.FC = () => {
+const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [enviado, setEnviado] = useState(false);
-  const [erro, setErro] = useState('');
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErro('');
+    setError('');
     if (!email.includes('@')) {
-      setErro('Digite um e-mail válido.');
+      setError('Digite um e-mail válido.');
       return;
     }
-    setEnviado(true);
-    // Aqui pode ser feita a integração com backend
+    setSent(true);
+    // Integration with backend can be done here
   };
 
   return (
@@ -37,15 +37,15 @@ const EsqueceuSenha: React.FC = () => {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             required
           />
-          {erro && (
+          {error && (
             <Label as="p" className="text-error mt-2 text-sm">
-              {erro}
+              {error}
             </Label>
           )}
           <Button type="submit" className="w-full mt-2">
             Enviar instruções
           </Button>
-          {enviado && (
+          {sent && (
             <Label as="p" className="text-success mt-2 text-sm">
               Se o e-mail estiver cadastrado, você receberá as instruções em instantes.
             </Label>
@@ -56,4 +56,4 @@ const EsqueceuSenha: React.FC = () => {
   );
 };
 
-export default EsqueceuSenha;
+export default ForgotPassword;

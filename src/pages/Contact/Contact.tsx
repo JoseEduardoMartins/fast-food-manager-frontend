@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Layout, Title, Label, Input, Button } from '@fast-food/design-system';
 
-const Contato: React.FC = () => {
-  const [nome, setNome] = useState('');
+const Contact: React.FC = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [mensagem, setMensagem] = useState('');
-  const [enviado, setEnviado] = useState(false);
+  const [message, setMessage] = useState('');
+  const [sent, setSent] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setEnviado(true);
-    // Aqui pode ser feita a integração com backend ou serviço de e-mail
+    setSent(true);
+    // Integration with backend or email service can be done here
   };
 
   return (
@@ -30,8 +30,8 @@ const Contato: React.FC = () => {
           >
             <Input
               label="Nome"
-              value={nome}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNome(e.target.value)}
+              value={name}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
               required
             />
             <Input
@@ -45,14 +45,14 @@ const Contato: React.FC = () => {
               label="Mensagem"
               as="textarea"
               rows={4}
-              value={mensagem}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMensagem(e.target.value)}
+              value={message}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
               required
             />
             <Button type="submit" className="w-full mt-2">
               Enviar mensagem
             </Button>
-            {enviado && (
+            {sent && (
               <Label as="p" className="text-success mt-2 text-sm">
                 Mensagem enviada com sucesso!
               </Label>
@@ -95,4 +95,4 @@ const Contato: React.FC = () => {
   );
 };
 
-export default Contato;
+export default Contact;

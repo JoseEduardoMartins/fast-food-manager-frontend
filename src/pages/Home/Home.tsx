@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout, Title, Label, Button } from '@fast-food/design-system';
-import { ROUTES } from '../routes';
+import { ROUTES } from '../../routes';
 
 const benefits = [
   {

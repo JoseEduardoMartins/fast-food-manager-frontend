@@ -17,25 +17,25 @@ const benefits = [
   },
 ];
 
-const vagas = [
+const jobs = [
   {
-    cargo: 'Desenvolvedor(a) Frontend',
-    local: 'Remoto',
-    tipo: 'CLT',
+    position: 'Desenvolvedor(a) Frontend',
+    location: 'Remoto',
+    type: 'CLT',
   },
   {
-    cargo: 'Product Owner',
-    local: 'Florianópolis/SC',
-    tipo: 'PJ',
+    position: 'Product Owner',
+    location: 'Florianópolis/SC',
+    type: 'PJ',
   },
   {
-    cargo: 'Designer UI/UX',
-    local: 'Remoto',
-    tipo: 'CLT',
+    position: 'Designer UI/UX',
+    location: 'Remoto',
+    type: 'CLT',
   },
 ];
 
-const Carreira: React.FC = () => {
+const Careers: React.FC = () => {
   return (
     <Layout>
       <section className="flex flex-col items-center justify-center min-h-[80vh] w-full text-center px-4 py-12">
@@ -65,19 +65,19 @@ const Carreira: React.FC = () => {
           Vagas em aberto
         </Title>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl mb-8">
-          {vagas.map((vaga) => (
+          {jobs.map((job) => (
             <div
-              key={vaga.cargo}
+              key={job.position}
               className="bg-background border border-border rounded-2xl p-8 flex flex-col items-start hover:border-gray-300 dark:hover:border-gray-700 transition-colors duration-200"
             >
               <Title variant="h4" className="mb-4 text-primary font-semibold">
-                {vaga.cargo}
+                {job.position}
               </Title>
               <Label as="p" className="mb-2 text-gray-600 dark:text-gray-400">
-                Local: {vaga.local}
+                Local: {job.location}
               </Label>
               <Label as="p" className="mb-6 text-gray-600 dark:text-gray-400">
-                Tipo: {vaga.tipo}
+                Tipo: {job.type}
               </Label>
               <Button className="w-full">Candidatar-se</Button>
             </div>
@@ -94,4 +94,4 @@ const Carreira: React.FC = () => {
   );
 };
 
-export default Carreira;
+export default Careers;

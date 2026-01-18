@@ -5,6 +5,13 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px'
+      }
+    },
     extend: {
         colors: {
           border: 'var(--border)',
@@ -81,5 +88,13 @@ export default {
         }
       },
   },
+  safelist: [
+    // Garante que as classes de cores do design system sejam geradas
+    { pattern: /^(bg|text|border)-(primary|secondary|success|error|warning|info|background|foreground|border|input)$/ },
+    { pattern: /^(bg|text|border)-(primary|secondary|success|error|warning|info)-(hover)$/ },
+    { pattern: /^(bg|text|border)-gray-(50|100|200|300|400|500|600|700|800|900|1000)$/ },
+    // Garante que as classes de espaçamento do design system sejam geradas
+    { pattern: /^(p|m|px|py|mx|my|pt|pb|pl|pr|mt|mb|ml|mr|gap|space-x|space-y)-(0|1|2|3|4|5|6|8|10|12|16|20|24|32)$/ },
+  ],
   plugins: [],
 }

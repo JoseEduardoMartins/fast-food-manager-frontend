@@ -28,7 +28,7 @@ const features = [
   },
 ];
 
-const Plataforma: React.FC = () => {
+const Platform: React.FC = () => {
   return (
     <Layout>
       <section className="flex flex-col items-center justify-center min-h-[80vh] w-full text-center px-4 py-12">
@@ -60,4 +60,4 @@ const Plataforma: React.FC = () => {
   );
 };
 
-export default Plataforma;
+export default Platform;

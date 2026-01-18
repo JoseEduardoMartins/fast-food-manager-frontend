@@ -1,17 +1,11 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { Input, Button, Layout, Title, Label } from '@fast-food/design-system';
-import { ROUTES } from '../routes';
-
-const loginSchema = z.object({
-  email: z.string().email('E-mail inválido').nonempty('E-mail é obrigatório'),
-  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
-});
-
-type LoginData = z.infer<typeof loginSchema>;
+import { ROUTES } from '../../routes';
+import { loginSchema } from './Login.type';
+import type { LoginData } from './Login.type';
 
 const Login: React.FC = () => {
   const {
@@ -24,7 +18,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const onSubmit = () => {
-    // Aqui vai a lógica de autenticação futura
+    // Authentication logic will go here
     alert('Login simulado!');
     navigate(ROUTES.HOME);
   };

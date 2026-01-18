@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { Layout, Title, Label, Input, Button } from '@fast-food/design-system';
 
-const Cadastro: React.FC = () => {
-  const [nome, setNome] = useState('');
+const Register: React.FC = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [enviado, setEnviado] = useState(false);
-  const [erro, setErro] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErro('');
-    if (senha !== confirmarSenha) {
-      setErro('As senhas não coincidem.');
+    setError('');
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem.');
       return;
     }
-    setEnviado(true);
-    // Aqui pode ser feita a integração com backend
+    setSubmitted(true);
+    // Integration with backend can be done here
   };
 
   return (
@@ -36,8 +36,8 @@ const Cadastro: React.FC = () => {
         >
           <Input
             label="Nome"
-            value={nome}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNome(e.target.value)}
+            value={name}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
             required
           />
           <Input
@@ -50,26 +50,26 @@ const Cadastro: React.FC = () => {
           <Input
             label="Senha"
             type="password"
-            value={senha}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSenha(e.target.value)}
+            value={password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             required
           />
           <Input
             label="Confirmar senha"
             type="password"
-            value={confirmarSenha}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmarSenha(e.target.value)}
+            value={confirmPassword}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
             required
           />
-          {erro && (
+          {error && (
             <Label as="p" className="text-error mt-2 text-sm">
-              {erro}
+              {error}
             </Label>
           )}
           <Button type="submit" className="w-full mt-2">
             Cadastrar
           </Button>
-          {enviado && (
+          {submitted && (
             <Label as="p" className="text-success mt-2 text-sm">
               Cadastro realizado com sucesso!
             </Label>
@@ -80,4 +80,4 @@ const Cadastro: React.FC = () => {
   );
 };
 
-export default Cadastro;
+export default Register;

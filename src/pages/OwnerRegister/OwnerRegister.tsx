@@ -58,7 +58,7 @@ const OwnerRegister: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Aqui vai a lógica de cadastro
+    // Registration logic goes here
     alert(`Plano: ${selectedPlan}\nCPF: ${taxId}\nTelefone: ${phone}`);
   };
 
