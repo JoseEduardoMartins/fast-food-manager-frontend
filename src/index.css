@@ -1,1 +1,9 @@
-@import '@fast-food/design-system/styles/tailwind.css';
+@import '@fast-food/design-system/styles/reset.css';
+@import '@fast-food/design-system/styles/colors.css';
+@import '@fast-food/design-system/styles/spacing.css';
+@import '@fast-food/design-system/styles/tokens-typography.css';
+@import '@fast-food/design-system/styles/scrollbar.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
