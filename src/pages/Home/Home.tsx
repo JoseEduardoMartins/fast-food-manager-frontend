@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout, Title, Label, Button } from '@fast-food/design-system';
-import { ROUTES } from '../../routes';
 
 const benefits = [
   {
@@ -58,13 +57,13 @@ const Home: React.FC = () => {
           Teste grátis!
         </Label>
         <div className="flex flex-col sm:flex-row gap-4 mb-20 w-full max-w-md justify-center">
-          <Button className="w-full sm:w-auto px-8 py-3 text-lg" onClick={() => navigate(ROUTES.REGISTER)}>
+          <Button className="w-full sm:w-auto px-8 py-3 text-lg" onClick={() => navigate('/register')}>
             Comece agora
           </Button>
           <Button 
             variant="secondary" 
             className="w-full sm:w-auto px-8 py-3 text-lg" 
-            onClick={() => navigate(ROUTES.PLATFORM)}
+            onClick={() => navigate('/platform')}
           >
             Saiba mais
           </Button>
@@ -127,7 +126,7 @@ const Home: React.FC = () => {
           <Label as="p" className="mb-8 text-lg text-gray-600 dark:text-gray-400">
             Comece hoje mesmo e veja a diferença que uma gestão moderna pode fazer.
           </Label>
-          <Button className="w-full max-w-xs mx-auto" onClick={() => navigate(ROUTES.REGISTER)}>
+          <Button className="w-full max-w-xs mx-auto" onClick={() => navigate('/register')}>
             Teste grátis agora
           </Button>
         </div>
