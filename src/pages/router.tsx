@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes } from 'react-router-dom';
+import { AuthProvider } from '@contexts';
 import { AuthRoutes } from '@pages/auth';
 import { AppRoutes } from '@pages/app';
 import { PublicRoutes } from '@pages/public';
@@ -10,11 +11,13 @@ import { PublicRoutes } from '@pages/public';
 export const Router = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        {PublicRoutes}
-        {AuthRoutes}
-        {AppRoutes}
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          {PublicRoutes}
+          {AuthRoutes}
+          {AppRoutes}
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 };
