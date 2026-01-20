@@ -30,9 +30,9 @@ describe('Login', () => {
     expect(screen.getByRole('button', { name: /entrar/i })).toBeInTheDocument();
   });
 
-  it('should render owner register button', () => {
+  it('should render register button', () => {
     renderWithRouter(<Login />);
-    expect(screen.getByRole('button', { name: /cadastre-se como owner/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /criar conta/i })).toBeInTheDocument();
   });
 
   it('should show validation error for invalid email', async () => {
@@ -69,13 +69,13 @@ describe('Login', () => {
     });
   });
 
-  it('should navigate to owner register page when clicking owner register button', async () => {
+  it('should navigate to register page when clicking register button', async () => {
     const user = userEvent.setup();
     renderWithRouter(<Login />);
 
-    const ownerButton = screen.getByRole('button', { name: /cadastre-se como owner/i });
-    await user.click(ownerButton);
+    const registerButton = screen.getByRole('button', { name: /criar conta/i });
+    await user.click(registerButton);
 
-    expect(mockNavigate).toHaveBeenCalledWith('/owner-register');
+    expect(mockNavigate).toHaveBeenCalledWith('/register');
   });
 });

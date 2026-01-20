@@ -13,7 +13,6 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   FORGOT_PASSWORD: '/forgot-password',
-  OWNER_REGISTER: '/owner-register',
 
   // Protected routes (require authentication)
   DASHBOARD: '/dashboard',

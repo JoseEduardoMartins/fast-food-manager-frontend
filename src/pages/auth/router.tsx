@@ -1,7 +1,6 @@
 import { Route } from 'react-router-dom';
 import ForgotPassword from './ForgotPassword';
 import Login from './Login';
-import OwnerRegister from './OwnerRegister';
 import Register from './Register';
 import { ROUTES } from '@common/constants';
 
@@ -14,6 +13,5 @@ export const AuthRoutes = (
       <Route path={ROUTES.LOGIN} element={<Login />} />
       <Route path={ROUTES.REGISTER} element={<Register />} />
       <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
-      <Route path={ROUTES.OWNER_REGISTER} element={<OwnerRegister />} />
     </>
   );
