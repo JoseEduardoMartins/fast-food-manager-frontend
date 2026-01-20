@@ -1,6 +1,7 @@
 import { Route } from 'react-router-dom';
 import { ProtectedRoute } from '@components/guards';
 import Dashboard from './Dashboard';
+import Users from './Users';
 import { ROUTES } from '@common/constants';
 
 /**
@@ -14,6 +15,14 @@ export const AppRoutes = (
       element={
         <ProtectedRoute>
           <Dashboard />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.USERS}
+      element={
+        <ProtectedRoute>
+          <Users />
         </ProtectedRoute>
       }
     />

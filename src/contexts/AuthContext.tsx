@@ -83,7 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       http.defaults.headers.token = response.token;
     }
 
-    // Redirect to dashboard after successful login
+    // Redirect to dashboard (same for all users, content adapts by role)
     navigate(ROUTES.DASHBOARD);
   };
 

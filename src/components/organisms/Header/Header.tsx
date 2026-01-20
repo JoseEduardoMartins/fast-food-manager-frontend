@@ -40,6 +40,14 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                 >
                   Dashboard
                 </a>
+                {user?.role === 'admin' && (
+                  <a
+                    className="transition-colors hover:text-primary cursor-pointer"
+                    onClick={() => onNavigate?.(ROUTES.USERS)}
+                  >
+                    Usuários
+                  </a>
+                )}
                 <div className="relative">
                   <button
                     className="flex items-center space-x-2 transition-colors hover:text-primary cursor-pointer"

@@ -16,6 +16,7 @@ export const ROUTES = {
 
   // Protected routes (require authentication)
   DASHBOARD: '/dashboard',
+  USERS: '/users',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
