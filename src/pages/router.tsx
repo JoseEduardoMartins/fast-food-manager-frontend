@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes } from 'react-router-dom';
 import { AuthRoutes } from './auth';
-import { ProtectedRoutes } from './protected';
+import { AppRoutes } from './app';
 import { PublicRoutes } from './public';
 
 /**
@@ -13,7 +13,7 @@ export const Router = () => {
       <Routes>
         {PublicRoutes}
         {AuthRoutes}
-        {ProtectedRoutes}
+        {AppRoutes}
       </Routes>
     </BrowserRouter>
   );

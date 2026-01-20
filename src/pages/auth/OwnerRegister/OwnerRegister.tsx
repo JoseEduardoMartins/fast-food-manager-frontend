@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Title, Label, Input, Select, Button } from '../../components';
+import { Layout, Title, Label, Input, Select, Button } from '../../../components';
 
 const plans = [
   {

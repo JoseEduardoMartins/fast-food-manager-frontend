@@ -2,8 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
-import { Input, Button, Layout, Title, Label } from '../../components';
-import { ROUTES } from '../../routes';
+import { Input, Button, Layout, Title, Label } from '../../../components';
 import { loginSchema } from './Login.type';
 import type { LoginData } from './Login.type';
 
@@ -20,7 +19,7 @@ const Login: React.FC = () => {
   const onSubmit = () => {
     // Authentication logic will go here
     alert('Login simulado!');
-    navigate(ROUTES.HOME);
+    navigate('/');
   };
 
   return (
@@ -61,7 +60,7 @@ const Login: React.FC = () => {
           <Button
             variant="secondary"
             className="w-full"
-            onClick={() => navigate(ROUTES.OWNER_REGISTER)}
+            onClick={() => navigate('/owner-register')}
           >
             Cadastre-se como Owner
           </Button>
