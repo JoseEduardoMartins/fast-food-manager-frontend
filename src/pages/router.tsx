@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { AuthProvider } from '@contexts';
 import { AuthRoutes } from '@pages/auth';
 import { AppRoutes } from '@pages/app';
@@ -12,6 +13,7 @@ export const Router = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Toaster position="top-right" richColors />
         <Routes>
           {PublicRoutes}
           {AuthRoutes}

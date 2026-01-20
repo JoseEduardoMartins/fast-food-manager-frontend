@@ -75,8 +75,6 @@ export interface ListUsersParams {
   companyId?: string;
   branchId?: string;
   isActive?: boolean;
-  orderBy?: string;
-  orderDirection?: 'asc' | 'desc';
   selectFields?: string[];
 }
 

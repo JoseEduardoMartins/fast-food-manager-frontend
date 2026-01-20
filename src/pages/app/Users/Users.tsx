@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Layout, Title, Label, Button, Card, Input, Select, Badge } from '@components';
 import { useAuth } from '@contexts';
 import { listUsers, createUser, updateUser, deleteUser } from '@services/users';
@@ -94,8 +95,6 @@ const Users: React.FC = () => {
       const params: ListUsersParams = {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
-        orderBy: 'name',
-        orderDirection: 'asc',
       };
 
       if (selectedRole !== 'all') {
@@ -140,6 +139,7 @@ const Users: React.FC = () => {
     try {
       setError(null);
       await createUser(formData);
+      toast.success('Usuário criado com sucesso!');
       setShowCreateModal(false);
       resetForm();
       await loadUsers();
@@ -149,9 +149,9 @@ const Users: React.FC = () => {
       setError(errorMessage);
       
       if (err.response?.status === 409) {
-        alert('Email já está em uso');
+        toast.error('Email já está em uso');
       } else {
-        alert(errorMessage);
+        toast.error(errorMessage);
       }
     }
   };
@@ -169,6 +169,7 @@ const Users: React.FC = () => {
         ...(formData.password && { password: formData.password }),
       };
       await updateUser(editingUser.id, updateData);
+      toast.success('Usuário atualizado com sucesso!');
       setEditingUser(null);
       resetForm();
       await loadUsers();
@@ -178,47 +179,78 @@ const Users: React.FC = () => {
       setError(errorMessage);
       
       if (err.response?.status === 409) {
-        alert('Email já está em uso');
+        toast.error('Email já está em uso');
       } else if (err.response?.status === 404) {
-        alert('Usuário não encontrado');
+        toast.error('Usuário não encontrado');
       } else {
-        alert(errorMessage);
+        toast.error(errorMessage);
       }
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este usuário?')) {
-      return;
-    }
-
-    try {
-      setError(null);
-      await deleteUser(id);
-      await loadUsers();
-    } catch (err: any) {
-      console.error('Erro ao excluir usuário:', err);
-      const errorMessage = err.response?.data?.message || 'Erro ao excluir usuário';
-      setError(errorMessage);
-      
-      if (err.response?.status === 404) {
-        alert('Usuário não encontrado');
-      } else {
-        alert(errorMessage);
-      }
-    }
+  const handleDelete = async (id: string, userName: string) => {
+    toast.custom((t) => (
+      <div className="bg-background border border-border rounded-lg shadow-lg p-4 max-w-md">
+        <p className="font-semibold mb-2">Confirmar exclusão</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Tem certeza que deseja excluir o usuário <strong>{userName}</strong>? Esta ação não pode ser desfeita.
+        </p>
+        <div className="flex gap-2 justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => toast.dismiss(t)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="error"
+            size="sm"
+            onClick={async () => {
+              toast.dismiss(t);
+              toast.promise(
+                new Promise(async (resolve, reject) => {
+                  try {
+                    await deleteUser(id);
+                    await loadUsers();
+                    resolve(undefined);
+                  } catch (err: any) {
+                    console.error('Erro ao excluir usuário:', err);
+                    const errorMessage = err.response?.data?.message || 'Erro ao excluir usuário';
+                    setError(errorMessage);
+                    reject(new Error(errorMessage));
+                  }
+                }),
+                {
+                  loading: 'Excluindo usuário...',
+                  success: 'Usuário excluído com sucesso!',
+                  error: (error: Error) => error.message || 'Erro ao excluir usuário',
+                }
+              );
+            }}
+          >
+            Excluir
+          </Button>
+        </div>
+      </div>
+    ), {
+      duration: Infinity,
+    });
   };
 
   const handleToggleActive = async (userItem: User) => {
     try {
       setError(null);
       await updateUser(userItem.id, { isActive: !userItem.isActive });
+      toast.success(
+        `Usuário ${userItem.isActive ? 'desativado' : 'ativado'} com sucesso!`
+      );
       await loadUsers();
     } catch (err: any) {
       console.error('Erro ao alterar status do usuário:', err);
       const errorMessage = err.response?.data?.message || 'Erro ao alterar status do usuário';
       setError(errorMessage);
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -404,7 +436,7 @@ const Users: React.FC = () => {
                               <Button
                                 variant="error"
                                 size="sm"
-                                onClick={() => handleDelete(userItem.id)}
+                                onClick={() => handleDelete(userItem.id, userItem.name)}
                               >
                                 Excluir
                               </Button>

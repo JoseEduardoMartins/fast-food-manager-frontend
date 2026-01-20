@@ -29,8 +29,6 @@ export const listUsers = async (params?: ListUsersParams): Promise<ListUsersResp
   if (params?.companyId) queryParams.companyId = params.companyId;
   if (params?.branchId) queryParams.branchId = params.branchId;
   if (params?.isActive !== undefined) queryParams.isActive = params.isActive;
-  if (params?.orderBy) queryParams.orderBy = params.orderBy;
-  if (params?.orderDirection) queryParams.orderDirection = params.orderDirection;
   if (params?.selectFields && params.selectFields.length > 0) {
     queryParams.selectFields = params.selectFields;
   }
