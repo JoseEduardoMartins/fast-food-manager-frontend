@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { Input, Button, Title, Label } from '@components';
+import { useAuth } from '@contexts';
 import { ROUTES } from '@common/constants';
 import { loginSchema } from './Login.type';
 import type { LoginData } from './Login.type';
@@ -16,11 +17,26 @@ const Login: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
   const navigate = useNavigate();
+  const { signIn } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = () => {
-    // Authentication logic will go here
-    alert('Login simulado!');
-    navigate(ROUTES.HOME);
+  const onSubmit = async (data: LoginData) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await signIn({
+        email: data.email,
+        password: data.password,
+      });
+      // Redirection is handled by AuthContext
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Erro ao fazer login. Tente novamente.';
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -53,8 +69,13 @@ const Login: React.FC = () => {
             error={!!errors.password}
             helperText={errors.password?.message}
           />
-          <Button type="submit" className="w-full mt-2">
-            Entrar
+          {error && (
+            <Label as="p" className="text-error mt-2 text-sm">
+              {error}
+            </Label>
+          )}
+          <Button type="submit" className="w-full mt-2" disabled={isLoading}>
+            {isLoading ? 'Entrando...' : 'Entrar'}
           </Button>
         </form>
         <Button

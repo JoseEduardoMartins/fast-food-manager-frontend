@@ -10,7 +10,7 @@ export const application = {
 };
 
 export const api = {
-  url: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  url: import.meta.env.VITE_API_URL || 'http://localhost:3000',
   timeout: Number(import.meta.env.VITE_API_TIMEOUT) || 30000,
 };
 

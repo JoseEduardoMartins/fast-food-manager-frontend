@@ -79,6 +79,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (response.token && http.defaults.headers) {
       http.defaults.headers.token = response.token;
     }
+
+    // Redirect to dashboard after successful login
+    navigate(ROUTES.DASHBOARD);
   };
 
   /**
