@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Title, Label, Input, Button } from '@fast-food/design-system';
+import { Layout, Title, Label, Input, Button } from '../../components';
 
 const Contact: React.FC = () => {
   const [name, setName] = useState('');

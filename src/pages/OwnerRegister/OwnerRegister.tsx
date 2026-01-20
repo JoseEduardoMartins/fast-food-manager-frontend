@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Title, Label, Input, Select, Button } from '@fast-food/design-system';
+import { Layout, Title, Label, Input, Select, Button } from '../../components';
 
 const plans = [
   {

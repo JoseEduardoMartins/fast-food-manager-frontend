@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Title, Label, Button } from '@fast-food/design-system';
+import { Layout, Title, Label, Button } from '../../components';
 
 const features = [
   {
