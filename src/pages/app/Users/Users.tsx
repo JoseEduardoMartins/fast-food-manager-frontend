@@ -6,9 +6,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Plus, Search, X, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
+import { Plus, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Layout, Title, Label, Button, Card, Input, Select, Badge, Table, TablePagination, Icon } from '@components';
+import { Layout, Title, Label, Button, Card, Select, Badge, Table, TablePagination, Icon, PageHeader, ErrorAlert, FilterForm, Modal, FormField } from '@components';
 import { useAuth } from '@contexts';
 import { listUsers, createUser, updateUser, deleteUser } from '@services/users';
 import type { User, CreateUserRequest, UpdateUserRequest, UserRole, ListUsersParams } from '@services/users';
@@ -400,76 +400,52 @@ const Users: React.FC = () => {
       }}
     >
       <div className="container py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <Title variant="h1" className="mb-2 text-foreground font-semibold">
-              Gerenciamento de Usuários
-            </Title>
-            <Label as="p" className="text-gray-600 dark:text-gray-400">
-              Gerencie proprietários, gerentes, cozinheiros, atendentes e clientes
-            </Label>
-          </div>
-          <Button onClick={() => setShowCreateModal(true)}>
-            <Icon icon={Plus} size={16} className="mr-2" />
-            Novo Usuário
-          </Button>
-        </div>
+        <PageHeader
+          title="Gerenciamento de Usuários"
+          description="Gerencie proprietários, gerentes, cozinheiros, atendentes e clientes"
+          action={
+            <Button onClick={() => setShowCreateModal(true)}>
+              <Icon icon={Plus} size={16} className="mr-2" />
+              Novo Usuário
+            </Button>
+          }
+        />
 
         {/* Error Message */}
-        {error && (
-          <Card className="mb-6 p-4 bg-red-50 border-red-200">
-            <Label className="text-red-600">{error}</Label>
-          </Card>
-        )}
+        <ErrorAlert message={error || ''} onDismiss={() => setError(null)} dismissible />
 
         {/* Filters */}
-        <Card className="mb-6 p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div>
-              <Label className="mb-2 block">Buscar por Nome</Label>
-              <Input
-                placeholder="Nome..."
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
-            </div>
-            <div>
-              <Label className="mb-2 block">Buscar por Email</Label>
-              <Input
-                type="email"
-                placeholder="Email..."
-                value={searchEmail}
-                onChange={(e) => setSearchEmail(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
-            </div>
-            <div>
-              <Label className="mb-2 block">Filtrar por Tipo</Label>
-              <Select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value as UserRole | 'all')}
-              >
-                <option value="all">Todos</option>
-                <option value="owner">Proprietários</option>
-                <option value="manager">Gerentes</option>
-                <option value="cook">Cozinheiros</option>
-                <option value="attendant">Atendentes</option>
-                <option value="customer">Clientes</option>
-              </Select>
-            </div>
+        <FilterForm onSearch={handleSearch} onClear={handleClearSearch}>
+          <FormField
+            label="Buscar por Nome"
+            placeholder="Nome..."
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          />
+          <FormField
+            label="Buscar por Email"
+            type="email"
+            placeholder="Email..."
+            value={searchEmail}
+            onChange={(e) => setSearchEmail(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          />
+          <div>
+            <Label className="mb-2 block">Filtrar por Tipo</Label>
+            <Select
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value as UserRole | 'all')}
+            >
+              <option value="all">Todos</option>
+              <option value="owner">Proprietários</option>
+              <option value="manager">Gerentes</option>
+              <option value="cook">Cozinheiros</option>
+              <option value="attendant">Atendentes</option>
+              <option value="customer">Clientes</option>
+            </Select>
           </div>
-              <div className="flex gap-2">
-                <Button onClick={handleSearch}>
-                  <Icon icon={Search} size={16} className="mr-2" />
-                  Buscar
-                </Button>
-                <Button onClick={handleClearSearch} variant="outline">
-                  <Icon icon={X} size={16} className="mr-2" />
-                  Limpar
-                </Button>
-              </div>
-        </Card>
+        </FilterForm>
 
         {/* Users Table */}
         <Card>
@@ -489,66 +465,61 @@ const Users: React.FC = () => {
         </Card>
 
         {/* Create/Edit Modal */}
-        {(showCreateModal || editingUser) && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <Card className="w-full max-w-md p-6">
-              <Title variant="h2" className="mb-4 font-semibold">
-                {editingUser ? 'Editar Usuário' : 'Novo Usuário'}
-              </Title>
-              <form onSubmit={editingUser ? handleUpdate : handleCreate} className="space-y-4">
-                <div>
-                  <Label className="mb-2 block">Nome</Label>
-                  <Input
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label className="mb-2 block">Email</Label>
-                  <Input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label className="mb-2 block">Senha</Label>
-                  <Input
-                    type="password"
-                    required={!editingUser}
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    placeholder={editingUser ? 'Deixe em branco para manter a senha atual' : ''}
-                  />
-                </div>
-                <div>
-                  <Label className="mb-2 block">Tipo de Usuário</Label>
-                  <Select
-                    required
-                    value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
-                  >
-                    <option value="owner">Proprietário</option>
-                    <option value="manager">Gerente</option>
-                    <option value="cook">Cozinheiro</option>
-                    <option value="attendant">Atendente</option>
-                    <option value="customer">Cliente</option>
-                  </Select>
-                </div>
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" className="flex-1">
-                    {editingUser ? 'Salvar' : 'Criar'}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={closeModal} className="flex-1">
-                    Cancelar
-                  </Button>
-                </div>
-              </form>
-            </Card>
-          </div>
-        )}
+        <Modal
+          isOpen={showCreateModal || !!editingUser}
+          onClose={closeModal}
+          title={editingUser ? 'Editar Usuário' : 'Novo Usuário'}
+        >
+          <form onSubmit={editingUser ? handleUpdate : handleCreate} className="space-y-4">
+            <FormField
+              label="Nome"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
+            <FormField
+              label="Email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+            <FormField
+              label="Senha"
+              type="password"
+              required={!editingUser}
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              placeholder={editingUser ? 'Deixe em branco para manter a senha atual' : ''}
+              helperText={editingUser ? 'Deixe em branco para manter a senha atual' : undefined}
+            />
+            <div>
+              <Label className="mb-2 block">
+                Tipo de Usuário
+                <span className="text-error ml-1">*</span>
+              </Label>
+              <Select
+                required
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
+              >
+                <option value="owner">Proprietário</option>
+                <option value="manager">Gerente</option>
+                <option value="cook">Cozinheiro</option>
+                <option value="attendant">Atendente</option>
+                <option value="customer">Cliente</option>
+              </Select>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button type="submit" className="flex-1">
+                {editingUser ? 'Salvar' : 'Criar'}
+              </Button>
+              <Button type="button" variant="outline" onClick={closeModal} className="flex-1">
+                Cancelar
+              </Button>
+            </div>
+          </form>
+        </Modal>
       </div>
     </Layout>
   );

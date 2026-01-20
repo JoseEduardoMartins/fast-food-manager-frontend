@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Building2, Store, Package, UtensilsCrossed, LeafyGreen, DollarSign, ShoppingCart, UserPlus } from 'lucide-react';
-import { Layout, Title, Label, Button, Card, Icon } from '@components';
+import { Layout, Title, Label, Button, Card, PageHeader, StatCard } from '@components';
 import { useAuth } from '@contexts';
 import { ROUTES } from '@common/constants';
 
@@ -94,16 +94,14 @@ const Dashboard: React.FC = () => {
       }}
     >
       <div className="container py-8">
-        <div className="mb-8">
-          <Title variant="h1" className="mb-2 text-foreground font-semibold">
-            {isAdmin ? 'Painel Administrativo' : 'Bem-vindo ao seu painel'}
-          </Title>
-          <Label as="p" className="text-gray-600 dark:text-gray-400">
-            {isAdmin
+        <PageHeader
+          title={isAdmin ? 'Painel Administrativo' : 'Bem-vindo ao seu painel'}
+          description={
+            isAdmin
               ? 'Visão geral do sistema e acesso rápido às funcionalidades de gerenciamento'
-              : 'Aqui você acompanha os principais indicadores do seu negócio em tempo real.'}
-          </Label>
-        </div>
+              : 'Aqui você acompanha os principais indicadores do seu negócio em tempo real.'
+          }
+        />
 
         {/* Statistics Grid */}
         <div className={`grid grid-cols-1 md:grid-cols-2 ${isAdmin ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-6 mb-8`}>
@@ -112,35 +110,14 @@ const Dashboard: React.FC = () => {
             const handleClick = hasRoute ? () => navigate(card.route as string) : undefined;
             
             return (
-              <Card
+              <StatCard
                 key={card.title}
-                className={`p-6 flex flex-col items-start text-left hover:border-primary transition-colors ${
-                  hasRoute ? 'cursor-pointer' : ''
-                }`}
+                title={card.title}
+                value={card.value}
+                description={card.description}
+                icon={'icon' in card ? card.icon : undefined}
                 onClick={handleClick}
-              >
-                {'icon' in card && card.icon && (
-                  <div className="flex items-start justify-between mb-4 w-full">
-                    <div className="text-primary">
-                      <Icon icon={card.icon as any} size={32} />
-                    </div>
-                    <Title variant="h2" className="text-primary font-bold text-3xl">
-                      {String(card.value)}
-                    </Title>
-                  </div>
-                )}
-              {!('icon' in card) || !card.icon ? (
-                <Title variant="h2" className="mb-3 text-primary font-bold text-3xl">
-                  {card.value}
-                </Title>
-              ) : null}
-              <Label as="p" className="font-semibold mb-2 text-foreground">
-                {card.title}
-              </Label>
-              <Label as="p" className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                {card.description}
-              </Label>
-            </Card>
+              />
             );
           })}
         </div>
