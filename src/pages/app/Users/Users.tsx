@@ -6,8 +6,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Plus, Search, X, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Layout, Title, Label, Button, Card, Input, Select, Badge, Table, TablePagination } from '@components';
+import { Layout, Title, Label, Button, Card, Input, Select, Badge, Table, TablePagination, Icon } from '@components';
 import { useAuth } from '@contexts';
 import { listUsers, createUser, updateUser, deleteUser } from '@services/users';
 import type { User, CreateUserRequest, UpdateUserRequest, UserRole, ListUsersParams } from '@services/users';
@@ -351,6 +352,7 @@ const Users: React.FC = () => {
                   openEditModal(user);
                 }}
               >
+                <Icon icon={Edit} size={14} className="mr-1" />
                 Editar
               </Button>
               <Button
@@ -361,6 +363,7 @@ const Users: React.FC = () => {
                   handleToggleActive(user);
                 }}
               >
+                <Icon icon={user.isActive ? UserX : UserCheck} size={14} className="mr-1" />
                 {user.isActive ? 'Desativar' : 'Ativar'}
               </Button>
               <Button
@@ -371,6 +374,7 @@ const Users: React.FC = () => {
                   handleDelete(user.id, user.name);
                 }}
               >
+                <Icon icon={Trash2} size={14} className="mr-1" />
                 Excluir
               </Button>
             </div>
@@ -405,7 +409,10 @@ const Users: React.FC = () => {
               Gerencie proprietários, gerentes, cozinheiros, atendentes e clientes
             </Label>
           </div>
-          <Button onClick={() => setShowCreateModal(true)}>Novo Usuário</Button>
+          <Button onClick={() => setShowCreateModal(true)}>
+            <Icon icon={Plus} size={16} className="mr-2" />
+            Novo Usuário
+          </Button>
         </div>
 
         {/* Error Message */}
@@ -452,10 +459,16 @@ const Users: React.FC = () => {
               </Select>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={handleSearch}>Buscar</Button>
-            <Button onClick={handleClearSearch} variant="outline">Limpar</Button>
-          </div>
+              <div className="flex gap-2">
+                <Button onClick={handleSearch}>
+                  <Icon icon={Search} size={16} className="mr-2" />
+                  Buscar
+                </Button>
+                <Button onClick={handleClearSearch} variant="outline">
+                  <Icon icon={X} size={16} className="mr-2" />
+                  Limpar
+                </Button>
+              </div>
         </Card>
 
         {/* Users Table */}

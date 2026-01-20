@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layout, Title, Label, Button, Card } from '@components';
+import { Users, Building2, Store, Package, UtensilsCrossed, LeafyGreen, DollarSign, ShoppingCart, UserPlus } from 'lucide-react';
+import { Layout, Title, Label, Button, Card, Icon } from '@components';
 import { useAuth } from '@contexts';
 import { ROUTES } from '@common/constants';
 
@@ -10,21 +11,25 @@ const regularUserCards = [
     title: 'Pedidos do dia',
     value: 27,
     description: 'Pedidos realizados hoje',
+    icon: ShoppingCart,
   },
   {
     title: 'Faturamento',
     value: 'R$ 2.350,00',
     description: 'Total faturado hoje',
+    icon: DollarSign,
   },
   {
     title: 'Produtos em estoque',
     value: 134,
     description: 'Itens disponíveis no estoque',
+    icon: Package,
   },
   {
     title: 'Novos clientes',
     value: 5,
     description: 'Clientes cadastrados hoje',
+    icon: UserPlus,
   },
 ];
 
@@ -35,37 +40,37 @@ const adminCards = [
     value: '12',
     description: 'Owners cadastrados no sistema',
     route: ROUTES.USERS,
-    icon: '👥',
+    icon: Users,
   },
   {
     title: 'Empresas Ativas',
     value: '8',
     description: 'Companies registradas',
-    icon: '🏢',
+    icon: Building2,
   },
   {
     title: 'Filiais',
     value: '24',
     description: 'Branches em operação',
-    icon: '🏪',
+    icon: Store,
   },
   {
     title: 'Pedidos Hoje',
     value: '1.234',
     description: 'Orders processados hoje',
-    icon: '📦',
+    icon: Package,
   },
   {
     title: 'Produtos Cadastrados',
     value: '456',
     description: 'Products no sistema',
-    icon: '🍔',
+    icon: UtensilsCrossed,
   },
   {
     title: 'Ingredientes',
     value: '89',
     description: 'Ingredients disponíveis',
-    icon: '🥬',
+    icon: LeafyGreen,
   },
 ];
 
@@ -114,19 +119,21 @@ const Dashboard: React.FC = () => {
                 }`}
                 onClick={handleClick}
               >
-                {'icon' in card && (
+                {'icon' in card && card.icon && (
                   <div className="flex items-start justify-between mb-4 w-full">
-                    <div className="text-4xl">{card.icon as string}</div>
+                    <div className="text-primary">
+                      <Icon icon={card.icon as any} size={32} />
+                    </div>
                     <Title variant="h2" className="text-primary font-bold text-3xl">
                       {String(card.value)}
                     </Title>
                   </div>
                 )}
-              {!('icon' in card) && (
+              {!('icon' in card) || !card.icon ? (
                 <Title variant="h2" className="mb-3 text-primary font-bold text-3xl">
                   {card.value}
                 </Title>
-              )}
+              ) : null}
               <Label as="p" className="font-semibold mb-2 text-foreground">
                 {card.title}
               </Label>

@@ -16,3 +16,6 @@ export { default as Divider } from './Divider';
 export type { DividerProps } from './Divider';
 export { default as Progress } from './Progress';
 export type { ProgressProps } from './Progress';
+
+export { default as Icon } from "./Icon";
+export type { IconProps } from "./Icon";

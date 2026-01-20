@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@common/helpers';
-import { Button } from '../../atoms';
+import { Button, Icon } from '../../atoms';
 import { ROUTES } from '@common/constants';
 import type { HeaderProps } from './Header.type';
 
@@ -54,19 +55,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                     onClick={() => setShowUserMenu(!showUserMenu)}
                   >
                     <span>{user?.name || 'Usuário'}</span>
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                    <Icon icon={ChevronDown} size={16} />
                   </button>
                   {showUserMenu && (
                     <div className="absolute right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
