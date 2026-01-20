@@ -1,0 +1,266 @@
+# Fast Food Manager Frontend - Component Rules
+
+## Project Structure
+
+The project follows Atomic Design principles with the following structure:
+
+```
+src/
+├── assets/          # Static assets
+├── components/      # All components organized by Atomic Design
+│   ├── atoms/       # Basic building blocks
+│   ├── molecules/   # Combinations of atoms
+│   └── organisms/   # Complex components combining molecules
+├── pages/           # Application pages
+├── utils/           # Utility functions and helpers
+└── styles/          # Global CSS files
+```
+
+## Component Structure
+
+Every component MUST follow this exact file structure:
+
+```
+ComponentName/
+├── ComponentName.tsx          # Main component implementation
+├── ComponentName.type.ts      # TypeScript type definitions
+├── ComponentName.style.tsx    # Style variants and CSS classes
+├── ComponentName.test.tsx     # Unit tests
+└── index.ts                   # Barrel exports
+```
+
+## File Responsibilities
+
+### ComponentName.tsx
+- Contains the main component implementation
+- Imports types from `./ComponentName.type.ts`
+- Imports variants/styles from `./ComponentName.style.tsx`
+- Uses `React.forwardRef` when appropriate
+- Sets `displayName` for better debugging
+- Exports the component as default
+
+Example:
+```tsx
+import React from 'react';
+import { cn } from '../../../utils';
+import type { ComponentProps } from './Component.type';
+import { componentVariants } from './Component.style';
+
+const Component = React.forwardRef<HTMLElement, ComponentProps>(
+  ({ className, variant, children, ...props }, ref) => {
+    return (
+      <element
+        ref={ref}
+        className={cn(componentVariants({ variant }), className)}
+        {...props}
+      >
+        {children}
+      </element>
+    );
+  }
+);
+
+Component.displayName = 'Component';
+
+export default Component;
+```
+
+### ComponentName.type.ts
+- Defines all TypeScript types and interfaces
+- Imports variant functions from `./ComponentName.style.tsx` (without `type` keyword)
+- Exports variant types using `VariantProps<typeof variantFunction>`
+- Defines component props interface extending variant types
+
+Example:
+```tsx
+import type { HTMLAttributes, ReactNode } from 'react';
+import type { VariantProps } from '../../../utils';
+import { componentVariants } from './Component.style';
+
+export type ComponentVariants = VariantProps<typeof componentVariants>;
+
+export interface ComponentProps
+  extends HTMLAttributes<HTMLElement>,
+    ComponentVariants {
+  children?: ReactNode;
+}
+```
+
+### ComponentName.style.tsx
+- Contains all style variants defined with `cva` (class-variance-authority)
+- Exports variant functions (e.g., `componentVariants`)
+- For simple objects (not using cva), use `as const` for type safety
+- Uses Tailwind CSS classes
+
+Example with cva:
+```tsx
+import { cva } from '../../../utils';
+
+export const componentVariants = cva(
+  'base-classes-here',
+  {
+    variants: {
+      variant: {
+        default: 'default-classes',
+        secondary: 'secondary-classes',
+      },
+      size: {
+        sm: 'small-classes',
+        md: 'medium-classes',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'md',
+    },
+  }
+);
+```
+
+Example with simple object:
+```tsx
+export const componentVariants = {
+  variant1: 'classes-here',
+  variant2: 'other-classes',
+} as const;
+```
+
+### ComponentName.test.tsx
+- Contains unit tests using Vitest and React Testing Library
+- Tests component rendering, props, and variants
+- Uses `describe` and `it` blocks
+- Imports from `@testing-library/react` and `vitest`
+
+Example:
+```tsx
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import Component from './Component';
+
+describe('Component', () => {
+  it('renders correctly', () => {
+    render(<Component>Content</Component>);
+    expect(screen.getByText('Content')).toBeInTheDocument();
+  });
+});
+```
+
+### index.ts
+- Barrel export file
+- Exports default component
+- Exports types when needed
+- Keeps imports clean in consuming files
+
+Example:
+```tsx
+export { default } from './Component';
+export { default as Component } from './Component';
+export type { ComponentProps } from './Component.type';
+```
+
+## Import Rules
+
+### Within Components
+- Always use relative imports for local files
+- Import types from `.type.ts`
+- Import variants from `.style.tsx`
+- Import utilities from `../../../utils`
+
+### From Other Components
+- Use imports from `src/components/index.ts` when possible
+- Use absolute imports from `src/components/[category]/[ComponentName]` if needed
+
+### Utils
+- Import from `src/utils` for helper functions
+- Use `cn` from `src/utils` for className merging
+- Use `cva` and `VariantProps` from `src/utils` for variants
+
+## Atomic Design Categories
+
+### Atoms (src/components/atoms/)
+- Basic, indivisible UI elements
+- Examples: Button, Input, Label, Title, Badge, Divider, Progress
+- Cannot be broken down further
+- Reusable across the entire application
+
+### Molecules (src/components/molecules/)
+- Simple combinations of atoms
+- Examples: Card, Alert, FormField
+- More complex than atoms but still relatively simple
+- Form functional units
+
+### Organisms (src/components/organisms/)
+- Complex components combining molecules and atoms
+- Examples: Header, Footer, Layout, Navigation
+- Form distinct sections of the interface
+- Can have their own logic and state management
+
+## Naming Conventions
+
+- Component files: PascalCase (e.g., `Button.tsx`)
+- Type files: PascalCase with `.type.ts` suffix (e.g., `Button.type.ts`)
+- Style files: PascalCase with `.style.tsx` suffix (e.g., `Button.style.tsx`)
+- Test files: PascalCase with `.test.tsx` suffix (e.g., `Button.test.tsx`)
+- Variant functions: camelCase with `Variants` suffix (e.g., `buttonVariants`)
+- Variant types: PascalCase with `Variants` suffix (e.g., `ButtonVariants`)
+- Props interfaces: PascalCase with `Props` suffix (e.g., `ButtonProps`)
+
+## Code Style
+
+### React Components
+- Always use `React.forwardRef` for components that need ref forwarding
+- Set `displayName` for all components
+- Use functional components with hooks
+- Prefer type imports: `import type { ... }`
+- Use explicit return types when beneficial
+
+### TypeScript
+- Use interfaces for component props
+- Use types for unions, intersections, and utility types
+- Export types from `.type.ts` files
+- Use `VariantProps` from `class-variance-authority` for variant types
+
+### Styling
+- Use Tailwind CSS classes via the `cn` utility
+- Define variants in `.style.tsx` using `cva` when appropriate
+- Keep base classes in variant definitions
+- Support dark mode with `dark:` prefix
+
+### Testing
+- Write tests for all components
+- Test rendering, props, and variant behavior
+- Use `describe` blocks to group related tests
+- Use descriptive test names
+
+## Best Practices
+
+1. **Separation of Concerns**: Keep logic, types, styles, and tests in separate files
+2. **Reusability**: Design components to be reusable and configurable
+3. **Type Safety**: Always define proper TypeScript types
+4. **Accessibility**: Include proper ARIA attributes and semantic HTML
+5. **Performance**: Use `React.memo` or `React.forwardRef` when appropriate
+6. **Documentation**: Add JSDoc comments for complex components
+7. **Consistency**: Follow the established patterns for all new components
+
+## Component Creation Checklist
+
+When creating a new component, ensure:
+
+- [ ] Component follows the exact file structure (5 files)
+- [ ] Types are defined in `.type.ts`
+- [ ] Variants are defined in `.style.tsx`
+- [ ] Tests are written in `.test.tsx`
+- [ ] Exports are configured in `index.ts`
+- [ ] Component is added to appropriate `atoms/index.ts`, `molecules/index.ts`, or `organisms/index.ts`
+- [ ] Component follows naming conventions
+- [ ] Imports use correct paths
+- [ ] Component has proper TypeScript types
+- [ ] Component is accessible (ARIA, semantic HTML)
+
+## Examples
+
+See existing components for reference:
+- `src/components/atoms/Button/` - Example with cva variants
+- `src/components/atoms/Title/` - Example with simple object variants
+- `src/components/molecules/Card/` - Example of molecule composition
+- `src/components/organisms/Layout/` - Example of organism composition
