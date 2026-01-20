@@ -1,0 +1,423 @@
+# Fast Food Manager Frontend - Route and Page Architecture Rules
+
+## Project Structure
+
+The application follows a clear separation of route types and page organization:
+
+```
+src/
+├── pages/
+│   ├── public/          # Public routes (accessible to all users)
+│   │   ├── Home/
+│   │   ├── Platform/
+│   │   ├── Contact/
+│   │   ├── Careers/
+│   │   ├── router.tsx   # Public route definitions
+│   │   └── index.ts
+│   ├── auth/            # Authentication routes
+│   │   ├── Login/
+│   │   ├── Register/
+│   │   ├── ForgotPassword/
+│   │   ├── OwnerRegister/
+│   │   ├── router.tsx   # Auth route definitions
+│   │   └── index.ts
+│   ├── app/             # Protected/application routes (require authentication)
+│   │   ├── Dashboard/
+│   │   ├── routes.tsx   # Protected route definitions
+│   │   └── index.ts
+│   ├── router.tsx       # Main router combining all route types
+│   └── index.ts
+└── common/
+    └── constants/
+        └── routes.ts    # Centralized route path constants
+```
+
+## Page Structure
+
+Every page MUST follow this exact file structure:
+
+```
+PageName/
+├── PageName.tsx          # Main page component implementation
+├── PageName.type.ts      # TypeScript type definitions
+├── PageName.test.tsx     # Unit tests
+└── index.ts              # Barrel exports
+```
+
+## Route Constants
+
+All route paths are centralized in `src/common/constants/routes.ts`:
+
+```typescript
+export const ROUTES = {
+  // Public routes
+  HOME: '/',
+  PLATFORM: '/platform',
+  CONTACT: '/contact',
+  CAREERS: '/careers',
+
+  // Authentication routes
+  LOGIN: '/login',
+  REGISTER: '/register',
+  FORGOT_PASSWORD: '/forgot-password',
+  OWNER_REGISTER: '/owner-register',
+
+  // Protected routes (require authentication)
+  DASHBOARD: '/dashboard',
+} as const;
+
+export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
+```
+
+### Usage Rules
+- **ALWAYS** import route constants from `@common/constants`
+- **ALWAYS** use `ROUTES.CONSTANT_NAME` instead of hardcoded strings
+- **NEVER** use direct string paths in route definitions or navigation
+- **NEVER** create new route paths without adding them to `ROUTES` constant
+
+Example:
+```tsx
+// ✅ Correct
+import { ROUTES } from '@common/constants';
+<Route path={ROUTES.HOME} element={<Home />} />
+navigate(ROUTES.LOGIN);
+
+// ❌ Wrong
+<Route path="/" element={<Home />} />
+navigate('/login');
+```
+
+## Route Type Organization
+
+### Public Routes (`src/pages/public/`)
+- Accessible to all users without authentication
+- No authentication guard required
+- Examples: Home, Platform, Contact, Careers
+- Defined in `src/pages/public/router.tsx`
+
+### Authentication Routes (`src/pages/auth/`)
+- For unauthenticated users (login, registration)
+- Should redirect authenticated users to dashboard
+- Examples: Login, Register, ForgotPassword, OwnerRegister
+- Defined in `src/pages/auth/router.tsx`
+
+### Protected Routes (`src/pages/app/`)
+- Require user authentication
+- Should redirect unauthenticated users to login
+- Examples: Dashboard, Profile, Settings
+- Defined in `src/pages/app/routes.tsx`
+- **TODO**: Add authentication guard wrapper
+
+## Route Definition Files
+
+### Public Routes (`src/pages/public/router.tsx`)
+
+```tsx
+import { Route } from 'react-router-dom';
+import Home from './Home';
+import Platform from './Platform';
+import Contact from './Contact';
+import Careers from './Careers';
+import { ROUTES } from '@common/constants';
+
+/**
+ * Public routes - accessible to all users without authentication
+ */
+export const PublicRoutes = (
+  <>
+    <Route path={ROUTES.HOME} element={<Home />} />
+    <Route path={ROUTES.PLATFORM} element={<Platform />} />
+    <Route path={ROUTES.CONTACT} element={<Contact />} />
+    <Route path={ROUTES.CAREERS} element={<Careers />} />
+  </>
+);
+```
+
+### Authentication Routes (`src/pages/auth/router.tsx`)
+
+```tsx
+import { Route } from 'react-router-dom';
+import Login from './Login';
+import Register from './Register';
+import ForgotPassword from './ForgotPassword';
+import OwnerRegister from './OwnerRegister';
+import { ROUTES } from '@common/constants';
+
+/**
+ * Authentication routes - login, registration, password recovery
+ * These routes should redirect authenticated users to dashboard
+ */
+export const AuthRoutes = (
+  <>
+    <Route path={ROUTES.LOGIN} element={<Login />} />
+    <Route path={ROUTES.REGISTER} element={<Register />} />
+    <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
+    <Route path={ROUTES.OWNER_REGISTER} element={<OwnerRegister />} />
+  </>
+);
+```
+
+### Protected Routes (`src/pages/app/routes.tsx`)
+
+```tsx
+import { Route } from 'react-router-dom';
+import Dashboard from './Dashboard';
+import { ROUTES } from '@common/constants';
+
+/**
+ * Protected routes - require authentication
+ * These routes should be wrapped with authentication guards
+ * TODO: Add authentication guard HOC or wrapper
+ */
+export const AppRoutes = (
+  <>
+    <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+  </>
+);
+```
+
+### Main Router (`src/pages/router.tsx`)
+
+```tsx
+import { BrowserRouter, Routes } from 'react-router-dom';
+import { AuthRoutes } from '@pages/auth';
+import { AppRoutes } from '@pages/app';
+import { PublicRoutes } from '@pages/public';
+
+/**
+ * Main routes configuration
+ * Combines all route types: public, auth, and protected
+ */
+export const Router = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {PublicRoutes}
+        {AuthRoutes}
+        {AppRoutes}
+      </Routes>
+    </BrowserRouter>
+  );
+};
+```
+
+## Page Component Structure
+
+### PageName.tsx
+- Contains the main page component implementation
+- Can use React hooks for state management
+- Imports and uses components from `@components`
+- Imports route constants from `@common/constants`
+- Uses `useNavigate` from `react-router-dom` for navigation
+
+Example:
+```tsx
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Layout, Title, Button } from '@components';
+import { ROUTES } from '@common/constants';
+
+const Home = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(ROUTES.LOGIN);
+  };
+
+  return (
+    <Layout>
+      <Title>Home Page</Title>
+      <Button onClick={handleClick}>Go to Login</Button>
+    </Layout>
+  );
+};
+
+export default Home;
+```
+
+### PageName.type.ts
+- Defines TypeScript types and interfaces specific to the page
+- Can include form schemas using Zod
+- Exports types for props, form data, etc.
+
+Example:
+```tsx
+import { z } from 'zod';
+
+export const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+export type LoginData = z.infer<typeof loginSchema>;
+```
+
+### PageName.test.tsx
+- Contains unit tests for the page component
+- Mocks `useNavigate` from `react-router-dom`
+- Tests rendering and user interactions
+- Uses Vitest and React Testing Library
+
+Example:
+```tsx
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { BrowserRouter } from 'react-router-dom';
+import Home from './Home';
+
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+describe('Home', () => {
+  beforeEach(() => {
+    mockNavigate.mockClear();
+  });
+
+  it('renders correctly', () => {
+    render(
+      <BrowserRouter>
+        <Home />
+      </BrowserRouter>
+    );
+    expect(screen.getByText('Home Page')).toBeInTheDocument();
+  });
+});
+```
+
+### index.ts
+- Barrel export file
+- Exports the default page component
+- Exports types when needed
+
+Example:
+```tsx
+export { default } from './Home';
+export type { LoginData } from './Home.type';
+```
+
+## Import Rules
+
+### Within Pages
+- Use relative imports for local files within the page directory
+- Import types from `./PageName.type.ts` using `import type`
+- Import route constants from `@common/constants`
+
+Example:
+```tsx
+import type { LoginData } from './Login.type';
+import { ROUTES } from '@common/constants';
+```
+
+### From Components
+- Import components from `@components`
+- Use path aliases for cleaner imports
+
+Example:
+```tsx
+import { Layout, Title, Button, Input } from '@components';
+```
+
+### Navigation
+- Import `useNavigate` from `react-router-dom`
+- Always use `ROUTES` constants for navigation paths
+
+Example:
+```tsx
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@common/constants';
+
+const navigate = useNavigate();
+navigate(ROUTES.DASHBOARD);
+```
+
+## Route Export Pattern
+
+Each route category exports its routes as JSX fragments:
+
+- `PublicRoutes` - Fragment containing all public routes
+- `AuthRoutes` - Fragment containing all authentication routes
+- `AppRoutes` - Fragment containing all protected routes
+
+**Important**: Routes are exported as fragments (`<>...</>`), not as components. They are used directly as children of `<Routes>` in the main router.
+
+## Naming Conventions
+
+- Page directories: PascalCase (e.g., `Home/`, `Login/`)
+- Page files: PascalCase (e.g., `Home.tsx`, `Login.tsx`)
+- Type files: PascalCase with `.type.ts` suffix (e.g., `Home.type.ts`)
+- Test files: PascalCase with `.test.tsx` suffix (e.g., `Home.test.tsx`)
+- Route constants: UPPER_SNAKE_CASE (e.g., `HOME`, `LOGIN`, `FORGOT_PASSWORD`)
+- Route exports: PascalCase with `Routes` suffix (e.g., `PublicRoutes`, `AuthRoutes`)
+
+## Adding New Routes
+
+When adding a new route:
+
+1. **Add route constant** to `src/common/constants/routes.ts`:
+   ```typescript
+   export const ROUTES = {
+     // ... existing routes
+     NEW_PAGE: '/new-page',
+   } as const;
+   ```
+
+2. **Create page directory** following the page structure:
+   ```
+   src/pages/[category]/NewPage/
+   ├── NewPage.tsx
+   ├── NewPage.type.ts
+   ├── NewPage.test.tsx
+   └── index.ts
+   ```
+
+3. **Add route to appropriate router file**:
+   - Public routes → `src/pages/public/router.tsx`
+   - Auth routes → `src/pages/auth/router.tsx`
+   - Protected routes → `src/pages/app/routes.tsx`
+
+4. **Update index.ts** in the category directory if needed
+
+5. **Use ROUTES constant** in navigation and route definitions
+
+## Best Practices
+
+1. **Centralization**: Always use `ROUTES` constants for all route paths
+2. **Separation**: Keep public, auth, and protected routes separated
+3. **Type Safety**: Use TypeScript types for route paths when possible
+4. **Testing**: Write tests for page components, mocking navigation
+5. **Navigation**: Always use `useNavigate` with `ROUTES` constants
+6. **Organization**: Follow the exact page file structure (4 files)
+7. **Documentation**: Add JSDoc comments to route definition files
+
+## Route Creation Checklist
+
+When creating a new route/page, ensure:
+
+- [ ] Route constant added to `src/common/constants/routes.ts`
+- [ ] Page follows exact file structure (4 files)
+- [ ] Page component created with proper structure
+- [ ] Route added to appropriate router file (`public/router.tsx`, `auth/router.tsx`, or `app/routes.tsx`)
+- [ ] Route uses `ROUTES` constant instead of hardcoded string
+- [ ] Page uses `ROUTES` constants for navigation
+- [ ] Tests written with `useNavigate` mocked
+- [ ] Page exported from category `index.ts` if needed
+- [ ] Types defined in `.type.ts` file
+- [ ] Imports use path aliases (`@components`, `@common/constants`)
+
+## Examples
+
+See existing routes and pages for reference:
+- `src/pages/public/Home/` - Public page example
+- `src/pages/auth/Login/` - Auth page example
+- `src/pages/app/Dashboard/` - Protected page example
+- `src/pages/public/router.tsx` - Public routes definition
+- `src/pages/auth/router.tsx` - Auth routes definition
+- `src/pages/app/routes.tsx` - Protected routes definition
+- `src/pages/router.tsx` - Main router configuration

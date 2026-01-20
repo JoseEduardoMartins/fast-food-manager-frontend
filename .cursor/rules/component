@@ -1,4 +1,4 @@
-# Fast Food Manager Frontend - Component Rules
+# Fast Food Manager Frontend - Component Architecture Rules
 
 ## Project Structure
 
@@ -11,9 +11,12 @@ src/
 │   ├── atoms/       # Basic building blocks
 │   ├── molecules/   # Combinations of atoms
 │   └── organisms/   # Complex components combining molecules
+├── common/          # Common utilities and constants
+│   ├── helpers/     # Utility functions (cn, cva, VariantProps)
+│   └── constants/   # Application constants (routes, etc.)
 ├── pages/           # Application pages
-├── utils/           # Utility functions and helpers
-└── styles/          # Global CSS files
+├── styles/          # Global CSS files
+└── assets/          # Static assets (images, fonts, etc.)
 ```
 
 ## Component Structure
@@ -42,7 +45,7 @@ ComponentName/
 Example:
 ```tsx
 import React from 'react';
-import { cn } from '../../../utils';
+import { cn } from '@common/helpers';
 import type { ComponentProps } from './Component.type';
 import { componentVariants } from './Component.style';
 
@@ -74,7 +77,7 @@ export default Component;
 Example:
 ```tsx
 import type { HTMLAttributes, ReactNode } from 'react';
-import type { VariantProps } from '../../../utils';
+import type { VariantProps } from '@common/helpers';
 import { componentVariants } from './Component.style';
 
 export type ComponentVariants = VariantProps<typeof componentVariants>;
@@ -94,7 +97,7 @@ export interface ComponentProps
 
 Example with cva:
 ```tsx
-import { cva } from '../../../utils';
+import { cva } from '@common/helpers';
 
 export const componentVariants = cva(
   'base-classes-here',
@@ -161,39 +164,77 @@ export type { ComponentProps } from './Component.type';
 ## Import Rules
 
 ### Within Components
-- Always use relative imports for local files
-- Import types from `.type.ts`
-- Import variants from `.style.tsx`
-- Import utilities from `../../../utils`
+- Always use relative imports for local files within the component directory
+- Import types from `./ComponentName.type.ts` using `import type`
+- Import variants from `./ComponentName.style.tsx` as values (not types)
+- Import utilities from `@common/helpers`
+
+Example:
+```tsx
+import type { ComponentProps } from './Component.type';  // ✅ Type import
+import { componentVariants } from './Component.style';   // ✅ Value import
+import { cn } from '@common/helpers';                    // ✅ Path alias
+```
 
 ### From Other Components
-- Use imports from `src/components/index.ts` when possible
-- Use absolute imports from `src/components/[category]/[ComponentName]` if needed
+- Use imports from `@components` when importing from the main components index
+- Use path aliases: `@components/[category]/[ComponentName]` when importing specific components
+- Import from component's `index.ts` when possible
 
-### Utils
-- Import from `src/utils` for helper functions
-- Use `cn` from `src/utils` for className merging
-- Use `cva` and `VariantProps` from `src/utils` for variants
+Example:
+```tsx
+import { Button, Input } from '@components';                              // ✅ From main index
+import { Button } from '@components/atoms';                               // ✅ From category index
+import { Card } from '@components/molecules/Card';                        // ✅ From component index
+```
+
+### Common Utilities and Constants
+- Import helpers from `@common/helpers`
+- Import constants from `@common/constants`
+- NEVER use `@utils` or `@constants` (these aliases don't exist)
+
+Example:
+```tsx
+import { cn, cva } from '@common/helpers';          // ✅ Correct
+import { ROUTES } from '@common/constants';         // ✅ Correct
+import { cn } from '@utils';                        // ❌ Wrong - doesn't exist
+import { ROUTES } from '@constants';                // ❌ Wrong - doesn't exist
+```
+
+## Path Aliases
+
+Available path aliases in the project:
+
+- `@/*` → `./src/*`
+- `@components` → `./src/components/index.ts`
+- `@components/*` → `./src/components/*`
+- `@pages/*` → `./src/pages/*`
+- `@common/*` → `./src/common/*`
+- `@styles/*` → `./src/styles/*`
+- `@assets/*` → `./src/assets/*`
 
 ## Atomic Design Categories
 
 ### Atoms (src/components/atoms/)
 - Basic, indivisible UI elements
-- Examples: Button, Input, Label, Title, Badge, Divider, Progress
+- Examples: Button, Input, Label, Title, Badge, Divider, Progress, Select, Textarea
 - Cannot be broken down further
 - Reusable across the entire application
+- Self-contained and have no dependencies on other components
 
 ### Molecules (src/components/molecules/)
 - Simple combinations of atoms
 - Examples: Card, Alert, FormField
 - More complex than atoms but still relatively simple
 - Form functional units
+- Can combine multiple atoms to create reusable patterns
 
 ### Organisms (src/components/organisms/)
 - Complex components combining molecules and atoms
 - Examples: Header, Footer, Layout, Navigation
 - Form distinct sections of the interface
 - Can have their own logic and state management
+- Often represent major page sections
 
 ## Naming Conventions
 
@@ -219,18 +260,21 @@ export type { ComponentProps } from './Component.type';
 - Use types for unions, intersections, and utility types
 - Export types from `.type.ts` files
 - Use `VariantProps` from `class-variance-authority` for variant types
+- Always use `import type` for type-only imports when `verbatimModuleSyntax` is enabled
 
 ### Styling
 - Use Tailwind CSS classes via the `cn` utility
 - Define variants in `.style.tsx` using `cva` when appropriate
 - Keep base classes in variant definitions
 - Support dark mode with `dark:` prefix
+- Use design system CSS variables when available
 
 ### Testing
 - Write tests for all components
 - Test rendering, props, and variant behavior
 - Use `describe` blocks to group related tests
 - Use descriptive test names
+- Mock external dependencies when needed
 
 ## Best Practices
 
@@ -241,6 +285,7 @@ export type { ComponentProps } from './Component.type';
 5. **Performance**: Use `React.memo` or `React.forwardRef` when appropriate
 6. **Documentation**: Add JSDoc comments for complex components
 7. **Consistency**: Follow the established patterns for all new components
+8. **Path Aliases**: Always use path aliases instead of relative paths when possible
 
 ## Component Creation Checklist
 
@@ -252,10 +297,13 @@ When creating a new component, ensure:
 - [ ] Tests are written in `.test.tsx`
 - [ ] Exports are configured in `index.ts`
 - [ ] Component is added to appropriate `atoms/index.ts`, `molecules/index.ts`, or `organisms/index.ts`
+- [ ] Component is exported from main `src/components/index.ts`
 - [ ] Component follows naming conventions
-- [ ] Imports use correct paths
+- [ ] Imports use path aliases (`@components`, `@common/helpers`, etc.)
 - [ ] Component has proper TypeScript types
 - [ ] Component is accessible (ARIA, semantic HTML)
+- [ ] Variants use `cva` when appropriate
+- [ ] Component has `displayName` set
 
 ## Examples
 
