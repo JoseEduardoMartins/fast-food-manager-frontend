@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Layout, Title, Label, Button } from '@components';
 
 const features = [
@@ -29,8 +30,13 @@ const features = [
 ];
 
 const Platform: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
-    <Layout>
+    <Layout 
+      headerProps={{ onNavigate: (route) => navigate(route) }}
+      footerProps={{ onNavigate: (route) => navigate(route) }}
+    >
       <section className="flex flex-col items-center justify-center min-h-[80vh] w-full text-center px-4 py-12">
         <Title variant="h1" className="mb-3 text-foreground font-semibold">
           A Plataforma Completa para o seu Negócio

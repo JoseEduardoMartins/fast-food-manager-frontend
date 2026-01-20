@@ -44,7 +44,10 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Layout headerProps={{ onNavigate: (route) => navigate(route) }}>
+    <Layout 
+      headerProps={{ onNavigate: (route) => navigate(route) }}
+      footerProps={{ onNavigate: (route) => navigate(route) }}
+    >
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center min-h-[85vh] w-full text-center px-4 py-20">
         <Title variant="h1" className="mb-6 text-foreground font-bold text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl mx-auto">

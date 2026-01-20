@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Layout, Title, Label, Input, Button } from '@components';
 
 const Contact: React.FC = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -14,7 +16,10 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <Layout>
+    <Layout 
+      headerProps={{ onNavigate: (route) => navigate(route) }}
+      footerProps={{ onNavigate: (route) => navigate(route) }}
+    >
       <section className="flex flex-col items-center justify-center min-h-[80vh] w-full text-center px-4 py-12">
         <Title variant="h1" className="mb-3 text-foreground font-semibold">
           Fale com a gente
