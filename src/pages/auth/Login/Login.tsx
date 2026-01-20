@@ -2,8 +2,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
-import { Input, Button, Layout, Title, Label } from '../../../components';
-import { ROUTES } from '../../../common/constants';
+import { Input, Button, Layout, Title, Label } from '@components';
+import { ROUTES } from '@common/constants';
 import { loginSchema } from './Login.type';
 import type { LoginData } from './Login.type';
 

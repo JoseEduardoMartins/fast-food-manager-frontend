@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Title, Label, Input, Button } from '../../../components';
+import { Layout, Title, Label, Input, Button } from '@components';
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');

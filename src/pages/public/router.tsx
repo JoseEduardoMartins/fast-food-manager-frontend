@@ -3,7 +3,7 @@ import Careers from './Careers';
 import Contact from './Contact';
 import Home from './Home';
 import Platform from './Platform';
-import { ROUTES } from '../../common/constants';
+import { ROUTES } from '@common/constants';
 
 /**
  * Public routes - accessible to all users without authentication

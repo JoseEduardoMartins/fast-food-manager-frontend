@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layout, Title, Label, Button } from '../../../components';
-import { ROUTES } from '../../../common/constants';
+import { Layout, Title, Label, Button } from '@components';
+import { ROUTES } from '@common/constants';
 
 const benefits = [
   {

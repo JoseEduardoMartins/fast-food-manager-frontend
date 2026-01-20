@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../common/helpers';
+import { cn } from '@common/helpers';
 import Header from '../Header';
 import Footer from '../Footer';
 import type { LayoutProps } from './Layout.type';

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes } from 'react-router-dom';
-import { AuthRoutes } from './auth';
-import { AppRoutes } from './app';
-import { PublicRoutes } from './public';
+import { AuthRoutes } from '@pages/auth';
+import { AppRoutes } from '@pages/app';
+import { PublicRoutes } from '@pages/public';
 
 /**
  * Main routes configuration

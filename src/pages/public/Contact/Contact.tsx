@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Title, Label, Input, Button } from '../../../components';
+import { Layout, Title, Label, Input, Button } from '@components';
 
 const Contact: React.FC = () => {
   const [name, setName] = useState('');

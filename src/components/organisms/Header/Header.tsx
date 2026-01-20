@@ -1,7 +1,7 @@
 import React from 'react';
-import { cn } from '../../../common/helpers';
+import { cn } from '@common/helpers';
 import { Button } from '../../atoms';
-import { ROUTES } from '../../../common/constants';
+import { ROUTES } from '@common/constants';
 import type { HeaderProps } from './Header.type';
 
 const Header = React.forwardRef<HTMLElement, HeaderProps>(

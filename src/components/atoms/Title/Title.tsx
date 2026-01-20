@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../common/helpers';
+import { cn } from '@common/helpers';
 import type { TitleProps } from './Title.type';
 import { titleVariants } from './Title.style';
 

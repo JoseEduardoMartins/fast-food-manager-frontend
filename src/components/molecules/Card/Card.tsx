@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../common/helpers';
+import { cn } from '@common/helpers';
 import type { CardProps } from './Card.type';
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(

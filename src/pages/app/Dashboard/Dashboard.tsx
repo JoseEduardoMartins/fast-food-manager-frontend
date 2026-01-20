@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Title, Label, Button } from '../../../components';
+import { Layout, Title, Label, Button } from '@components';
 
 const cards = [
   {

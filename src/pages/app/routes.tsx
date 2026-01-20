@@ -1,6 +1,6 @@
 import { Route } from 'react-router-dom';
 import Dashboard from './Dashboard';
-import { ROUTES } from '../../common/constants';
+import { ROUTES } from '@common/constants';
 
 /**
  * Protected routes - require authentication

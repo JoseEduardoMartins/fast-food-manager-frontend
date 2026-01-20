@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import type { VariantProps } from '../../../common/helpers';
+import type { VariantProps } from '@common/helpers';
 import { alertVariants } from './Alert.style';
 
 export type AlertVariants = VariantProps<typeof alertVariants>;

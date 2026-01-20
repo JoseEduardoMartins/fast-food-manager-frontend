@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../common/helpers';
+import { cn } from '@common/helpers';
 import type { ButtonProps } from './Button.type';
 import { buttonVariants } from './Button.style';
 
