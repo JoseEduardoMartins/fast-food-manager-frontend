@@ -8,6 +8,7 @@ import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { http } from '@config';
 import { getAccessToken } from '@config';
+import { getUserFromStorage, setUserInStorage, removeUserFromStorage } from '@config';
 import {
   signUp as signUpService,
   signIn as signInService,
@@ -72,7 +73,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signIn = async (data: SignInRequest): Promise<void> => {
     const response = await signInService(data);
 
+    // Store user data in localStorage
     setUser(response.user);
+    setUserInStorage(JSON.stringify(response.user));
 
     // Token is already stored by signInService
     // Set token in http defaults for immediate use
@@ -91,7 +94,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const response = await signUpService(data);
 
     // Set user with partial data (email and name from request)
-    setUser({
+    const userData: User = {
       id: response.id,
       name: data.name,
       email: data.email,
@@ -102,7 +105,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isVerified: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
+    };
+
+    setUser(userData);
+    // Don't store in localStorage on signup since user needs to confirm email first
   };
 
   /**
@@ -120,10 +126,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Update user as verified
     if (user) {
-      setUser({
+      const updatedUser = {
         ...user,
         isVerified: true,
-      });
+      };
+      setUser(updatedUser);
+      // Update user in storage
+      setUserInStorage(JSON.stringify(updatedUser));
     }
   };
 
@@ -133,6 +142,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signOut = async (): Promise<void> => {
     signOutService();
     setUser(null);
+    removeUserFromStorage();
 
     // Clear token from http defaults
     if (http.defaults.headers) {
@@ -150,7 +160,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     if (!token) {
       // No token found, user is not authenticated
-      // Allow free navigation to public and auth routes
+      // Clear user from state if exists
+      setUser(null);
+      removeUserFromStorage();
       setLoading(false);
       return;
     }
@@ -160,24 +172,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
       http.defaults.headers.token = token;
     }
 
-    // Try to get user information from token or make a request
-    // For now, we'll just check if token exists
-    // In a real scenario, you'd make an API call to get user info
-    // Example: const response = await http.get<User>('/auth/me');
-    
+    // Try to recover user data from localStorage
     try {
+      const storedUserData = getUserFromStorage();
+      
+      if (storedUserData) {
+        // Parse and set user from localStorage
+        const userData: User = JSON.parse(storedUserData);
+        setUser(userData);
+        setLoading(false);
+        return;
+      }
+
+      // If no user data in storage but token exists, try to get from API
       // If you have a /me endpoint, uncomment this:
       // const response = await http.get<User>('/auth/me');
       // setUser(response.data);
+      // setUserInStorage(JSON.stringify(response.data));
       
-      // For now, we'll just validate the token exists
+      // For now, if no user data in storage, we'll just validate the token exists
       // The token will be validated on the next authenticated request
       // If invalid, the httpErrorHandler will handle it
       setLoading(false);
     } catch (error) {
-      // Token invalid, clear it but don't redirect
-      // Let the user navigate freely to public routes
+      // Invalid stored data or token, clear everything
       signOutService();
+      removeUserFromStorage();
+      setUser(null);
       if (http.defaults.headers) {
         delete http.defaults.headers.token;
       }
