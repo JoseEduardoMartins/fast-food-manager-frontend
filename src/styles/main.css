@@ -1,7 +1,7 @@
-/* Importar apenas os tokens CSS do design system (sem as diretivas @tailwind) */
-@import '@fast-food/design-system/styles/reset.css';
-@import '@fast-food/design-system/styles/colors.css';
-@import '@fast-food/design-system/styles/scrollbar.css';
+/* Importar estilos locais (copiados do design system) */
+@import './reset.css';
+@import './colors.css';
+@import './scrollbar.css';
 
 /* Regras globais do design system */
 html,

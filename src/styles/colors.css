@@ -1,0 +1,116 @@
+:root {
+  /* Gray scale */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  /* Green (Primary) */
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --primary-light: #34d399;
+  --primary-dark: #047857;
+
+  /* Black */
+  --black: #000000;
+  --black-light: #1a1a1a;
+
+  /* White */
+  --white: #ffffff;
+  --white-off: #fafafa;
+
+  /* Semantic colors based on green */
+  --secondary: var(--gray-600);
+  --secondary-hover: var(--gray-700);
+
+  --success: var(--primary);
+  --success-hover: var(--primary-hover);
+
+  --error: #dc2626;
+  --error-hover: #b91c1c;
+
+  --warning: #f59e0b;
+  --warning-hover: #d97706;
+
+  --info: var(--gray-500);
+  --info-hover: var(--gray-600);
+
+  /* Background and foreground */
+  --background: var(--white);
+  --foreground: var(--black);
+
+  --border: var(--gray-200);
+  --input: var(--gray-300);
+
+  --scrollbar-track: var(--gray-200);
+  --scrollbar-thumb: var(--gray-400);
+
+  /* Font families */
+  --font-family-sans: 'Inter', 'Roboto', Arial, sans-serif;
+  --font-family-mono: 'Fira Mono', 'Menlo', 'Monaco', monospace;
+}
+
+.dark {
+  /* Gray scale (adjusted for dark mode) */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --gray-1000: #030712;
+
+  /* Green (Primary) - lighter in dark mode */
+  --primary: #34d399;
+  --primary-hover: #10b981;
+  --primary-light: #6ee7b7;
+  --primary-dark: #059669;
+
+  /* Black (becomes very dark gray in dark mode) */
+  --black: #000000;
+  --black-light: #1a1a1a;
+
+  /* White (becomes dark gray in dark mode) */
+  --white: #1f2937;
+  --white-off: #111827;
+
+  /* Semantic colors */
+  --secondary: var(--gray-400);
+  --secondary-hover: var(--gray-300);
+
+  --success: var(--primary);
+  --success-hover: var(--primary-hover);
+
+  --error: #f87171;
+  --error-hover: #ef4444;
+
+  --warning: #fbbf24;
+  --warning-hover: #f59e0b;
+
+  --info: var(--gray-500);
+  --info-hover: var(--gray-400);
+
+  /* Background and foreground (inverted in dark mode) */
+  --background: var(--gray-900);
+  --foreground: var(--gray-100);
+
+  --border: var(--gray-700);
+  --input: var(--gray-600);
+
+  --scrollbar-track: var(--gray-800);
+  --scrollbar-thumb: var(--gray-600);
+
+  /* Font families */
+  --font-family-sans: 'Inter', 'Roboto', Arial, sans-serif;
+  --font-family-mono: 'Fira Mono', 'Menlo', 'Monaco', monospace;
+}

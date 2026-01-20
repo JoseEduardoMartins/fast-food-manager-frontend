@@ -35,6 +35,12 @@ export default {
           },
           primary: 'var(--primary)',
           'primary-hover': 'var(--primary-hover)',
+          'primary-light': 'var(--primary-light)',
+          'primary-dark': 'var(--primary-dark)',
+          black: 'var(--black)',
+          'black-light': 'var(--black-light)',
+          white: 'var(--white)',
+          'white-off': 'var(--white-off)',
           secondary: 'var(--secondary)',
           'secondary-hover': 'var(--secondary-hover)',
           success: 'var(--success)',
@@ -53,9 +59,10 @@ export default {
       },
   },
   safelist: [
-    // Garante que as classes de cores do design system sejam geradas
-    { pattern: /^(bg|text|border)-(primary|secondary|success|error|warning|info|background|foreground|border|input)$/ },
-    { pattern: /^(bg|text|border)-(primary|secondary|success|error|warning|info)-(hover)$/ },
+    // Garante que as classes de cores sejam geradas
+    { pattern: /^(bg|text|border)-(primary|secondary|success|error|warning|info|background|foreground|border|input|black|white)$/ },
+    { pattern: /^(bg|text|border)-(primary|secondary|success|error|warning|info)-(hover|light|dark)$/ },
+    { pattern: /^(bg|text|border)-(black|white)-(light|off)?$/ },
     { pattern: /^(bg|text|border)-gray-(50|100|200|300|400|500|600|700|800|900|1000)$/ },
   ],
   plugins: [],
