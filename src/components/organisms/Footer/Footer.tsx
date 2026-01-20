@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../utils';
+import { cn } from '../../../common/helpers';
 import type { FooterProps } from './Footer.type';
 
 const Footer = React.forwardRef<HTMLElement, FooterProps>(

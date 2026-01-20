@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../utils';
+import { cn } from '../../../common/helpers';
 import Label from '../Label';
 import type { TextareaProps } from './Textarea.type';
 

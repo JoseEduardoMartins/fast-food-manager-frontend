@@ -1,5 +1,6 @@
 import { Route } from 'react-router-dom';
 import Dashboard from './Dashboard';
+import { ROUTES } from '../../common/constants';
 
 /**
  * Protected routes - require authentication
@@ -8,6 +9,6 @@ import Dashboard from './Dashboard';
  */
 export const AppRoutes = (
     <>
-      <Route path='/dashboard' element={<Dashboard />} />
+      <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
     </>
   );

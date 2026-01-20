@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../utils';
+import { cn } from '../../../common/helpers';
 import type { ProgressProps } from './Progress.type';
 
 const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(

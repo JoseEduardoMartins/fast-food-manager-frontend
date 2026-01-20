@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import type { VariantProps } from '../../../utils';
+import type { VariantProps } from '../../../common/helpers';
 import { badgeVariants } from './Badge.style';
 
 export type BadgeVariants = VariantProps<typeof badgeVariants>;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../utils';
+import { cn } from '../../../common/helpers';
 import type { DividerProps } from './Divider.type';
 
 const Divider = React.forwardRef<HTMLHRElement, DividerProps>(

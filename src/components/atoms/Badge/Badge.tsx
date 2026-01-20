@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../../utils';
+import { cn } from '../../../common/helpers';
 import type { BadgeProps } from './Badge.type';
 import { badgeVariants } from './Badge.style';
 

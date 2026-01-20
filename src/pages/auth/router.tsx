@@ -3,6 +3,7 @@ import ForgotPassword from './ForgotPassword';
 import Login from './Login';
 import OwnerRegister from './OwnerRegister';
 import Register from './Register';
+import { ROUTES } from '../../common/constants';
 
 /**
  * Authentication routes - login, registration, password recovery
@@ -10,9 +11,9 @@ import Register from './Register';
  */
 export const AuthRoutes = (
     <>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/owner-register" element={<OwnerRegister />} />
+      <Route path={ROUTES.LOGIN} element={<Login />} />
+      <Route path={ROUTES.REGISTER} element={<Register />} />
+      <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
+      <Route path={ROUTES.OWNER_REGISTER} element={<OwnerRegister />} />
     </>
   );
