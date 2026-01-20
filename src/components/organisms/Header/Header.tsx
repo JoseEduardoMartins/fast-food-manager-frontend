@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '../../../utils';
 import { Button } from '../../atoms';
+import { ROUTES } from '../../../routes';
 import type { HeaderProps } from './Header.type';
 
 const Header = React.forwardRef<HTMLElement, HeaderProps>(
@@ -18,7 +19,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
           <div className="mr-4 flex">
             <a
               className="mr-6 flex items-center space-x-2 cursor-pointer"
-              onClick={() => onNavigate?.('/')}
+              onClick={() => onNavigate?.(ROUTES.HOME)}
             >
               <span className="font-bold text-xl">Fast Food Manager</span>
             </a>
@@ -26,26 +27,26 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
           <nav className="flex items-center space-x-6 text-sm font-medium ml-auto">
             <a
               className="transition-colors hover:text-primary cursor-pointer"
-              onClick={() => onNavigate?.('/platform')}
+              onClick={() => onNavigate?.(ROUTES.PLATFORM)}
             >
               Plataforma
             </a>
             <a
               className="transition-colors hover:text-primary cursor-pointer"
-              onClick={() => onNavigate?.('/careers')}
+              onClick={() => onNavigate?.(ROUTES.CAREERS)}
             >
               Carreiras
             </a>
             <a
               className="transition-colors hover:text-primary cursor-pointer"
-              onClick={() => onNavigate?.('/contact')}
+              onClick={() => onNavigate?.(ROUTES.CONTACT)}
             >
               Contato
             </a>
-            <Button variant="outline" size="sm" onClick={() => onNavigate?.('/login')}>
+            <Button variant="outline" size="sm" onClick={() => onNavigate?.(ROUTES.LOGIN)}>
               Entrar
             </Button>
-            <Button size="sm" onClick={() => onNavigate?.('/register')}>
+            <Button size="sm" onClick={() => onNavigate?.(ROUTES.REGISTER)}>
               Cadastrar
             </Button>
           </nav>

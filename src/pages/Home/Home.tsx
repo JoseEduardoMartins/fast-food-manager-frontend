@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout, Title, Label, Button } from '../../components';
+import { ROUTES } from '../../routes';
 
 const benefits = [
   {
@@ -43,7 +44,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Layout headerProps={{ onNavigate: (route: string) => navigate(route) }}>
+    <Layout headerProps={{ onNavigate: (route) => navigate(route) }}>
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center min-h-[85vh] w-full text-center px-4 py-20">
         <Title variant="h1" className="mb-6 text-foreground font-bold text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl mx-auto">
@@ -57,13 +58,13 @@ const Home: React.FC = () => {
           Teste grátis!
         </Label>
         <div className="flex flex-col sm:flex-row gap-4 mb-20 w-full max-w-md justify-center">
-          <Button className="w-full sm:w-auto px-8 py-3 text-lg" onClick={() => navigate('/register')}>
+          <Button className="w-full sm:w-auto px-8 py-3 text-lg" onClick={() => navigate(ROUTES.REGISTER)}>
             Comece agora
           </Button>
           <Button 
             variant="secondary" 
             className="w-full sm:w-auto px-8 py-3 text-lg" 
-            onClick={() => navigate('/platform')}
+            onClick={() => navigate(ROUTES.PLATFORM)}
           >
             Saiba mais
           </Button>
@@ -126,7 +127,7 @@ const Home: React.FC = () => {
           <Label as="p" className="mb-8 text-lg text-gray-600 dark:text-gray-400">
             Comece hoje mesmo e veja a diferença que uma gestão moderna pode fazer.
           </Label>
-          <Button className="w-full max-w-xs mx-auto" onClick={() => navigate('/register')}>
+          <Button className="w-full max-w-xs mx-auto" onClick={() => navigate(ROUTES.REGISTER)}>
             Teste grátis agora
           </Button>
         </div>
