@@ -3,10 +3,11 @@
  * CRUD for users - Content adapts based on user role
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Layout, Title, Label, Button, Card, Input, Select, Badge } from '@components';
+import type { ColumnDef } from '@tanstack/react-table';
+import { Layout, Title, Label, Button, Card, Input, Select, Badge, Table, TablePagination } from '@components';
 import { useAuth } from '@contexts';
 import { listUsers, createUser, updateUser, deleteUser } from '@services/users';
 import type { User, CreateUserRequest, UpdateUserRequest, UserRole, ListUsersParams } from '@services/users';
@@ -294,6 +295,92 @@ const Users: React.FC = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
+  // Define table columns
+  const columns = useMemo<ColumnDef<User>[]>(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Nome',
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: 'email',
+        header: 'Email',
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: 'role',
+        header: 'Tipo',
+        cell: (info) => {
+          const role = info.getValue() as UserRole;
+          return <Badge variant="secondary">{roleLabels[role]}</Badge>;
+        },
+      },
+      {
+        accessorKey: 'isActive',
+        header: 'Status',
+        cell: (info) => {
+          const isActive = info.getValue() as boolean;
+          return (
+            <Badge variant={isActive ? 'success' : 'error'}>
+              {isActive ? 'Ativo' : 'Inativo'}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: 'createdAt',
+        header: 'Data de Cadastro',
+        cell: (info) => {
+          const date = info.getValue() as string;
+          return new Date(date).toLocaleDateString('pt-BR');
+        },
+      },
+      {
+        id: 'actions',
+        header: 'Ações',
+        cell: (info) => {
+          const user = info.row.original;
+          return (
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openEditModal(user);
+                }}
+              >
+                Editar
+              </Button>
+              <Button
+                variant={user.isActive ? 'warning' : 'success'}
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleActive(user);
+                }}
+              >
+                {user.isActive ? 'Desativar' : 'Ativar'}
+              </Button>
+              <Button
+                variant="error"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(user.id, user.name);
+                }}
+              >
+                Excluir
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    []
+  );
+
   return (
     <Layout
       headerProps={{
@@ -373,113 +460,19 @@ const Users: React.FC = () => {
 
         {/* Users Table */}
         <Card>
-          {loading ? (
-            <div className="py-8 text-center text-gray-600 dark:text-gray-400">
-              Carregando...
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left py-3 px-4 font-semibold">Nome</th>
-                      <th className="text-left py-3 px-4 font-semibold">Email</th>
-                      <th className="text-left py-3 px-4 font-semibold">Tipo</th>
-                      <th className="text-left py-3 px-4 font-semibold">Status</th>
-                      <th className="text-left py-3 px-4 font-semibold">Data de Cadastro</th>
-                      <th className="text-right py-3 px-4 font-semibold">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="py-8 text-center text-gray-600 dark:text-gray-400">
-                          Nenhum usuário encontrado
-                        </td>
-                      </tr>
-                    ) : (
-                      users.map((userItem) => (
-                        <tr
-                          key={userItem.id}
-                          className="border-b border-border hover:bg-gray-50 dark:hover:bg-gray-800"
-                        >
-                          <td className="py-3 px-4">{userItem.name}</td>
-                          <td className="py-3 px-4">{userItem.email}</td>
-                          <td className="py-3 px-4">
-                            <Badge variant="secondary">{roleLabels[userItem.role]}</Badge>
-                          </td>
-                          <td className="py-3 px-4">
-                            <Badge variant={userItem.isActive ? 'success' : 'error'}>
-                              {userItem.isActive ? 'Ativo' : 'Inativo'}
-                            </Badge>
-                          </td>
-                          <td className="py-3 px-4">
-                            {new Date(userItem.createdAt).toLocaleDateString('pt-BR')}
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openEditModal(userItem)}
-                              >
-                                Editar
-                              </Button>
-                              <Button
-                                variant={userItem.isActive ? 'warning' : 'success'}
-                                size="sm"
-                                onClick={() => handleToggleActive(userItem)}
-                              >
-                                {userItem.isActive ? 'Desativar' : 'Ativar'}
-                              </Button>
-                              <Button
-                                variant="error"
-                                size="sm"
-                                onClick={() => handleDelete(userItem.id, userItem.name)}
-                              >
-                                Excluir
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              {pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between border-t border-border px-4 py-4">
-                  <Label className="text-sm text-gray-600 dark:text-gray-400">
-                    Mostrando {users.length} de {pagination.total} usuários
-                  </Label>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handlePageChange(pagination.pageIndex - 1)}
-                      disabled={pagination.pageIndex === 0}
-                    >
-                      Anterior
-                    </Button>
-                    <Label className="flex items-center px-3 text-sm">
-                      Página {pagination.pageIndex + 1} de {pagination.totalPages}
-                    </Label>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handlePageChange(pagination.pageIndex + 1)}
-                      disabled={pagination.pageIndex >= pagination.totalPages - 1}
-                    >
-                      Próxima
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+          <Table
+            data={users}
+            columns={columns}
+            loading={loading}
+          />
+          <TablePagination
+            pageIndex={pagination.pageIndex}
+            pageSize={pagination.pageSize}
+            totalPages={pagination.totalPages}
+            total={pagination.total}
+            onPageChange={handlePageChange}
+            showPagination={pagination.totalPages > 1}
+          />
         </Card>
 
         {/* Create/Edit Modal */}
