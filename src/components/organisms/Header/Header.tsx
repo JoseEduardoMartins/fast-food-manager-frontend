@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@common/helpers';
 import { Button } from '../../atoms';
 import { ROUTES } from '@common/constants';
 import type { HeaderProps } from './Header.type';
 
 const Header = React.forwardRef<HTMLElement, HeaderProps>(
-  ({ className, onNavigate, ...props }, ref) => {
+  ({ className, onNavigate, user, isAuthenticated = false, onSignOut, ...props }, ref) => {
+    const [showUserMenu, setShowUserMenu] = useState(false);
+
+    const handleSignOut = () => {
+      onSignOut?.();
+      setShowUserMenu(false);
+    };
+
     return (
       <header
         ref={ref}
@@ -19,36 +26,102 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
           <div className="mr-4 flex">
             <a
               className="mr-6 flex items-center space-x-2 cursor-pointer"
-              onClick={() => onNavigate?.(ROUTES.HOME)}
+              onClick={() => onNavigate?.(isAuthenticated ? ROUTES.DASHBOARD : ROUTES.HOME)}
             >
               <span className="font-bold text-xl">Fast Food Manager</span>
             </a>
           </div>
           <nav className="flex items-center space-x-6 text-sm font-medium ml-auto">
-            <a
-              className="transition-colors hover:text-primary cursor-pointer"
-              onClick={() => onNavigate?.(ROUTES.PLATFORM)}
-            >
-              Plataforma
-            </a>
-            <a
-              className="transition-colors hover:text-primary cursor-pointer"
-              onClick={() => onNavigate?.(ROUTES.CAREERS)}
-            >
-              Carreiras
-            </a>
-            <a
-              className="transition-colors hover:text-primary cursor-pointer"
-              onClick={() => onNavigate?.(ROUTES.CONTACT)}
-            >
-              Contato
-            </a>
-            <Button variant="outline" size="sm" onClick={() => onNavigate?.(ROUTES.LOGIN)}>
-              Entrar
-            </Button>
-            <Button size="sm" onClick={() => onNavigate?.(ROUTES.REGISTER)}>
-              Cadastrar
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <a
+                  className="transition-colors hover:text-primary cursor-pointer"
+                  onClick={() => onNavigate?.(ROUTES.DASHBOARD)}
+                >
+                  Dashboard
+                </a>
+                <div className="relative">
+                  <button
+                    className="flex items-center space-x-2 transition-colors hover:text-primary cursor-pointer"
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                  >
+                    <span>{user?.name || 'Usuário'}</span>
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
+                      <div className="px-4 py-2 border-b border-border">
+                        <p className="text-sm font-medium">{user?.name}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{user?.email}</p>
+                      </div>
+                      <a
+                        className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                        onClick={() => {
+                          onNavigate?.(ROUTES.DASHBOARD);
+                          setShowUserMenu(false);
+                        }}
+                      >
+                        Perfil
+                      </a>
+                      <a
+                        className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                        onClick={() => {
+                          onNavigate?.('/settings');
+                          setShowUserMenu(false);
+                        }}
+                      >
+                        Configurações
+                      </a>
+                      <button
+                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-error"
+                        onClick={handleSignOut}
+                      >
+                        Sair
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <a
+                  className="transition-colors hover:text-primary cursor-pointer"
+                  onClick={() => onNavigate?.(ROUTES.PLATFORM)}
+                >
+                  Plataforma
+                </a>
+                <a
+                  className="transition-colors hover:text-primary cursor-pointer"
+                  onClick={() => onNavigate?.(ROUTES.CAREERS)}
+                >
+                  Carreiras
+                </a>
+                <a
+                  className="transition-colors hover:text-primary cursor-pointer"
+                  onClick={() => onNavigate?.(ROUTES.CONTACT)}
+                >
+                  Contato
+                </a>
+                <Button variant="outline" size="sm" onClick={() => onNavigate?.(ROUTES.LOGIN)}>
+                  Entrar
+                </Button>
+                <Button size="sm" onClick={() => onNavigate?.(ROUTES.REGISTER)}>
+                  Cadastrar
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       </header>

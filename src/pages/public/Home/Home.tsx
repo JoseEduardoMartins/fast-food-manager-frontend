@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout, Title, Label, Button } from '@components';
+import { useAuth } from '@contexts';
 import { ROUTES } from '@common/constants';
 
 const benefits = [
@@ -42,11 +43,21 @@ const features = [
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, signOut } = useAuth();
 
   return (
     <Layout 
-      headerProps={{ onNavigate: (route) => navigate(route) }}
-      footerProps={{ onNavigate: (route) => navigate(route) }}
+      headerProps={{ 
+        onNavigate: (route) => navigate(route),
+        user,
+        isAuthenticated,
+        onSignOut: signOut,
+      }}
+      footerProps={{ 
+        onNavigate: (route) => navigate(route),
+        user,
+        isAuthenticated,
+      }}
     >
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center min-h-[85vh] w-full text-center px-4 py-20">
