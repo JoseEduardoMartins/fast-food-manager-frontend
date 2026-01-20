@@ -8,8 +8,7 @@ import { ROUTES } from './constants';
 /**
  * Public routes - accessible to all users without authentication
  */
-export const PublicRoutes = () => {
-  return (
+export const PublicRoutes = (
     <>
       <Route path={ROUTES.HOME} element={<Home />} />
       <Route path={ROUTES.PLATFORM} element={<Platform />} />
@@ -17,4 +16,3 @@ export const PublicRoutes = () => {
       <Route path={ROUTES.CAREERS} element={<Careers />} />
     </>
   );
-};

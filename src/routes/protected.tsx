@@ -1,4 +1,3 @@
-import React from 'react';
 import { Route } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard';
 import { ROUTES } from './constants';
@@ -8,10 +7,8 @@ import { ROUTES } from './constants';
  * These routes should be wrapped with authentication guards
  * TODO: Add authentication guard HOC or wrapper
  */
-export const ProtectedRoutes = () => {
-  return (
+export const ProtectedRoutes = (
     <>
       <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
     </>
   );
-};
