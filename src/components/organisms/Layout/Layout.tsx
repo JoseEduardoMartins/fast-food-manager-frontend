@@ -6,6 +6,9 @@ import type { LayoutProps } from './Layout.type';
 
 const Layout = React.forwardRef<HTMLDivElement, LayoutProps>(
   ({ className, children, headerProps, footerProps, showHeader = true, showFooter = true, ...props }, ref) => {
+    // Hide footer for authenticated users
+    const shouldShowFooter = showFooter && footerProps !== null && !footerProps?.isAuthenticated;
+    
     return (
       <div
         ref={ref}
@@ -14,7 +17,7 @@ const Layout = React.forwardRef<HTMLDivElement, LayoutProps>(
       >
         {showHeader && headerProps !== null && <Header {...headerProps} />}
         <main className="flex-1">{children}</main>
-        {showFooter && footerProps !== null && <Footer {...footerProps} />}
+        {shouldShowFooter && <Footer {...footerProps} />}
       </div>
     );
   }
