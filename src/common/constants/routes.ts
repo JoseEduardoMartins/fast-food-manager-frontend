@@ -17,6 +17,9 @@ export const ROUTES = {
   // Protected routes (require authentication)
   DASHBOARD: '/dashboard',
   USERS: '/users',
+  USERS_CREATE: '/users/create',
+  USERS_DETAILS: '/users/:id',
+  USERS_EDIT: '/users/:id/edit',
   COMPANIES: '/companies',
   BRANCHES: '/branches',
   ORDERS: '/orders',

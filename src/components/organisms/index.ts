@@ -4,7 +4,5 @@ export { default as Footer } from './Footer';
 export type { FooterProps } from './Footer';
 export { default as Layout } from './Layout';
 export type { LayoutProps } from './Layout';
-export { default as Sidebar } from './Sidebar';
+export { Sidebar } from './Sidebar';
 export type { SidebarProps, SidebarItemConfig } from './Sidebar';
-export { default as AppLayout } from './AppLayout';
-export type { AppLayoutProps } from './AppLayout';

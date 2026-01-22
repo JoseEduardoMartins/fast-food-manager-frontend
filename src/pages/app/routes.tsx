@@ -1,7 +1,10 @@
 import { Route } from 'react-router-dom';
 import { ProtectedRoute } from '@components/guards';
 import Dashboard from './Dashboard';
-import Users from './Users';
+import UserList from './Users/UserList';
+import CreateUser from './Users/CreateUser';
+import UserDetails from './Users/UserDetails';
+import EditUser from './Users/EditUser';
 import Companies from './Companies';
 import Branches from './Branches';
 import Orders from './Orders';
@@ -29,7 +32,31 @@ export const AppRoutes = (
       path={ROUTES.USERS}
       element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <Users />
+          <UserList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.USERS_CREATE}
+      element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <CreateUser />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.USERS_DETAILS}
+      element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <UserDetails />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.USERS_EDIT}
+      element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <EditUser />
         </ProtectedRoute>
       }
     />
