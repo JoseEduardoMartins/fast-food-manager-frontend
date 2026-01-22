@@ -16,7 +16,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         className={cn('mb-8 flex items-center justify-between', className)}
       >
         <div>
-          <Title variant="h1" className="mb-2 text-foreground font-semibold">
+          <Title variant="h2" className="mb-2 text-foreground font-semibold">
             {title}
           </Title>
           {description && (
