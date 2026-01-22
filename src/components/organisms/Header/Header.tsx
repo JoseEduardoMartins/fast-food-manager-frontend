@@ -23,7 +23,7 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
         )}
         {...props}
       >
-        <div className="container flex h-14 items-center">
+        <div className="mx-4 flex h-14 items-center">
           <div className="mr-4 flex">
             <a
               className="mr-6 flex items-center space-x-2 cursor-pointer"
