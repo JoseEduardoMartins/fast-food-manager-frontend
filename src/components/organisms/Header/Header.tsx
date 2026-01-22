@@ -35,20 +35,6 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
           <nav className="flex items-center space-x-6 text-sm font-medium ml-auto">
             {isAuthenticated ? (
               <>
-                <a
-                  className="transition-colors hover:text-primary cursor-pointer"
-                  onClick={() => onNavigate?.(ROUTES.DASHBOARD)}
-                >
-                  Dashboard
-                </a>
-                {user?.role === 'admin' && (
-                  <a
-                    className="transition-colors hover:text-primary cursor-pointer"
-                    onClick={() => onNavigate?.(ROUTES.USERS)}
-                  >
-                    Usuários
-                  </a>
-                )}
                 <div className="relative">
                   <button
                     className="flex items-center space-x-2 transition-colors hover:text-primary cursor-pointer"
@@ -63,24 +49,6 @@ const Header = React.forwardRef<HTMLElement, HeaderProps>(
                         <p className="text-sm font-medium">{user?.name}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-400">{user?.email}</p>
                       </div>
-                      <a
-                        className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                        onClick={() => {
-                          onNavigate?.(ROUTES.DASHBOARD);
-                          setShowUserMenu(false);
-                        }}
-                      >
-                        Perfil
-                      </a>
-                      <a
-                        className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                        onClick={() => {
-                          onNavigate?.('/settings');
-                          setShowUserMenu(false);
-                        }}
-                      >
-                        Configurações
-                      </a>
                       <button
                         className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-error"
                         onClick={handleSignOut}

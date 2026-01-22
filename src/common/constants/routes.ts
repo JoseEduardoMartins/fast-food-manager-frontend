@@ -17,6 +17,13 @@ export const ROUTES = {
   // Protected routes (require authentication)
   DASHBOARD: '/dashboard',
   USERS: '/users',
+  COMPANIES: '/companies',
+  BRANCHES: '/branches',
+  ORDERS: '/orders',
+  MENUS: '/menus',
+  PRODUCTS: '/products',
+  INGREDIENTS: '/ingredients',
+  STOCK: '/stock',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

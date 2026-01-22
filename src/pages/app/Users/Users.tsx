@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Plus, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Layout, Title, Label, Button, Card, Select, Badge, Table, TablePagination, Icon, PageHeader, ErrorAlert, FilterForm, Modal, FormField } from '@components';
+import { AppLayout, Title, Label, Button, Card, Select, Badge, Table, TablePagination, Icon, PageHeader, ErrorAlert, FilterForm, Modal, FormField } from '@components';
 import { useAuth } from '@contexts';
 import { listUsers, createUser, updateUser, deleteUser } from '@services/users';
 import type { User, CreateUserRequest, UpdateUserRequest, UserRole, ListUsersParams } from '@services/users';
@@ -29,7 +29,7 @@ const allowedRoles: UserRole[] = ['owner', 'manager', 'cook', 'attendant', 'cust
 
 const Users: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const isAdmin = user?.role === 'admin';
   
   const [users, setUsers] = useState<User[]>([]);
@@ -58,19 +58,7 @@ const Users: React.FC = () => {
   // Only admin can access full CRUD functionality
   if (!isAdmin) {
     return (
-      <Layout
-        headerProps={{
-          onNavigate: (route) => navigate(route),
-          user,
-          isAuthenticated,
-          onSignOut: signOut,
-        }}
-        footerProps={{
-          onNavigate: (route) => navigate(route),
-          user,
-          isAuthenticated,
-        }}
-      >
+      <AppLayout user={user} onSignOut={signOut}>
         <div className="container py-8">
           <div className="text-center">
             <Title variant="h1" className="mb-4 text-foreground font-semibold">
@@ -84,7 +72,7 @@ const Users: React.FC = () => {
             </Button>
           </div>
         </div>
-      </Layout>
+      </AppLayout>
     );
   }
 
@@ -386,19 +374,7 @@ const Users: React.FC = () => {
   );
 
   return (
-    <Layout
-      headerProps={{
-        onNavigate: (route) => navigate(route),
-        user,
-        isAuthenticated,
-        onSignOut: signOut,
-      }}
-      footerProps={{
-        onNavigate: (route) => navigate(route),
-        user,
-        isAuthenticated,
-      }}
-    >
+    <AppLayout user={user} onSignOut={signOut}>
       <div className="container py-8">
         <PageHeader
           title="Gerenciamento de Usuários"
@@ -521,7 +497,7 @@ const Users: React.FC = () => {
           </form>
         </Modal>
       </div>
-    </Layout>
+    </AppLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Building2, Store, Package, UtensilsCrossed, LeafyGreen, DollarSign, ShoppingCart, UserPlus } from 'lucide-react';
-import { Layout, Title, Label, Button, Card, PageHeader, StatCard } from '@components';
+import { AppLayout, Title, Label, Button, Card, PageHeader, StatCard } from '@components';
 import { useAuth } from '@contexts';
 import { ROUTES } from '@common/constants';
 
@@ -76,23 +76,11 @@ const adminCards = [
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const isAdmin = user?.role === 'admin';
 
   return (
-    <Layout 
-      headerProps={{ 
-        onNavigate: (route) => navigate(route),
-        user,
-        isAuthenticated,
-        onSignOut: signOut,
-      }}
-      footerProps={{ 
-        onNavigate: (route) => navigate(route),
-        user,
-        isAuthenticated,
-      }}
-    >
+    <AppLayout user={user} onSignOut={signOut}>
       <div className="container py-8">
         <PageHeader
           title={isAdmin ? 'Painel Administrativo' : 'Bem-vindo ao seu painel'}
@@ -182,7 +170,7 @@ const Dashboard: React.FC = () => {
           </div>
         )}
       </div>
-    </Layout>
+    </AppLayout>
   );
 };
 
