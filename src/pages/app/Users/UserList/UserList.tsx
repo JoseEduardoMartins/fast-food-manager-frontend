@@ -5,7 +5,7 @@
 
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, UserCheck, UserX, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 import {
   AppLayout,
@@ -53,7 +53,6 @@ const UserList: React.FC = () => {
     setSearchEmail,
     pagination,
     handleDelete,
-    handleToggleActive,
     handlePageChange,
     handleSearch,
     handleClearSearch,
@@ -102,11 +101,11 @@ const UserList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: 'Ações',
+        header: () => <div className="text-center">Ações</div>,
         cell: (info) => {
           const user = info.row.original;
           return (
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -114,9 +113,9 @@ const UserList: React.FC = () => {
                   e.stopPropagation();
                   navigate(`${ROUTES.USERS}/${user.id}`);
                 }}
+                title="Ver detalhes"
               >
-                <Icon icon={Eye} size={14} className="mr-1" />
-                Ver
+                <Icon icon={Eye} size={16} />
               </Button>
               <Button
                 variant="outline"
@@ -125,20 +124,9 @@ const UserList: React.FC = () => {
                   e.stopPropagation();
                   navigate(`${ROUTES.USERS}/${user.id}/edit`);
                 }}
+                title="Editar usuário"
               >
-                <Icon icon={Edit} size={14} className="mr-1" />
-                Editar
-              </Button>
-              <Button
-                variant={user.isActive ? 'warning' : 'success'}
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleToggleActive(user);
-                }}
-              >
-                <Icon icon={user.isActive ? UserX : UserCheck} size={14} className="mr-1" />
-                {user.isActive ? 'Desativar' : 'Ativar'}
+                <Icon icon={Edit} size={16} />
               </Button>
               <Button
                 variant="error"
@@ -147,16 +135,16 @@ const UserList: React.FC = () => {
                   e.stopPropagation();
                   handleDelete(user.id, user.name);
                 }}
+                title="Excluir usuário"
               >
-                <Icon icon={Trash2} size={14} className="mr-1" />
-                Excluir
+                <Icon icon={Trash2} size={16} />
               </Button>
             </div>
           );
         },
       },
     ],
-    [handleDelete, handleToggleActive, navigate]
+    [handleDelete, navigate]
   );
 
   return (
