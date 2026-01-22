@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { getUserById, updateUser } from '@services/users';
 import type { User, UpdateUserRequest } from '@services/users';
-import { updateUserSchema, type UpdateUserFormData } from '../schemas';
+import { userFormSchema, type UserFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
 
 export const useEditUser = () => {
@@ -21,8 +21,8 @@ export const useEditUser = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<UpdateUserFormData>({
-    resolver: zodResolver(updateUserSchema),
+  const form = useForm<UserFormData>({
+    resolver: zodResolver(userFormSchema),
   });
 
   useEffect(() => {
@@ -41,12 +41,15 @@ export const useEditUser = () => {
       const userData = await getUserById(id);
       setUser(userData);
       
+      // Only include role in form if it's an allowed role (not admin)
+      const allowedRoles = ['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'] as const;
+      const formRole = allowedRoles.includes(userData.role as any) ? userData.role : 'customer';
+      
       // Reset form with user data
       form.reset({
         name: userData.name,
         email: userData.email,
-        role: userData.role,
-        isActive: userData.isActive,
+        role: formRole as any,
         password: '',
         confirmPassword: '',
       });
@@ -63,7 +66,7 @@ export const useEditUser = () => {
     }
   };
 
-  const onSubmit = async (data: UpdateUserFormData) => {
+  const onSubmit = async (data: UserFormData) => {
     if (!id) return;
 
     setSaving(true);
@@ -74,13 +77,8 @@ export const useEditUser = () => {
         name: data.name,
         email: data.email,
         role: data.role,
-        isActive: data.isActive,
+        password: data.password, // Password is now required
       };
-
-      // Only include password if it was provided
-      if (data.password && data.password.length > 0) {
-        updateData.password = data.password;
-      }
 
       await updateUser(id, updateData);
       toast.success('Usuário atualizado com sucesso!');

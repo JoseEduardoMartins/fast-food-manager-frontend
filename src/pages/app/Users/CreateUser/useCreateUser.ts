@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { createUser } from '@services/users';
 import type { CreateUserRequest } from '@services/users';
-import { createUserSchema, type CreateUserFormData } from '../schemas';
+import { userFormSchema, type UserFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
 
 export const useCreateUser = () => {
@@ -18,19 +18,18 @@ export const useCreateUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<CreateUserFormData>({
-    resolver: zodResolver(createUserSchema),
+  const form = useForm<UserFormData>({
+    resolver: zodResolver(userFormSchema),
     defaultValues: {
       name: '',
       email: '',
       password: '',
       confirmPassword: '',
       role: 'customer',
-      isActive: true,
     },
   });
 
-  const onSubmit = async (data: CreateUserFormData) => {
+  const onSubmit = async (data: UserFormData) => {
     setIsLoading(true);
     setError(null);
 
@@ -40,17 +39,18 @@ export const useCreateUser = () => {
         email: data.email,
         password: data.password,
         role: data.role,
-        isActive: data.isActive ?? true,
+        isActive: true, // Always active on creation
       };
 
       const response = await createUser(createData);
       toast.success('Usuário criado com sucesso!');
       navigate(`${ROUTES.USERS}/${response.id}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erro ao criar usuário:', err);
-      const errorMessage = err.response?.data?.message || 'Erro ao criar usuário';
+      const error = err as { response?: { data?: { message?: string }; status?: number } };
+      const errorMessage = error.response?.data?.message || 'Erro ao criar usuário';
       
-      if (err.response?.status === 409) {
+      if (error.response?.status === 409) {
         setError('Email já está em uso');
         toast.error('Email já está em uso');
       } else {

@@ -47,40 +47,25 @@ const EditUser: React.FC = () => {
         title={`Editar Usuário: ${user.name}`}
         description="Atualize as informações do usuário"
         action={
-          <Button variant="outline" onClick={handleCancel}>
-            <Icon icon={ArrowLeft} size={16} className="mr-2" />
-            Voltar
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleCancel} disabled={saving}>
+              <Icon icon={ArrowLeft} size={16} className="mr-2" />
+              Voltar
+            </Button>
+            <Button onClick={form.handleSubmit(onSubmit)} disabled={saving}>
+              <Icon icon={Save} size={16} className="mr-2" />
+              {saving ? 'Salvando...' : 'Salvar Alterações'}
+            </Button>
+          </div>
         }
       />
 
       <ErrorAlert message={error || ''} onDismiss={() => setError(null)} dismissible />
 
-      <Card className="max-w-4xl mx-auto p-6">
+      <Card className="p-6">
         <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <UserForm mode="edit" user={user} />
-
-            <div className="flex gap-4 pt-4 border-t border-border">
-              <Button
-                type="submit"
-                className="flex-1"
-                disabled={saving}
-              >
-                <Icon icon={Save} size={16} className="mr-2" />
-                {saving ? 'Salvando...' : 'Salvar Alterações'}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                className="flex-1"
-                disabled={saving}
-              >
-                <Icon icon={ArrowLeft} size={16} className="mr-2" />
-                Cancelar
-              </Button>
-            </div>
           </form>
         </FormProvider>
       </Card>
