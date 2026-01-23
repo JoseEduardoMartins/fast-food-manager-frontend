@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { getUserById, updateUser } from '@services/users';
-import type { User, UpdateUserRequest } from '@services/users';
+import type { User, UpdateUserRequest, UserAddressInput } from '@services/users';
 import { userFormSchema, type UserFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
 
@@ -20,6 +20,7 @@ export const useEditUser = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [addresses, setAddresses] = useState<UserAddressInput[]>([]);
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userFormSchema),
@@ -38,6 +39,7 @@ export const useEditUser = () => {
     
     try {
       setLoading(true);
+      // Fetch user with all data including addresses
       const userData = await getUserById(id);
       setUser(userData);
       
@@ -78,6 +80,7 @@ export const useEditUser = () => {
         email: data.email,
         role: data.role,
         password: data.password, // Password is now required
+        addresses: addresses.length > 0 ? addresses : undefined,
       };
 
       await updateUser(id, updateData);
@@ -91,8 +94,8 @@ export const useEditUser = () => {
         setError('Email já está em uso');
         toast.error('Email já está em uso');
       } else if (err.response?.status === 404) {
-        setError('Usuário não encontrado');
-        toast.error('Usuário não encontrado');
+        setError('Usuário ou endereço não encontrado');
+        toast.error('Usuário ou endereço não encontrado');
       } else {
         setError(errorMessage);
         toast.error(errorMessage);
@@ -110,6 +113,10 @@ export const useEditUser = () => {
     }
   };
 
+  const handleAddressesChange = (newAddresses: UserAddressInput[]) => {
+    setAddresses(newAddresses);
+  };
+
   return {
     user,
     loading,
@@ -119,5 +126,8 @@ export const useEditUser = () => {
     form,
     onSubmit,
     handleCancel,
+    reloadUser: loadUser,
+    addresses,
+    handleAddressesChange,
   };
 };

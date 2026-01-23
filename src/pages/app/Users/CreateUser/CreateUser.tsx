@@ -13,7 +13,7 @@ import { useCreateUser } from './useCreateUser';
 
 const CreateUser: React.FC = () => {
   const { user, signOut } = useAuth();
-  const { form, isLoading, error, setError, onSubmit, handleCancel } = useCreateUser();
+  const { form, isLoading, error, setError, onSubmit, handleCancel, handleAddressesChange } = useCreateUser();
 
   return (
     <AppLayout user={user} onSignOut={signOut}>
@@ -39,7 +39,7 @@ const CreateUser: React.FC = () => {
       <Card className="p-6">
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <UserForm mode="create" />
+            <UserForm mode="create" onAddressesChange={handleAddressesChange} />
           </form>
         </FormProvider>
       </Card>

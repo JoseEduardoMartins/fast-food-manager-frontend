@@ -30,6 +30,8 @@ export const useUserList = () => {
       const params: ListUsersParams = {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
+        // Select only fields needed for list view
+        selectFields: ['id', 'name', 'email', 'role', 'isActive', 'createdAt'],
       };
 
       if (selectedRole !== 'all') {

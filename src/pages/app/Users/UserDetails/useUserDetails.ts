@@ -38,6 +38,7 @@ export const useUserDetails = () => {
     
     try {
       setLoading(true);
+      // Fetch user with all data including addresses
       const userData = await getUserById(id);
       setUser(userData);
       
@@ -127,5 +128,6 @@ export const useUserDetails = () => {
     handleDelete,
     handleEdit,
     handleBack,
+    reloadUser: loadUser,
   };
 };

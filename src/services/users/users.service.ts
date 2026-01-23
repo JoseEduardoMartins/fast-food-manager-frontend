@@ -5,6 +5,7 @@
  */
 
 import { http } from '@config';
+import { buildQueryParams, type QueryParamValue } from '@common/helpers';
 import type {
   User,
   CreateUserRequest,
@@ -22,21 +23,8 @@ import type {
  * GET /api/users
  */
 export const listUsers = async (params?: ListUsersParams): Promise<ListUsersResponse> => {
-  const queryParams: Record<string, any> = {};
-  
-  if (params?.pageIndex !== undefined) queryParams.pageIndex = params.pageIndex;
-  if (params?.pageSize !== undefined) queryParams.pageSize = params.pageSize;
-  if (params?.name) queryParams.name = params.name;
-  if (params?.email) queryParams.email = params.email;
-  if (params?.role) queryParams.role = params.role;
-  if (params?.companyId) queryParams.companyId = params.companyId;
-  if (params?.branchId) queryParams.branchId = params.branchId;
-  if (params?.isActive !== undefined) queryParams.isActive = params.isActive;
-  if (params?.selectFields && params.selectFields.length > 0) {
-    queryParams.selectFields = params.selectFields;
-  }
-
-  const response = await http.get<ListUsersResponse>('/users', { params: queryParams });
+  const queryString = buildQueryParams(params as Record<string, QueryParamValue>);
+  const response = await http.get<ListUsersResponse>(`/users${queryString}`);
   return response.data;
 };
 
@@ -48,12 +36,8 @@ export const getUserById = async (
   id: string,
   selectFields?: string[]
 ): Promise<User> => {
-  const params: Record<string, any> = {};
-  if (selectFields && selectFields.length > 0) {
-    params.selectFields = selectFields;
-  }
-
-  const response = await http.get<User>(`/users/${id}`, { params });
+  const queryString = buildQueryParams({ selectFields });
+  const response = await http.get<User>(`/users/${id}${queryString}`);
   return response.data;
 };
 

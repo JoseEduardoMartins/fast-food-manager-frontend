@@ -78,6 +78,23 @@ export interface User {
 }
 
 /**
+ * Address data for create/update user request
+ * Agora envia dados completos do endereço ao invés de apenas addressId
+ */
+export interface UserAddressInput {
+  id?: string; // ID do relacionamento user_address (apenas para update)
+  street: string;
+  number?: string;
+  complement?: string;
+  zipcode?: string;
+  countryId: string;
+  stateId: string;
+  cityId: string;
+  label?: string;
+  isDefault?: boolean;
+}
+
+/**
  * Create user request
  */
 export interface CreateUserRequest {
@@ -88,6 +105,7 @@ export interface CreateUserRequest {
   companyId?: string;
   branchId?: string;
   isActive?: boolean;
+  addresses?: UserAddressInput[];
 }
 
 /**
@@ -102,6 +120,7 @@ export interface UpdateUserRequest {
   companyId?: string;
   branchId?: string;
   isActive?: boolean;
+  addresses?: UserAddressInput[];
 }
 
 /**

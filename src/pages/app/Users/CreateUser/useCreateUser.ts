@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { createUser } from '@services/users';
-import type { CreateUserRequest } from '@services/users';
+import type { CreateUserRequest, UserAddressInput } from '@services/users';
 import { userFormSchema, type UserFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
 
@@ -17,6 +17,7 @@ export const useCreateUser = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [addresses, setAddresses] = useState<UserAddressInput[]>([]);
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userFormSchema),
@@ -40,6 +41,7 @@ export const useCreateUser = () => {
         password: data.password,
         role: data.role,
         isActive: true, // Always active on creation
+        addresses: addresses.length > 0 ? addresses : undefined,
       };
 
       const response = await createUser(createData);
@@ -53,6 +55,9 @@ export const useCreateUser = () => {
       if (error.response?.status === 409) {
         setError('Email já está em uso');
         toast.error('Email já está em uso');
+      } else if (error.response?.status === 404) {
+        setError('Endereço não encontrado');
+        toast.error('Um ou mais endereços não foram encontrados');
       } else {
         setError(errorMessage);
         toast.error(errorMessage);
@@ -66,6 +71,10 @@ export const useCreateUser = () => {
     navigate(ROUTES.USERS);
   };
 
+  const handleAddressesChange = (newAddresses: UserAddressInput[]) => {
+    setAddresses(newAddresses);
+  };
+
   return {
     form,
     isLoading,
@@ -73,5 +82,7 @@ export const useCreateUser = () => {
     setError,
     onSubmit,
     handleCancel,
+    addresses,
+    handleAddressesChange,
   };
 };

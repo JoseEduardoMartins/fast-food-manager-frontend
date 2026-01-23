@@ -24,6 +24,7 @@ const UserDetails: React.FC = () => {
     handleDelete,
     handleEdit,
     handleBack,
+    reloadUser,
   } = useUserDetails();
 
   if (loading) {
@@ -93,7 +94,7 @@ const UserDetails: React.FC = () => {
       <Card className="p-6">
         <FormProvider {...form}>
           <form>
-            <UserForm mode="view" isViewOnly user={user} />
+            <UserForm mode="view" isViewOnly user={user} onAddressChange={reloadUser} />
           </form>
         </FormProvider>
       </Card>
