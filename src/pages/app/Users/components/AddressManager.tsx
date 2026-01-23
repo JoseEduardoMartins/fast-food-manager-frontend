@@ -3,13 +3,14 @@
  * Manages user addresses for create, view, and edit modes
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Plus, Edit, Trash2, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, Button, Icon, Badge, FormField, Label } from '@components';
 import { removeUserAddress, updateUserAddress } from '@services/users';
 import type { UserAddressInput, UserAddress } from '@services/users';
 import type { AddressManagerProps } from './AddressManager.type';
+import { listCountries, type Country } from '@services/countries';
 
 export const AddressManager: React.FC<AddressManagerProps> = ({
   addresses = [],
@@ -33,9 +34,35 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
     isDefault: false,
   });
 
+  // Countries, states, cities data
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [loadingCountries, setLoadingCountries] = useState(false);
+
   const isViewOnly = mode === 'view';
   const canManageAddresses = mode === 'create' || mode === 'edit';
   const isCreateMode = mode === 'create';
+
+  // Load countries on component mount
+  useEffect(() => {
+    const loadCountries = async () => {
+      try {
+        setLoadingCountries(true);
+        const response = await listCountries({
+          pageSize: 200, // Get all countries
+          orderBy: 'name',
+          orderDirection: 'asc',
+        });
+        setCountries(response.data);
+      } catch (error) {
+        console.error('Erro ao carregar países:', error);
+        toast.error('Erro ao carregar países');
+      } finally {
+        setLoadingCountries(false);
+      }
+    };
+
+    loadCountries();
+  }, []);
 
   const handleAddAddress = () => {
     // Validações
@@ -194,17 +221,23 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
                 placeholder="00000-000"
               />
               
-              {/* Mock data - will be replaced with real selects later */}
+              {/* Country select - real data from API */}
               <div>
                 <Label className="mb-2 block">País<span className="text-error ml-1">*</span></Label>
                 <select
                   value={newAddress.countryId}
                   onChange={(e) => setNewAddress({ ...newAddress, countryId: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  disabled={loadingCountries}
                 >
-                  <option value="">Selecione um país</option>
-                  <option value="mock-country-br">Brasil</option>
-                  <option value="mock-country-us">Estados Unidos</option>
+                  <option value="">
+                    {loadingCountries ? 'Carregando países...' : 'Selecione um país'}
+                  </option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.name} ({country.shortName}) - {country.phoneCode}
+                    </option>
+                  ))}
                 </select>
               </div>
               
