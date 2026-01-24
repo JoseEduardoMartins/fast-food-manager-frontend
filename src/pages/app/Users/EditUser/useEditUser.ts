@@ -75,12 +75,15 @@ export const useEditUser = () => {
     setError(null);
 
     try {
+      // Remove dados extras (country, state, city) antes de enviar ao backend
+      const cleanAddresses = addresses.map(({ country, state, city, ...address }) => address);
+
       const updateData: UpdateUserRequest = {
         name: data.name,
         email: data.email,
         role: data.role,
         password: data.password, // Password is now required
-        addresses: addresses.length > 0 ? addresses : undefined,
+        addresses: cleanAddresses.length > 0 ? cleanAddresses : undefined,
       };
 
       await updateUser(id, updateData);

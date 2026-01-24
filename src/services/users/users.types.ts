@@ -92,6 +92,22 @@ export interface UserAddressInput {
   cityId: string;
   label?: string;
   isDefault?: boolean;
+  // Dados adicionais para exibição (não enviados ao backend)
+  country?: {
+    id: string;
+    name: string;
+    shortName: string;
+    phoneCode: string;
+  };
+  state?: {
+    id: string;
+    name: string;
+    shortName: string;
+  };
+  city?: {
+    id: string;
+    name: string;
+  };
 }
 
 /**

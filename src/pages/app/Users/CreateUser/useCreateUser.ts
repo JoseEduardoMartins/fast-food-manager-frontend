@@ -35,13 +35,16 @@ export const useCreateUser = () => {
     setError(null);
 
     try {
+      // Remove dados extras (country, state, city) antes de enviar ao backend
+      const cleanAddresses = addresses.map(({ country, state, city, ...address }) => address);
+
       const createData: CreateUserRequest = {
         name: data.name,
         email: data.email,
         password: data.password,
         role: data.role,
         isActive: true, // Always active on creation
-        addresses: addresses.length > 0 ? addresses : undefined,
+        addresses: cleanAddresses.length > 0 ? cleanAddresses : undefined,
       };
 
       const response = await createUser(createData);

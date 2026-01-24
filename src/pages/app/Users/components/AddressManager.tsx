@@ -153,8 +153,33 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
       return;
     }
 
+    // Buscar dados completos das entidades selecionadas
+    const selectedCountry = countries.find(c => c.id === newAddress.countryId);
+    const selectedState = states.find(s => s.id === newAddress.stateId);
+    const selectedCity = cities.find(c => c.id === newAddress.cityId);
+
+    // Criar endereço com dados completos para exibição
+    const addressWithDetails: UserAddressInput = {
+      ...newAddress,
+      country: selectedCountry ? {
+        id: selectedCountry.id,
+        name: selectedCountry.name,
+        shortName: selectedCountry.shortName,
+        phoneCode: selectedCountry.phoneCode,
+      } : undefined,
+      state: selectedState ? {
+        id: selectedState.id,
+        name: selectedState.name,
+        shortName: selectedState.shortName,
+      } : undefined,
+      city: selectedCity ? {
+        id: selectedCity.id,
+        name: selectedCity.name,
+      } : undefined,
+    };
+
     // Modo create ou edit: adiciona ao estado local
-    const updatedAddresses = [...localAddresses, { ...newAddress }];
+    const updatedAddresses = [...localAddresses, addressWithDetails];
     setLocalAddresses(updatedAddresses);
     onAddressesChange?.(updatedAddresses);
     toast.success('Endereço adicionado');
@@ -232,20 +257,16 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
     };
   };
 
-  // Helper functions to get names from IDs
-  const getCountryName = (countryId: string): string => {
-    const country = countries.find(c => c.id === countryId);
-    return country ? `${country.name} (${country.shortName})` : countryId;
-  };
+  // Helper functions to format address location display
+  const formatAddressLocation = (addr: UserAddressInput) => {
+    const cityName = addr.city?.name || addr.cityId;
+    const stateName = addr.state ? `${addr.state.name} (${addr.state.shortName})` : addr.stateId;
+    const countryName = addr.country ? `${addr.country.name} (${addr.country.shortName})` : addr.countryId;
 
-  const getStateName = (stateId: string): string => {
-    const state = states.find(s => s.id === stateId);
-    return state ? `${state.name} (${state.shortName})` : stateId;
-  };
-
-  const getCityName = (cityId: string): string => {
-    const city = cities.find(c => c.id === cityId);
-    return city ? city.name : cityId;
+    return {
+      cityState: `${cityName} - ${stateName}`,
+      country: countryName,
+    };
   };
 
   // Determine which addresses to display
@@ -447,52 +468,56 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
         <div className="space-y-3">
           {isCreateMode ? (
             // Render for create mode (local addresses)
-            localAddresses.map((addr, index) => (
-              <Card key={`temp-${index}`} className="p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      {addr.label && (
-                        <Badge variant="secondary">{addr.label}</Badge>
-                      )}
-                      {addr.isDefault && (
-                        <Badge variant="success">Padrão</Badge>
-                      )}
+            localAddresses.map((addr, index) => {
+              const location = formatAddressLocation(addr);
+              
+              return (
+                <Card key={`temp-${index}`} className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        {addr.label && (
+                          <Badge variant="secondary">{addr.label}</Badge>
+                        )}
+                        {addr.isDefault && (
+                          <Badge variant="success">Padrão</Badge>
+                        )}
+                      </div>
+                      <div className="text-sm space-y-1">
+                        <p className="font-medium">
+                          {addr.street}{addr.number ? `, ${addr.number}` : ''}
+                        </p>
+                        {addr.complement && (
+                          <p className="text-gray-600">{addr.complement}</p>
+                        )}
+                        {addr.zipcode && (
+                          <p className="text-gray-500">CEP: {addr.zipcode}</p>
+                        )}
+                        <p className="text-gray-600 text-sm">
+                          {location.cityState}
+                        </p>
+                        <p className="text-gray-500 text-xs">
+                          {location.country}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-sm space-y-1">
-                      <p className="font-medium">
-                        {addr.street}{addr.number ? `, ${addr.number}` : ''}
-                      </p>
-                      {addr.complement && (
-                        <p className="text-gray-600">{addr.complement}</p>
-                      )}
-                      {addr.zipcode && (
-                        <p className="text-gray-500">CEP: {addr.zipcode}</p>
-                      )}
-                      <p className="text-gray-600 text-sm">
-                        {getCityName(addr.cityId)} - {getStateName(addr.stateId)}
-                      </p>
-                      <p className="text-gray-500 text-xs">
-                        {getCountryName(addr.countryId)}
-                      </p>
-                    </div>
+                    {!isViewOnly && (
+                      <div className="flex gap-2 ml-4">
+                        <Button
+                          type="button"
+                          variant="error"
+                          size="sm"
+                          onClick={() => handleRemoveAddress(index)}
+                          title="Remover endereço"
+                        >
+                          <Icon icon={Trash2} size={16} />
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                  {!isViewOnly && (
-                    <div className="flex gap-2 ml-4">
-                      <Button
-                        type="button"
-                        variant="error"
-                        size="sm"
-                        onClick={() => handleRemoveAddress(index)}
-                        title="Remover endereço"
-                      >
-                        <Icon icon={Trash2} size={16} />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            ))
+                </Card>
+              );
+            })
           ) : (
             // Render for view/edit mode (server addresses)
             addresses.map((userAddress, index) => {
