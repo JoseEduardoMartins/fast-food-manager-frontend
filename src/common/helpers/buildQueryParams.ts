@@ -13,8 +13,7 @@ const appendParam = (
 
   if (Array.isArray(value)) {
     if (value.length > 0) {
-      // For arrays, we can either join them or append multiple times
-      // Joining is more common for selectFields, etc
+      // For arrays, join them with comma
       params.append(key, value.join(','));
     }
   } else if (value instanceof Date) {
@@ -27,6 +26,9 @@ const appendParam = (
     if (value.trim()) {
       params.append(key, value);
     }
+  } else if (typeof value === 'object' && value !== null) {
+    // For objects (like sort), stringify them
+    params.append(key, JSON.stringify(value));
   } else {
     // For other types, try to stringify
     params.append(key, String(value));
@@ -36,7 +38,16 @@ const appendParam = (
 /**
  * Type for query parameters value
  */
-export type QueryParamValue = string | number | boolean | Date | string[] | number[] | undefined | null;
+export type QueryParamValue = 
+  | string 
+  | number 
+  | boolean 
+  | Date 
+  | string[] 
+  | number[] 
+  | Record<string, any> 
+  | undefined 
+  | null;
 
 /**
  * Builds query string from optional params using URLSearchParams

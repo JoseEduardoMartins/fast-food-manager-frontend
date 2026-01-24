@@ -14,6 +14,14 @@ export interface Country {
 }
 
 /**
+ * Sort configuration
+ */
+export interface SortConfig {
+  fields: string[];
+  order: ('ASC' | 'DESC')[];
+}
+
+/**
  * List countries request parameters
  */
 export interface ListCountriesParams {
@@ -22,9 +30,10 @@ export interface ListCountriesParams {
   name?: string;
   shortName?: string;
   phoneCode?: string;
-  orderBy?: string;
-  orderDirection?: 'asc' | 'desc';
+  sort?: SortConfig;
   selectFields?: string[];
+  ids?: number[];
+  ignoredIds?: number[];
 }
 
 /**

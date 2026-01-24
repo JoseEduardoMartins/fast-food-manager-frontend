@@ -49,8 +49,10 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
         setLoadingCountries(true);
         const response = await listCountries({
           pageSize: 200, // Get all countries
-          orderBy: 'name',
-          orderDirection: 'asc',
+          sort: {
+            fields: ['name'],
+            order: ['ASC'],
+          },
         });
         setCountries(response.data);
       } catch (error) {
