@@ -232,6 +232,22 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
     };
   };
 
+  // Helper functions to get names from IDs
+  const getCountryName = (countryId: string): string => {
+    const country = countries.find(c => c.id === countryId);
+    return country ? `${country.name} (${country.shortName})` : countryId;
+  };
+
+  const getStateName = (stateId: string): string => {
+    const state = states.find(s => s.id === stateId);
+    return state ? `${state.name} (${state.shortName})` : stateId;
+  };
+
+  const getCityName = (cityId: string): string => {
+    const city = cities.find(c => c.id === cityId);
+    return city ? city.name : cityId;
+  };
+
   // Determine which addresses to display
   const displayAddresses = isCreateMode 
     ? localAddresses.map((addr, index) => ({
@@ -453,8 +469,11 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
                       {addr.zipcode && (
                         <p className="text-gray-500">CEP: {addr.zipcode}</p>
                       )}
+                      <p className="text-gray-600 text-sm">
+                        {getCityName(addr.cityId)} - {getStateName(addr.stateId)}
+                      </p>
                       <p className="text-gray-500 text-xs">
-                        País: {addr.countryId} | Estado: {addr.stateId} | Cidade: {addr.cityId}
+                        {getCountryName(addr.countryId)}
                       </p>
                     </div>
                   </div>
