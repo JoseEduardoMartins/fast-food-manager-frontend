@@ -23,6 +23,7 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
 }) => {
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
+  const [editingAddressIndex, setEditingAddressIndex] = useState<number | null>(null);
   const [localAddresses, setLocalAddresses] = useState<UserAddressInput[]>([]);
   const [newAddress, setNewAddress] = useState<UserAddressInput>({
     street: '',
@@ -178,13 +179,61 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
       } : undefined,
     };
 
-    // Modo create ou edit: adiciona ao estado local
-    const updatedAddresses = [...localAddresses, addressWithDetails];
+    let updatedAddresses: UserAddressInput[];
+
+    if (editingAddressIndex !== null) {
+      // Modo edição: atualiza endereço existente
+      updatedAddresses = localAddresses.map((addr, idx) =>
+        idx === editingAddressIndex ? addressWithDetails : addr
+      );
+      toast.success('Endereço atualizado');
+      setEditingAddressIndex(null);
+    } else {
+      // Modo adição: adiciona novo endereço
+      updatedAddresses = [...localAddresses, addressWithDetails];
+      toast.success('Endereço adicionado');
+    }
+
     setLocalAddresses(updatedAddresses);
     onAddressesChange?.(updatedAddresses);
-    toast.success('Endereço adicionado');
 
     setIsAddingAddress(false);
+    setNewAddress({
+      street: '',
+      number: '',
+      complement: '',
+      zipcode: '',
+      countryId: '',
+      stateId: '',
+      cityId: '',
+      label: '',
+      isDefault: false,
+    });
+  };
+
+  const handleEditAddress = (index: number) => {
+    const addressToEdit = localAddresses[index];
+    
+    // Preencher o formulário com os dados do endereço
+    setNewAddress({
+      street: addressToEdit.street,
+      number: addressToEdit.number || '',
+      complement: addressToEdit.complement || '',
+      zipcode: addressToEdit.zipcode || '',
+      countryId: addressToEdit.countryId,
+      stateId: addressToEdit.stateId,
+      cityId: addressToEdit.cityId,
+      label: addressToEdit.label || '',
+      isDefault: addressToEdit.isDefault || false,
+    });
+
+    setEditingAddressIndex(index);
+    setIsAddingAddress(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsAddingAddress(false);
+    setEditingAddressIndex(null);
     setNewAddress({
       street: '',
       number: '',
@@ -297,9 +346,12 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
         )}
       </div>
 
-      {/* Add Address Form */}
+      {/* Add/Edit Address Form */}
       {isAddingAddress && canManageAddresses && (
         <Card className="p-4 border-2 border-dashed">
+          <h3 className="text-lg font-semibold mb-4">
+            {editingAddressIndex !== null ? 'Editar Endereço' : 'Adicionar Endereço'}
+          </h3>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
@@ -430,25 +482,12 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
             <div className="flex gap-2">
               <Button type="button" onClick={handleAddAddress}>
                 <Icon icon={Check} size={16} className="mr-2" />
-                Adicionar
+                {editingAddressIndex !== null ? 'Salvar Alterações' : 'Adicionar'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => {
-                  setIsAddingAddress(false);
-                  setNewAddress({
-                    street: '',
-                    number: '',
-                    complement: '',
-                    zipcode: '',
-                    countryId: '',
-                    stateId: '',
-                    cityId: '',
-                    label: '',
-                    isDefault: false,
-                  });
-                }}
+                onClick={handleCancelEdit}
               >
                 <Icon icon={X} size={16} className="mr-2" />
                 Cancelar
@@ -503,6 +542,16 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
                     </div>
                     {!isViewOnly && (
                       <div className="flex gap-2 ml-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditAddress(index)}
+                          title="Editar endereço"
+                          disabled={isAddingAddress}
+                        >
+                          <Icon icon={Edit} size={16} />
+                        </Button>
                         <Button
                           type="button"
                           variant="error"
