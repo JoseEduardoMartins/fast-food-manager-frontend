@@ -11,6 +11,7 @@ import { removeUserAddress, updateUserAddress } from '@services/users';
 import type { UserAddressInput, UserAddress } from '@services/users';
 import type { AddressManagerProps } from './AddressManager.type';
 import { listCountries, type Country } from '@services/countries';
+import { listStates, type State } from '@services/states';
 
 export const AddressManager: React.FC<AddressManagerProps> = ({
   addresses = [],
@@ -36,7 +37,9 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
 
   // Countries, states, cities data
   const [countries, setCountries] = useState<Country[]>([]);
+  const [states, setStates] = useState<State[]>([]);
   const [loadingCountries, setLoadingCountries] = useState(false);
+  const [loadingStates, setLoadingStates] = useState(false);
 
   const isViewOnly = mode === 'view';
   const canManageAddresses = mode === 'create' || mode === 'edit';
@@ -65,6 +68,37 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
 
     loadCountries();
   }, []);
+
+  // Load states when country changes
+  useEffect(() => {
+    const loadStates = async () => {
+      if (!newAddress.countryId) {
+        setStates([]);
+        return;
+      }
+
+      try {
+        setLoadingStates(true);
+        const response = await listStates({
+          countryId: newAddress.countryId,
+          pageSize: 200, // Get all states
+          sort: {
+            fields: ['name'],
+            order: ['ASC'],
+          },
+        });
+        setStates(response.data);
+      } catch (error) {
+        console.error('Erro ao carregar estados:', error);
+        toast.error('Erro ao carregar estados');
+        setStates([]);
+      } finally {
+        setLoadingStates(false);
+      }
+    };
+
+    loadStates();
+  }, [newAddress.countryId]);
 
   const handleAddAddress = () => {
     // Validações
@@ -228,7 +262,14 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
                 <Label className="mb-2 block">País<span className="text-error ml-1">*</span></Label>
                 <select
                   value={newAddress.countryId}
-                  onChange={(e) => setNewAddress({ ...newAddress, countryId: e.target.value })}
+                  onChange={(e) => {
+                    setNewAddress({ 
+                      ...newAddress, 
+                      countryId: e.target.value,
+                      stateId: '', // Reset state when country changes
+                      cityId: '', // Reset city when country changes
+                    });
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   disabled={loadingCountries}
                 >
@@ -243,17 +284,33 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
                 </select>
               </div>
               
+              {/* State select - real data from API (cascading from country) */}
               <div>
                 <Label className="mb-2 block">Estado<span className="text-error ml-1">*</span></Label>
                 <select
                   value={newAddress.stateId}
-                  onChange={(e) => setNewAddress({ ...newAddress, stateId: e.target.value })}
+                  onChange={(e) => {
+                    setNewAddress({ 
+                      ...newAddress, 
+                      stateId: e.target.value,
+                      cityId: '', // Reset city when state changes
+                    });
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  disabled={!newAddress.countryId || loadingStates}
                 >
-                  <option value="">Selecione um estado</option>
-                  <option value="mock-state-sp">São Paulo</option>
-                  <option value="mock-state-rj">Rio de Janeiro</option>
-                  <option value="mock-state-mg">Minas Gerais</option>
+                  <option value="">
+                    {!newAddress.countryId 
+                      ? 'Selecione um país primeiro' 
+                      : loadingStates 
+                        ? 'Carregando estados...' 
+                        : 'Selecione um estado'}
+                  </option>
+                  {states.map((state) => (
+                    <option key={state.id} value={state.id}>
+                      {state.name} ({state.shortName})
+                    </option>
+                  ))}
                 </select>
               </div>
               
