@@ -12,6 +12,7 @@ import type { UserAddressInput, UserAddress } from '@services/users';
 import type { AddressManagerProps } from './AddressManager.type';
 import { listCountries, type Country } from '@services/countries';
 import { listStates, type State } from '@services/states';
+import { listCities, type City } from '@services/cities';
 
 export const AddressManager: React.FC<AddressManagerProps> = ({
   addresses = [],
@@ -38,8 +39,10 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
   // Countries, states, cities data
   const [countries, setCountries] = useState<Country[]>([]);
   const [states, setStates] = useState<State[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
   const [loadingCountries, setLoadingCountries] = useState(false);
   const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
 
   const isViewOnly = mode === 'view';
   const canManageAddresses = mode === 'create' || mode === 'edit';
@@ -99,6 +102,37 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
 
     loadStates();
   }, [newAddress.countryId]);
+
+  // Load cities when state changes
+  useEffect(() => {
+    const loadCities = async () => {
+      if (!newAddress.stateId) {
+        setCities([]);
+        return;
+      }
+
+      try {
+        setLoadingCities(true);
+        const response = await listCities({
+          stateId: newAddress.stateId,
+          pageSize: 500, // Get all cities
+          sort: {
+            fields: ['name'],
+            order: ['ASC'],
+          },
+        });
+        setCities(response.data);
+      } catch (error) {
+        console.error('Erro ao carregar cidades:', error);
+        toast.error('Erro ao carregar cidades');
+        setCities([]);
+      } finally {
+        setLoadingCities(false);
+      }
+    };
+
+    loadCities();
+  }, [newAddress.stateId]);
 
   const handleAddAddress = () => {
     // Validações
@@ -314,17 +348,27 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
                 </select>
               </div>
               
+              {/* City select - real data from API (cascading from state) */}
               <div>
                 <Label className="mb-2 block">Cidade<span className="text-error ml-1">*</span></Label>
                 <select
                   value={newAddress.cityId}
                   onChange={(e) => setNewAddress({ ...newAddress, cityId: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  disabled={!newAddress.stateId || loadingCities}
                 >
-                  <option value="">Selecione uma cidade</option>
-                  <option value="mock-city-sp">São Paulo</option>
-                  <option value="mock-city-campinas">Campinas</option>
-                  <option value="mock-city-santos">Santos</option>
+                  <option value="">
+                    {!newAddress.stateId 
+                      ? 'Selecione um estado primeiro' 
+                      : loadingCities 
+                        ? 'Carregando cidades...' 
+                        : 'Selecione uma cidade'}
+                  </option>
+                  {cities.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               
