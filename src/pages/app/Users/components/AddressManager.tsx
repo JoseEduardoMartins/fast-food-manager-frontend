@@ -194,6 +194,33 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
       toast.success('Endereço adicionado');
     }
 
+    // Se o endereço sendo adicionado/editado é padrão, remove o padrão dos outros
+    if (addressWithDetails.isDefault) {
+      // Verificar se já existe um endereço padrão
+      const hasDefaultAddress = updatedAddresses.some((addr, idx) => {
+        if (editingAddressIndex !== null) {
+          return addr.isDefault && idx !== editingAddressIndex;
+        } else {
+          return addr.isDefault && idx !== updatedAddresses.length - 1;
+        }
+      });
+
+      if (hasDefaultAddress) {
+        toast.info('O endereço padrão anterior foi desmarcado');
+      }
+
+      updatedAddresses = updatedAddresses.map((addr, idx) => {
+        // Manter isDefault apenas no endereço atual
+        if (editingAddressIndex !== null) {
+          // No modo edição, manter padrão apenas no índice editado
+          return idx === editingAddressIndex ? addr : { ...addr, isDefault: false };
+        } else {
+          // No modo adição, manter padrão apenas no último (recém-adicionado)
+          return idx === updatedAddresses.length - 1 ? addr : { ...addr, isDefault: false };
+        }
+      });
+    }
+
     setLocalAddresses(updatedAddresses);
     onAddressesChange?.(updatedAddresses);
 
