@@ -166,6 +166,7 @@ const AsyncSelectWithRef = React.forwardRef(AsyncSelect) as <TData, TParams = vo
   props: AsyncSelectProps<TData, TParams> & { ref?: React.Ref<HTMLSelectElement> }
 ) => React.ReactElement;
 
-AsyncSelectWithRef.displayName = 'AsyncSelect';
+// Set displayName using Object.assign to work with generic types
+Object.assign(AsyncSelectWithRef, { displayName: 'AsyncSelect' });
 
 export default AsyncSelectWithRef;
