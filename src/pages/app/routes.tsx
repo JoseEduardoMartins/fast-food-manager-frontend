@@ -5,7 +5,7 @@ import UserList from './Users/UserList';
 import CreateUser from './Users/CreateUser';
 import UserDetails from './Users/UserDetails';
 import EditUser from './Users/EditUser';
-import Companies from './Companies';
+import { CompanyList, CreateCompany, CompanyDetails, EditCompany } from './Companies';
 import Branches from './Branches';
 import Orders from './Orders';
 import Menus from './Menus';
@@ -64,7 +64,31 @@ export const AppRoutes = (
       path={ROUTES.COMPANIES}
       element={
         <ProtectedRoute allowedRoles={['admin', 'owner']}>
-          <Companies />
+          <CompanyList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.COMPANIES_CREATE}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+          <CreateCompany />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.COMPANIES_DETAILS}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+          <CompanyDetails />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.COMPANIES_EDIT}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+          <EditCompany />
         </ProtectedRoute>
       }
     />
