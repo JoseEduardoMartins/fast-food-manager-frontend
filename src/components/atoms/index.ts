@@ -8,6 +8,8 @@ export { default as Title } from './Title';
 export type { TitleProps, TitleVariant } from './Title';
 export { default as Select } from './Select';
 export type { SelectProps } from './Select';
+export { AsyncSelect } from './AsyncSelect';
+export type { AsyncSelectProps, LoadFunction, GetLabel, GetValue } from './AsyncSelect';
 export { default as Textarea } from './Textarea';
 export type { TextareaProps } from './Textarea';
 export { default as Badge } from './Badge';

@@ -3,16 +3,19 @@
  * Manages user addresses for create, view, and edit modes
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MapPin, Plus, Edit, Trash2, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { Card, Button, Icon, Badge, FormField, Label } from '@components';
+import { Card, Button, Icon, Badge, FormField, Label, AsyncSelect } from '@components';
 import { removeUserAddress, updateUserAddress } from '@services/users';
 import type { UserAddressInput, UserAddress } from '@services/users';
 import type { AddressManagerProps } from './AddressManager.type';
 import { listCountries, type Country } from '@services/countries';
 import { listStates, type State } from '@services/states';
 import { listCities, type City } from '@services/cities';
+import type { ListCountriesParams } from '@services/countries';
+import type { ListStatesParams } from '@services/states';
+import type { ListCitiesParams } from '@services/cities';
 
 export const AddressManager: React.FC<AddressManagerProps> = ({
   addresses = [],
@@ -37,105 +40,76 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
     isDefault: false,
   });
 
-  // Countries, states, cities data
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [states, setStates] = useState<State[]>([]);
-  const [cities, setCities] = useState<City[]>([]);
-  const [loadingCountries, setLoadingCountries] = useState(false);
-  const [loadingStates, setLoadingStates] = useState(false);
-  const [loadingCities, setLoadingCities] = useState(false);
-
   const isViewOnly = mode === 'view';
   const canManageAddresses = mode === 'create' || mode === 'edit';
   const isCreateMode = mode === 'create';
 
-  // Load countries on component mount
-  useEffect(() => {
-    const loadCountries = async () => {
-      try {
-        setLoadingCountries(true);
-        const response = await listCountries({
-          pageSize: 200, // Get all countries
-          sort: {
-            fields: ['name'],
-            order: ['ASC'],
-          },
-        });
-        setCountries(response.data);
-      } catch (error) {
-        console.error('Erro ao carregar países:', error);
-        toast.error('Erro ao carregar países');
-      } finally {
-        setLoadingCountries(false);
-      }
-    };
+  // Load functions for AsyncSelect
+  const loadCountries = async (params?: ListCountriesParams): Promise<Country[]> => {
+    try {
+      const response = await listCountries({
+        pageSize: 200,
+        sort: {
+          fields: ['name'],
+          order: ['ASC'],
+        },
+        ...params,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao carregar países:', error);
+      toast.error('Erro ao carregar países');
+      return [];
+    }
+  };
 
-    loadCountries();
-  }, []);
+  const loadStates = async (params?: ListStatesParams): Promise<State[]> => {
+    if (!newAddress.countryId) {
+      return [];
+    }
 
-  // Load states when country changes
-  useEffect(() => {
-    const loadStates = async () => {
-      if (!newAddress.countryId) {
-        setStates([]);
-        return;
-      }
+    try {
+      const response = await listStates({
+        countryId: newAddress.countryId,
+        pageSize: 200,
+        sort: {
+          fields: ['name'],
+          order: ['ASC'],
+        },
+        ...params,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao carregar estados:', error);
+      toast.error('Erro ao carregar estados');
+      return [];
+    }
+  };
 
-      try {
-        setLoadingStates(true);
-        const response = await listStates({
-          countryId: newAddress.countryId,
-          pageSize: 200, // Get all states
-          sort: {
-            fields: ['name'],
-            order: ['ASC'],
-          },
-        });
-        setStates(response.data);
-      } catch (error) {
-        console.error('Erro ao carregar estados:', error);
-        toast.error('Erro ao carregar estados');
-        setStates([]);
-      } finally {
-        setLoadingStates(false);
-      }
-    };
+  const loadCities = async (params?: ListCitiesParams): Promise<City[]> => {
+    if (!newAddress.stateId) {
+      return [];
+    }
 
-    loadStates();
-  }, [newAddress.countryId]);
+    try {
+      const response = await listCities({
+        stateId: newAddress.stateId,
+        pageSize: 500,
+        sort: {
+          fields: ['name'],
+          order: ['ASC'],
+        },
+        ...params,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao carregar cidades:', error);
+      toast.error('Erro ao carregar cidades');
+      return [];
+    }
+  };
 
-  // Load cities when state changes
-  useEffect(() => {
-    const loadCities = async () => {
-      if (!newAddress.stateId) {
-        setCities([]);
-        return;
-      }
-
-      try {
-        setLoadingCities(true);
-        const response = await listCities({
-          stateId: newAddress.stateId,
-          pageSize: 500, // Get all cities
-          sort: {
-            fields: ['name'],
-            order: ['ASC'],
-          },
-        });
-        setCities(response.data);
-      } catch (error) {
-        console.error('Erro ao carregar cidades:', error);
-        toast.error('Erro ao carregar cidades');
-        setCities([]);
-      } finally {
-        setLoadingCities(false);
-      }
-    };
-
-    loadCities();
-  }, [newAddress.stateId]);
-
-  const handleAddAddress = () => {
+  const handleAddAddress = async () => {
     // Validações
     if (!newAddress.street.trim()) {
       toast.error('Rua é obrigatória');
@@ -155,9 +129,26 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
     }
 
     // Buscar dados completos das entidades selecionadas
-    const selectedCountry = countries.find(c => c.id === newAddress.countryId);
-    const selectedState = states.find(s => s.id === newAddress.stateId);
-    const selectedCity = cities.find(c => c.id === newAddress.cityId);
+    let selectedCountry: Country | undefined;
+    let selectedState: State | undefined;
+    let selectedCity: City | undefined;
+
+    try {
+      if (newAddress.countryId) {
+        const countriesData = await loadCountries();
+        selectedCountry = countriesData.find(c => c.id === newAddress.countryId);
+      }
+      if (newAddress.stateId) {
+        const statesData = await loadStates();
+        selectedState = statesData.find(s => s.id === newAddress.stateId);
+      }
+      if (newAddress.cityId) {
+        const citiesData = await loadCities();
+        selectedCity = citiesData.find(c => c.id === newAddress.cityId);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados completos:', error);
+    }
 
     // Criar endereço com dados completos para exibição
     const addressWithDetails: UserAddressInput = {
@@ -407,86 +398,67 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
                 placeholder="00000-000"
               />
               
-              {/* Country select - real data from API */}
-              <div>
-                <Label className="mb-2 block">País<span className="text-error ml-1">*</span></Label>
-                <select
-                  value={newAddress.countryId}
-                  onChange={(e) => {
-                    setNewAddress({ 
-                      ...newAddress, 
-                      countryId: e.target.value,
-                      stateId: '', // Reset state when country changes
-                      cityId: '', // Reset city when country changes
-                    });
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  disabled={loadingCountries}
-                >
-                  <option value="">
-                    {loadingCountries ? 'Carregando países...' : 'Selecione um país'}
-                  </option>
-                  {countries.map((country) => (
-                    <option key={country.id} value={country.id}>
-                      {country.name} ({country.shortName}) - {country.phoneCode}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* Country select - using AsyncSelect */}
+              <AsyncSelect<Country, ListCountriesParams>
+                label="País"
+                value={newAddress.countryId}
+                onChange={(e) => {
+                  setNewAddress({ 
+                    ...newAddress, 
+                    countryId: e.target.value,
+                    stateId: '', // Reset state when country changes
+                    cityId: '', // Reset city when country changes
+                  });
+                }}
+                loadOptions={loadCountries}
+                getValue={(country) => country.id}
+                getLabel={(country) => `${country.name} (${country.shortName}) - ${country.phoneCode}`}
+                placeholder="Selecione um país"
+                loadingText="Carregando países..."
+                noOptionsText="Nenhum país disponível"
+                errorText="Erro ao carregar países"
+                reloadOnParamsChange={false}
+              />
               
-              {/* State select - real data from API (cascading from country) */}
-              <div>
-                <Label className="mb-2 block">Estado<span className="text-error ml-1">*</span></Label>
-                <select
-                  value={newAddress.stateId}
-                  onChange={(e) => {
-                    setNewAddress({ 
-                      ...newAddress, 
-                      stateId: e.target.value,
-                      cityId: '', // Reset city when state changes
-                    });
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  disabled={!newAddress.countryId || loadingStates}
-                >
-                  <option value="">
-                    {!newAddress.countryId 
-                      ? 'Selecione um país primeiro' 
-                      : loadingStates 
-                        ? 'Carregando estados...' 
-                        : 'Selecione um estado'}
-                  </option>
-                  {states.map((state) => (
-                    <option key={state.id} value={state.id}>
-                      {state.name} ({state.shortName})
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* State select - using AsyncSelect (cascading from country) */}
+              <AsyncSelect<State, ListStatesParams>
+                label="Estado"
+                value={newAddress.stateId}
+                onChange={(e) => {
+                  setNewAddress({ 
+                    ...newAddress, 
+                    stateId: e.target.value,
+                    cityId: '', // Reset city when state changes
+                  });
+                }}
+                loadOptions={loadStates}
+                loadParams={newAddress.countryId ? {} : undefined}
+                getValue={(state) => state.id}
+                getLabel={(state) => `${state.name} (${state.shortName})`}
+                placeholder={!newAddress.countryId ? 'Selecione um país primeiro' : 'Selecione um estado'}
+                loadingText="Carregando estados..."
+                noOptionsText="Nenhum estado disponível"
+                errorText="Erro ao carregar estados"
+                disabled={!newAddress.countryId}
+                reloadOnParamsChange={true}
+              />
               
-              {/* City select - real data from API (cascading from state) */}
-              <div>
-                <Label className="mb-2 block">Cidade<span className="text-error ml-1">*</span></Label>
-                <select
-                  value={newAddress.cityId}
-                  onChange={(e) => setNewAddress({ ...newAddress, cityId: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  disabled={!newAddress.stateId || loadingCities}
-                >
-                  <option value="">
-                    {!newAddress.stateId 
-                      ? 'Selecione um estado primeiro' 
-                      : loadingCities 
-                        ? 'Carregando cidades...' 
-                        : 'Selecione uma cidade'}
-                  </option>
-                  {cities.map((city) => (
-                    <option key={city.id} value={city.id}>
-                      {city.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* City select - using AsyncSelect (cascading from state) */}
+              <AsyncSelect<City, ListCitiesParams>
+                label="Cidade"
+                value={newAddress.cityId}
+                onChange={(e) => setNewAddress({ ...newAddress, cityId: e.target.value })}
+                loadOptions={loadCities}
+                loadParams={newAddress.stateId ? {} : undefined}
+                getValue={(city) => city.id}
+                getLabel={(city) => city.name}
+                placeholder={!newAddress.stateId ? 'Selecione um estado primeiro' : 'Selecione uma cidade'}
+                loadingText="Carregando cidades..."
+                noOptionsText="Nenhuma cidade disponível"
+                errorText="Erro ao carregar cidades"
+                disabled={!newAddress.stateId}
+                reloadOnParamsChange={true}
+              />
               
               <FormField
                 label="Rótulo"
