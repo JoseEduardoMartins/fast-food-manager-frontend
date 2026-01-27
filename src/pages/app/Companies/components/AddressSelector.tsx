@@ -4,7 +4,7 @@
  * Uses React Hook Form context to manage address fields
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MapPin } from 'lucide-react';
 import { Card, Icon, FormField, Label, AsyncSelect } from '@components';
@@ -30,11 +30,6 @@ export const AddressSelector: React.FC<AddressSelectorProps> = ({
 
   const address = watch('address');
   const isViewOnly = mode === 'view';
-  
-  // Track loaded data to ensure selects are populated in view mode
-  const [countriesLoaded, setCountriesLoaded] = useState(false);
-  const [statesLoaded, setStatesLoaded] = useState(false);
-  const [citiesLoaded, setCitiesLoaded] = useState(false);
 
   // Load functions for AsyncSelect
   const loadCountries = async (params?: ListCountriesParams): Promise<Country[]> => {
@@ -115,30 +110,12 @@ export const AddressSelector: React.FC<AddressSelectorProps> = ({
     if (field === 'countryId') {
       newAddress.stateId = '';
       newAddress.cityId = '';
-      setStatesLoaded(false);
-      setCitiesLoaded(false);
     } else if (field === 'stateId') {
       newAddress.cityId = '';
-      setCitiesLoaded(false);
     }
     
     setValue('address', newAddress);
   };
-
-  // In view mode, ensure data is loaded when address is populated
-  useEffect(() => {
-    if (isViewOnly && address) {
-      if (address.countryId && !countriesLoaded) {
-        setCountriesLoaded(true);
-      }
-      if (address.countryId && address.stateId && !statesLoaded) {
-        setStatesLoaded(true);
-      }
-      if (address.stateId && address.cityId && !citiesLoaded) {
-        setCitiesLoaded(true);
-      }
-    }
-  }, [isViewOnly, address, countriesLoaded, statesLoaded, citiesLoaded]);
 
   return (
     <div className="space-y-4">
