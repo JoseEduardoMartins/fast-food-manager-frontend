@@ -4,14 +4,45 @@
  */
 
 import type { SortConfig } from '@services/countries';
+import type { Country, State, City } from '@services/users';
+
+/**
+ * Company entity with full details (returned in branch listing)
+ */
+export interface CompanyWithDetails {
+  id: string;
+  name: string;
+  cnpj: string;
+  addressId: string;
+  phone?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  address?: {
+    id: string;
+    street: string;
+    number?: string;
+    complement?: string;
+    zipcode?: string;
+    countryId: string;
+    stateId: string;
+    cityId: string;
+    country?: Country;
+    state?: State;
+    city?: City;
+  };
+}
 
 /**
  * Branch entity
+ * Note: When listing/b fetching branches, the backend automatically returns
+ * the full company object with address and relationships via leftJoin
  */
 export interface Branch {
   id: string;
   name: string;
   companyId: string;
+  company?: CompanyWithDetails; // Automatically populated by backend via leftJoin
   menuId: string;
   addressId: string;
   phone?: string;

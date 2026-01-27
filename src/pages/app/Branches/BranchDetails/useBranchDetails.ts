@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { getBranchById, updateBranch, deleteBranch } from '@services/branches';
-import { getAddressById } from '@services/addresses';
 import type { Branch } from '@services/branches';
 import { branchFormSchema, type BranchFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
@@ -42,32 +41,7 @@ export const useBranchDetails = () => {
       const branchData = await getBranchById(id);
       setBranch(branchData);
       
-      // Fetch address data to populate form
-      let addressData = {
-        street: '',
-        number: '',
-        complement: '',
-        zipcode: '',
-        countryId: '',
-        stateId: '',
-        cityId: '',
-      };
-
-      try {
-        const address = await getAddressById(branchData.addressId);
-        addressData = {
-          street: address.street,
-          number: address.number || '',
-          complement: address.complement || '',
-          zipcode: address.zipcode || '',
-          countryId: address.countryId,
-          stateId: address.stateId,
-          cityId: address.cityId,
-        };
-      } catch (err) {
-        console.error('Erro ao carregar endereço:', err);
-        // Continue with empty address if not found
-      }
+      // Address data will be loaded by AddressSelector component
       
       form.reset({
         name: branchData.name,

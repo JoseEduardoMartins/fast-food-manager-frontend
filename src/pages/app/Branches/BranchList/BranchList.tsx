@@ -57,11 +57,11 @@ const BranchList: React.FC = () => {
         cell: (info) => info.getValue(),
       },
       {
-        accessorKey: 'companyId',
+        accessorKey: 'company',
         header: 'Empresa',
         cell: (info) => {
-          const companyId = info.getValue() as string;
-          return companyId || '-';
+          const branch = info.row.original;
+          return branch.company?.name || branch.companyId || '-';
         },
       },
       {

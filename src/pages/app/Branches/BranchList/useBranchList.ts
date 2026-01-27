@@ -30,7 +30,7 @@ export const useBranchList = () => {
       const params: ListBranchesParams = {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
-        selectFields: ['id', 'name', 'companyId', 'menuId', 'phone', 'isActive', 'createdAt'],
+        // Não especificamos selectFields para receber dados completos da empresa via leftJoin
       };
 
       if (selectedStatus !== 'all') {

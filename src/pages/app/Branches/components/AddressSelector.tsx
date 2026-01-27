@@ -26,7 +26,6 @@ export const AddressSelector: React.FC<AddressSelectorProps> = ({
   const {
     watch,
     setValue,
-    formState: { errors },
   } = useFormContext<BranchFormData>();
 
   const addressId = watch('addressId');
