@@ -6,7 +6,10 @@ import CreateUser from './Users/CreateUser';
 import UserDetails from './Users/UserDetails';
 import EditUser from './Users/EditUser';
 import { CompanyList, CreateCompany, CompanyDetails, EditCompany } from './Companies';
-import Branches from './Branches';
+import { BranchList } from './Branches/BranchList';
+import { CreateBranch } from './Branches/CreateBranch';
+import { BranchDetails } from './Branches/BranchDetails';
+import { EditBranch } from './Branches/EditBranch';
 import Orders from './Orders';
 import Menus from './Menus';
 import Products from './Products';
@@ -96,7 +99,31 @@ export const AppRoutes = (
       path={ROUTES.BRANCHES}
       element={
         <ProtectedRoute allowedRoles={['admin', 'owner']}>
-          <Branches />
+          <BranchList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.BRANCHES_CREATE}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+          <CreateBranch />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.BRANCHES_DETAILS}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+          <BranchDetails />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.BRANCHES_EDIT}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+          <EditBranch />
         </ProtectedRoute>
       }
     />
