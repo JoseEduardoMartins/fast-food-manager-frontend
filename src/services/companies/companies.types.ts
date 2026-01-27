@@ -47,14 +47,29 @@ export interface ListCompaniesResponse {
 }
 
 /**
+ * Address data for company creation/update
+ */
+export interface CompanyAddressInput {
+  street: string;
+  number?: string;
+  complement?: string;
+  zipcode?: string;
+  countryId: string;
+  stateId: string;
+  cityId: string;
+}
+
+/**
  * Request to create a company
+ * Can use either addressId (existing address) or address (create inline)
  */
 export interface CreateCompanyRequest {
   name: string;
   cnpj: string;
-  addressId: string;
+  addressId?: string; // Required if address is not provided
+  address?: CompanyAddressInput; // Required if addressId is not provided
   phone?: string;
-  isActive?: boolean;
+  // isActive is not available in creation - always true
 }
 
 /**
@@ -66,11 +81,13 @@ export interface CreateCompanyResponse {
 
 /**
  * Request to update a company
+ * Can use addressId (to change to existing address) or address (to update/create inline)
  */
 export interface UpdateCompanyRequest {
   name?: string;
   cnpj?: string;
-  addressId?: string;
+  addressId?: string; // To change to an existing address
+  address?: Partial<CompanyAddressInput>; // To update/create address inline (all fields optional)
   phone?: string;
   isActive?: boolean;
 }

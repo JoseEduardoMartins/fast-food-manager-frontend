@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { createCompany } from '@services/companies';
-import { createAddress } from '@services/addresses';
 import type { CreateCompanyRequest } from '@services/companies';
 import { companyFormSchema, type CompanyFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
@@ -18,8 +17,6 @@ export const useCreateCompany = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [addressId, setAddressId] = useState<string | null>(null);
-  const [addressData, setAddressData] = useState<any>(null);
 
   const form = useForm<CompanyFormData>({
     resolver: zodResolver(companyFormSchema),
@@ -27,8 +24,15 @@ export const useCreateCompany = () => {
       name: '',
       cnpj: '',
       phone: '',
-      addressId: '',
-      isActive: true,
+      address: {
+        street: '',
+        number: '',
+        complement: '',
+        zipcode: '',
+        countryId: '',
+        stateId: '',
+        cityId: '',
+      },
     },
   });
 
@@ -37,29 +41,21 @@ export const useCreateCompany = () => {
     setError(null);
 
     try {
-      // First, create the address if we have address data
-      let finalAddressId = data.addressId;
-
-      // If addressId is a temporary ID (starts with 'temp-'), create the address
-      if (data.addressId.startsWith('temp-') && addressData) {
-        const addressResponse = await createAddress({
-          street: addressData.street,
-          number: addressData.number,
-          complement: addressData.complement,
-          zipcode: addressData.zipcode,
-          countryId: addressData.countryId,
-          stateId: addressData.stateId,
-          cityId: addressData.cityId,
-        });
-        finalAddressId = addressResponse.id;
-      }
-
+      // Send address inline - backend will create it automatically
       const createData: CreateCompanyRequest = {
         name: data.name,
         cnpj: data.cnpj,
         phone: data.phone || undefined,
-        addressId: finalAddressId,
-        isActive: data.isActive ?? true,
+        address: {
+          street: data.address.street,
+          number: data.address.number || undefined,
+          complement: data.address.complement || undefined,
+          zipcode: data.address.zipcode || undefined,
+          countryId: data.address.countryId,
+          stateId: data.address.stateId,
+          cityId: data.address.cityId,
+        },
+        // isActive is not available in creation - always true
       };
 
       const response = await createCompany(createData);
@@ -74,8 +70,8 @@ export const useCreateCompany = () => {
         setError('CNPJ já está em uso');
         toast.error('CNPJ já está em uso');
       } else if (error.response?.status === 404) {
-        setError('Endereço não encontrado');
-        toast.error('Endereço não encontrado');
+        setError('País, estado ou cidade não encontrado');
+        toast.error('País, estado ou cidade não encontrado');
       } else {
         setError(errorMessage);
         toast.error(errorMessage);
@@ -89,23 +85,6 @@ export const useCreateCompany = () => {
     navigate(ROUTES.COMPANIES);
   };
 
-  const handleAddressChange = (id: string) => {
-    setAddressId(id);
-    form.setValue('addressId', id);
-  };
-
-  const handleAddressDataChange = (data: {
-    street: string;
-    number?: string;
-    complement?: string;
-    zipcode?: string;
-    countryId: string;
-    stateId: string;
-    cityId: string;
-  }) => {
-    setAddressData(data);
-  };
-
   return {
     form,
     isLoading,
@@ -113,8 +92,5 @@ export const useCreateCompany = () => {
     setError,
     onSubmit,
     handleCancel,
-    addressId,
-    handleAddressChange,
-    handleAddressDataChange,
   };
 };

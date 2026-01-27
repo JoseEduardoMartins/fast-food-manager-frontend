@@ -13,7 +13,7 @@ import { useCreateCompany } from './useCreateCompany';
 
 const CreateCompany: React.FC = () => {
   const { user, signOut } = useAuth();
-  const { form, isLoading, error, setError, onSubmit, handleCancel, handleAddressChange, handleAddressDataChange } = useCreateCompany();
+  const { form, isLoading, error, setError, onSubmit, handleCancel } = useCreateCompany();
 
   return (
     <AppLayout user={user} onSignOut={signOut}>
@@ -39,7 +39,7 @@ const CreateCompany: React.FC = () => {
       <Card className="p-6">
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CompanyForm mode="create" onAddressChange={handleAddressChange} onAddressDataChange={handleAddressDataChange} />
+            <CompanyForm mode="create" />
           </form>
         </FormProvider>
       </Card>

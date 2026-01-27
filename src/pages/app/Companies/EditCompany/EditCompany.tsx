@@ -13,7 +13,7 @@ import { useEditCompany } from './useEditCompany';
 
 const EditCompany: React.FC = () => {
   const { user: currentUser, signOut } = useAuth();
-  const { company, loading, saving, error, setError, form, onSubmit, handleCancel, handleAddressChange, handleAddressDataChange } = useEditCompany();
+  const { company, loading, saving, error, setError, form, onSubmit, handleCancel } = useEditCompany();
 
   if (loading) {
     return (
@@ -67,9 +67,7 @@ const EditCompany: React.FC = () => {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CompanyForm 
               mode="edit" 
-              company={company} 
-              onAddressChange={handleAddressChange}
-              onAddressDataChange={handleAddressDataChange}
+              company={company}
             />
           </form>
         </FormProvider>

@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { getCompanyById, updateCompany, deleteCompany } from '@services/companies';
+import { getAddressById } from '@services/addresses';
 import type { Company } from '@services/companies';
 import { companyFormSchema, type CompanyFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
@@ -41,11 +42,38 @@ export const useCompanyDetails = () => {
       const companyData = await getCompanyById(id);
       setCompany(companyData);
       
+      // Fetch address data to populate form
+      let addressData = {
+        street: '',
+        number: '',
+        complement: '',
+        zipcode: '',
+        countryId: '',
+        stateId: '',
+        cityId: '',
+      };
+
+      try {
+        const address = await getAddressById(companyData.addressId);
+        addressData = {
+          street: address.street,
+          number: address.number || '',
+          complement: address.complement || '',
+          zipcode: address.zipcode || '',
+          countryId: address.countryId,
+          stateId: address.stateId,
+          cityId: address.cityId,
+        };
+      } catch (err) {
+        console.error('Erro ao carregar endereço:', err);
+        // Continue with empty address if not found
+      }
+      
       form.reset({
         name: companyData.name,
         cnpj: companyData.cnpj,
         phone: companyData.phone || '',
-        addressId: companyData.addressId,
+        address: addressData,
         isActive: companyData.isActive,
       });
       

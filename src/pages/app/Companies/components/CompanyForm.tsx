@@ -15,25 +15,17 @@ interface CompanyFormProps {
   isViewOnly?: boolean;
   company?: Company;
   mode: 'create' | 'view' | 'edit';
-  onAddressChange?: (addressId: string) => void;
-  onAddressDataChange?: (data: any) => void;
 }
 
 export const CompanyForm: React.FC<CompanyFormProps> = ({ 
   isViewOnly = false, 
   company, 
   mode,
-  onAddressChange,
-  onAddressDataChange
 }) => {
   const {
     register,
     formState: { errors },
-    watch,
-    setValue,
   } = useFormContext<CompanyFormData>();
-
-  const addressId = watch('addressId');
 
   return (
     <div className="space-y-6">
@@ -86,12 +78,6 @@ export const CompanyForm: React.FC<CompanyFormProps> = ({
       {/* Address Selector */}
       <AddressSelector
         mode={mode}
-        addressId={addressId}
-        onAddressChange={(id) => {
-          setValue('addressId', id);
-          onAddressChange?.(id);
-        }}
-        onAddressDataChange={onAddressDataChange}
         disabled={isViewOnly}
       />
     </div>

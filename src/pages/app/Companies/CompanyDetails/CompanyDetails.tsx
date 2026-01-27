@@ -24,7 +24,6 @@ const CompanyDetails: React.FC = () => {
     handleDelete,
     handleEdit,
     handleBack,
-    reloadCompany,
   } = useCompanyDetails();
 
   if (loading) {
@@ -92,7 +91,7 @@ const CompanyDetails: React.FC = () => {
       <Card className="p-6">
         <FormProvider {...form}>
           <form>
-            <CompanyForm mode="view" isViewOnly company={company} onAddressChange={reloadCompany} />
+            <CompanyForm mode="view" isViewOnly company={company} />
           </form>
         </FormProvider>
       </Card>

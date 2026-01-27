@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { getCompanyById, updateCompany } from '@services/companies';
-import { createAddress, updateAddress } from '@services/addresses';
+import { getAddressById } from '@services/addresses';
 import type { Company, UpdateCompanyRequest } from '@services/companies';
 import { companyFormSchema, type CompanyFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
@@ -21,7 +21,6 @@ export const useEditCompany = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [addressData, setAddressData] = useState<any>(null);
 
   const form = useForm<CompanyFormData>({
     resolver: zodResolver(companyFormSchema),
@@ -43,11 +42,38 @@ export const useEditCompany = () => {
       const companyData = await getCompanyById(id);
       setCompany(companyData);
       
+      // Fetch address data to populate form
+      let addressData = {
+        street: '',
+        number: '',
+        complement: '',
+        zipcode: '',
+        countryId: '',
+        stateId: '',
+        cityId: '',
+      };
+
+      try {
+        const address = await getAddressById(companyData.addressId);
+        addressData = {
+          street: address.street,
+          number: address.number || '',
+          complement: address.complement || '',
+          zipcode: address.zipcode || '',
+          countryId: address.countryId,
+          stateId: address.stateId,
+          cityId: address.cityId,
+        };
+      } catch (err) {
+        console.error('Erro ao carregar endereço:', err);
+        // Continue with empty address if not found
+      }
+      
       form.reset({
         name: companyData.name,
         cnpj: companyData.cnpj,
         phone: companyData.phone || '',
-        addressId: companyData.addressId,
+        address: addressData,
         isActive: companyData.isActive,
       });
       
@@ -69,38 +95,20 @@ export const useEditCompany = () => {
     setError(null);
 
     try {
-      let finalAddressId = data.addressId;
-
-      // If addressId is a temporary ID (starts with 'temp-'), create the address
-      if (data.addressId.startsWith('temp-') && addressData) {
-        const addressResponse = await createAddress({
-          street: addressData.street,
-          number: addressData.number,
-          complement: addressData.complement,
-          zipcode: addressData.zipcode,
-          countryId: addressData.countryId,
-          stateId: addressData.stateId,
-          cityId: addressData.cityId,
-        });
-        finalAddressId = addressResponse.id;
-      } else if (addressData && data.addressId !== company?.addressId) {
-        // If address data changed and it's not a new address, update it
-        await updateAddress(data.addressId, {
-          street: addressData.street,
-          number: addressData.number,
-          complement: addressData.complement,
-          zipcode: addressData.zipcode,
-          countryId: addressData.countryId,
-          stateId: addressData.stateId,
-          cityId: addressData.cityId,
-        });
-      }
-
+      // Send address inline - backend will update/create it automatically
       const updateData: UpdateCompanyRequest = {
         name: data.name,
         cnpj: data.cnpj,
         phone: data.phone || undefined,
-        addressId: finalAddressId,
+        address: {
+          street: data.address.street,
+          number: data.address.number || undefined,
+          complement: data.address.complement || undefined,
+          zipcode: data.address.zipcode || undefined,
+          countryId: data.address.countryId,
+          stateId: data.address.stateId,
+          cityId: data.address.cityId,
+        },
         isActive: data.isActive,
       };
 
@@ -115,8 +123,8 @@ export const useEditCompany = () => {
         setError('CNPJ já está em uso');
         toast.error('CNPJ já está em uso');
       } else if (err.response?.status === 404) {
-        setError('Endereço não encontrado');
-        toast.error('Endereço não encontrado');
+        setError('País, estado ou cidade não encontrado');
+        toast.error('País, estado ou cidade não encontrado');
       } else {
         setError(errorMessage);
         toast.error(errorMessage);
@@ -129,22 +137,6 @@ export const useEditCompany = () => {
   const handleCancel = () => {
     if (!id) return;
     navigate(`${ROUTES.COMPANIES}/${id}`);
-  };
-
-  const handleAddressChange = (addressId: string) => {
-    form.setValue('addressId', addressId);
-  };
-
-  const handleAddressDataChange = (data: {
-    street: string;
-    number?: string;
-    complement?: string;
-    zipcode?: string;
-    countryId: string;
-    stateId: string;
-    cityId: string;
-  }) => {
-    setAddressData(data);
   };
 
   const reloadCompany = () => {
@@ -161,7 +153,5 @@ export const useEditCompany = () => {
     onSubmit,
     handleCancel,
     reloadCompany,
-    handleAddressChange,
-    handleAddressDataChange,
   };
 };
