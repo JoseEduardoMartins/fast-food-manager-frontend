@@ -36,8 +36,7 @@ const AsyncSelect = <TData, TParams = void>(
 
   const loadParamsRef = useRef<TParams | undefined>(loadParams);
   const loadData = useCallback(async () => {
-    if (disabled) return;
-
+    // Always load data, even when disabled (needed for view mode to display selected values)
     setLoading(true);
     setLoadError(null);
 
@@ -55,7 +54,7 @@ const AsyncSelect = <TData, TParams = void>(
     } finally {
       setLoading(false);
     }
-  }, [loadOptions, disabled]);
+  }, [loadOptions, loadParams]);
 
   // Load data on mount
   useEffect(() => {
