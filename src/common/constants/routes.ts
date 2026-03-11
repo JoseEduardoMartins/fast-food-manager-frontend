@@ -41,6 +41,9 @@ export const ROUTES = {
   PRODUCTS_DETAILS: '/products/:id',
   PRODUCTS_EDIT: '/products/:id/edit',
   INGREDIENTS: '/ingredients',
+  INGREDIENTS_CREATE: '/ingredients/create',
+  INGREDIENTS_DETAILS: '/ingredients/:id',
+  INGREDIENTS_EDIT: '/ingredients/:id/edit',
   STOCK: '/stock',
 } as const;
 
