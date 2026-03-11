@@ -16,10 +16,26 @@ export type OrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   [ORDER_STATUS.received]: 'Recebido',
   [ORDER_STATUS.preparing]: 'Em preparo',
-  [ORDER_STATUS.ready]: 'Pronto',
+  [ORDER_STATUS.ready]: 'Pronto para entrega',
   [ORDER_STATUS.delivered]: 'Entregue',
   [ORDER_STATUS.cancelled]: 'Cancelado',
 };
+
+/** Colunas do Kanban de pedidos e quais roles podem ver cada uma */
+export const ORDER_KANBAN_COLUMNS: Array<{
+  status: OrderStatus;
+  label: string;
+  /** Roles que veem esta coluna (admin/owner/manager veem todas via lógica no hook) */
+  roles: Array<'admin' | 'owner' | 'manager' | 'cook' | 'attendant' | 'delivery'>;
+}> = [
+  { status: ORDER_STATUS.received, label: 'Recebido', roles: ['admin', 'owner', 'manager', 'cook'] },
+  { status: ORDER_STATUS.preparing, label: 'Em preparo', roles: ['admin', 'owner', 'manager', 'cook'] },
+  { status: ORDER_STATUS.ready, label: 'Pronto para entrega', roles: ['admin', 'owner', 'manager', 'cook', 'attendant', 'delivery'] },
+  { status: ORDER_STATUS.delivered, label: 'Entregue', roles: ['admin', 'owner', 'manager', 'attendant', 'delivery'] },
+];
+
+/** Status que não aparecem no Kanban (ex.: cancelados) */
+export const ORDER_STATUS_EXCLUDED_FROM_KANBAN: OrderStatus[] = [ORDER_STATUS.cancelled];
 
 export const PAYMENT_METHOD = {
   cash: 'cash',
@@ -69,3 +85,19 @@ export const ORDER_DELIVERY_STATUS_LABELS: Record<OrderDeliveryStatus, string> =
   [ORDER_DELIVERY_STATUS.delivered]: 'Entregue',
   [ORDER_DELIVERY_STATUS.failed]: 'Falhou',
 };
+
+export type OrderKanbanRole = 'admin' | 'owner' | 'manager' | 'cook' | 'attendant' | 'delivery';
+
+/** Retorna as colunas do Kanban visíveis para o role (admin/owner/manager veem todas) */
+export function getOrderKanbanColumnsForRole(
+  role: OrderKanbanRole
+): Array<{ status: OrderStatus; label: string }> {
+  const fullAccess = role === 'admin' || role === 'owner' || role === 'manager';
+  if (fullAccess) {
+    return ORDER_KANBAN_COLUMNS.map((c) => ({ status: c.status, label: c.label }));
+  }
+  return ORDER_KANBAN_COLUMNS.filter((c) => c.roles.includes(role)).map((c) => ({
+    status: c.status,
+    label: c.label,
+  }));
+}

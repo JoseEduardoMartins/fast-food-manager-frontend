@@ -7,6 +7,9 @@ export type { UserType } from './userTypes';
 export {
   ORDER_STATUS,
   ORDER_STATUS_LABELS,
+  ORDER_KANBAN_COLUMNS,
+  ORDER_STATUS_EXCLUDED_FROM_KANBAN,
+  getOrderKanbanColumnsForRole,
   PAYMENT_METHOD,
   PAYMENT_METHOD_LABELS,
   CONSUMPTION_MODE,
@@ -19,4 +22,5 @@ export type {
   PaymentMethod,
   ConsumptionMode,
   OrderDeliveryStatus,
+  OrderKanbanRole,
 } from './orderEnums';
