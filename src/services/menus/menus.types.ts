@@ -12,9 +12,32 @@ export interface Menu {
   id: string;
   name: string;
   description?: string;
-  isActive?: boolean;
+  isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+/**
+ * Request to create a menu
+ */
+export interface CreateMenuRequest {
+  name: string;
+  isActive?: boolean;
+}
+
+/**
+ * Response from creating a menu
+ */
+export interface CreateMenuResponse {
+  id: string;
+}
+
+/**
+ * Request to update a menu
+ */
+export interface UpdateMenuRequest {
+  name?: string;
+  isActive?: boolean;
 }
 
 /**
