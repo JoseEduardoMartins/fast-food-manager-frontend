@@ -18,6 +18,7 @@ import MenuList from './Menus/MenuList';
 import CreateMenu from './Menus/CreateMenu';
 import MenuDetails from './Menus/MenuDetails';
 import EditMenu from './Menus/EditMenu';
+import { CategoryList, CreateCategory, CategoryDetails, EditCategory } from './Categories';
 import ProductList from './Products/ProductList';
 import CreateProduct from './Products/CreateProduct';
 import ProductDetails from './Products/ProductDetails';
@@ -204,6 +205,38 @@ export const AppRoutes = (
       element={
         <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
           <EditMenu />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.CATEGORIES}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+          <CategoryList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.CATEGORIES_CREATE}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+          <CreateCategory />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.CATEGORIES_DETAILS}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+          <CategoryDetails />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.CATEGORIES_EDIT}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+          <EditCategory />
         </ProtectedRoute>
       }
     />

@@ -1,9 +1,11 @@
 /**
  * Menu service types
  * Basic types for menu listing (used in branch forms)
+ * GET /menus/:id returns MenuWithCategories (menu + categories + products in one request)
  */
 
 import type { SortConfig } from '@services/countries';
+import type { Product } from '@services/products';
 
 /**
  * Menu entity
@@ -15,6 +17,31 @@ export interface Menu {
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+/** Item in category.products[] from GET /menus/:id */
+export interface CategoryProductItemInMenu {
+  id: string;
+  productId: string;
+  order?: number;
+  product: Product;
+}
+
+/** Category as returned inside GET /menus/:id (with embedded products) */
+export interface CategoryInMenu {
+  id: string;
+  menuId: string;
+  name: string;
+  order: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  products: CategoryProductItemInMenu[];
+}
+
+/** Menu with categories and products (GET /menus/:id response) */
+export interface MenuWithCategories extends Menu {
+  categories?: CategoryInMenu[];
 }
 
 /**

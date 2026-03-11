@@ -7,6 +7,7 @@ import { http } from '@config';
 import { buildQueryParams, type QueryParamValue } from '@common/helpers';
 import type {
   Menu,
+  MenuWithCategories,
   ListMenusParams,
   ListMenusResponse,
   CreateMenuRequest,
@@ -25,15 +26,11 @@ export const listMenus = async (params?: ListMenusParams): Promise<ListMenusResp
 };
 
 /**
- * Gets a menu by ID
- * GET /menus/:id
+ * Gets a menu by ID (with categories and products in one request)
+ * GET /menus/:id - use in menu details to avoid N+1 requests
  */
-export const getMenuById = async (
-  id: string,
-  selectFields?: string[]
-): Promise<Menu> => {
-  const queryString = buildQueryParams({ selectFields });
-  const response = await http.get<Menu>(`/menus/${id}${queryString}`);
+export const getMenuById = async (id: string): Promise<MenuWithCategories> => {
+  const response = await http.get<MenuWithCategories>(`/menus/${id}`);
   return response.data;
 };
 
