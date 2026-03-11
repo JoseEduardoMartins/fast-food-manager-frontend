@@ -37,6 +37,9 @@ export const ROUTES = {
   MENUS_DETAILS: '/menus/:id',
   MENUS_EDIT: '/menus/:id/edit',
   PRODUCTS: '/products',
+  PRODUCTS_CREATE: '/products/create',
+  PRODUCTS_DETAILS: '/products/:id',
+  PRODUCTS_EDIT: '/products/:id/edit',
   INGREDIENTS: '/ingredients',
   STOCK: '/stock',
 } as const;

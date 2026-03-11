@@ -18,7 +18,10 @@ import MenuList from './Menus/MenuList';
 import CreateMenu from './Menus/CreateMenu';
 import MenuDetails from './Menus/MenuDetails';
 import EditMenu from './Menus/EditMenu';
-import Products from './Products';
+import ProductList from './Products/ProductList';
+import CreateProduct from './Products/CreateProduct';
+import ProductDetails from './Products/ProductDetails';
+import EditProduct from './Products/EditProduct';
 import Ingredients from './Ingredients';
 import Stock from './Stock';
 import { ROUTES } from '@common/constants';
@@ -201,7 +204,31 @@ export const AppRoutes = (
       path={ROUTES.PRODUCTS}
       element={
         <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']}>
-          <Products />
+          <ProductList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.PRODUCTS_CREATE}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']}>
+          <CreateProduct />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.PRODUCTS_DETAILS}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']}>
+          <ProductDetails />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.PRODUCTS_EDIT}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']}>
+          <EditProduct />
         </ProtectedRoute>
       }
     />
