@@ -4,20 +4,16 @@
  * Uses React Hook Form context
  */
 
+import { Badge, FormField, Label, Select } from '@components';
+import type { UserRole } from '@services/users';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormField, Label, Select, Badge } from '@components';
-import type { User, UserRole, UserAddressInput } from '@services/users';
 import type { UserFormData } from '../schemas';
-import { PlanCards } from './PlanCards';
 import { AddressManager } from './AddressManager';
+import { PlanCards } from './PlanCards';
 
 interface UserFormProps {
-  isViewOnly?: boolean;
-  user?: User;
   mode: 'create' | 'view' | 'edit';
-  onAddressChange?: () => void;
-  onAddressesChange?: (addresses: UserAddressInput[]) => void;
 }
 
 const roleLabels: Record<UserRole, string> = {
@@ -32,21 +28,16 @@ const roleLabels: Record<UserRole, string> = {
 
 const allowedRoles: UserRole[] = ['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'];
 
-export const UserForm: React.FC<UserFormProps> = ({ 
-  isViewOnly = false, 
-  user, 
-  mode,
-  onAddressChange,
-  onAddressesChange
-}) => {
+export const UserForm: React.FC<UserFormProps> = ({ mode }) => {
   const {
     register,
     formState: { errors },
     watch,
   } = useFormContext<UserFormData>();
 
-  const selectedRole = watch('role');
-  const isOwner = selectedRole === 'owner' || user?.role === 'owner';
+  const role = watch('role');
+  const isOwner = role === 'owner';
+  const isViewOnly = mode === 'view';
 
   return (
     <div className="space-y-6">
@@ -107,10 +98,10 @@ export const UserForm: React.FC<UserFormProps> = ({
             Tipo de Usuário
             {!isViewOnly && <span className="text-error ml-1">*</span>}
           </Label>
-          {isViewOnly && user ? (
+          {isViewOnly ? (
             <div className="mt-1">
               <Badge variant="secondary" className="text-base py-1 px-3">
-                {roleLabels[user.role]}
+                {role}
               </Badge>
             </div>
           ) : (
@@ -128,30 +119,17 @@ export const UserForm: React.FC<UserFormProps> = ({
                   </option>
                 ))}
               </Select>
-              {errors.role && (
-                <p className="text-sm text-error mt-1">{errors.role?.message}</p>
-              )}
+              {errors.role && <p className="text-sm text-error mt-1">{errors.role?.message}</p>}
             </>
           )}
         </div>
       </div>
 
       {/* Plan Cards - Show only for owner role */}
-      {isOwner && (
-        <PlanCards 
-          disabled={isViewOnly} 
-          selectedPlan="preta"
-        />
-      )}
+      {isOwner && <PlanCards disabled={isViewOnly} selectedPlan="preta" />}
 
       {/* Address Manager - Show in all modes */}
-      <AddressManager
-        addresses={user?.userAddresses}
-        mode={mode}
-        userId={user?.id}
-        onAddressChange={onAddressChange}
-        onAddressesChange={onAddressesChange}
-      />
+      <AddressManager mode={mode} />
     </div>
   );
 };

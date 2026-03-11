@@ -13,7 +13,7 @@ import { useCreateUser } from './useCreateUser';
 
 const CreateUser: React.FC = () => {
   const { user, signOut } = useAuth();
-  const { form, isLoading, error, setError, onSubmit, handleCancel, handleAddressesChange } = useCreateUser();
+  const { form, isLoading, error, setError, onSubmit, onCancel } = useCreateUser();
 
   return (
     <AppLayout user={user} onSignOut={signOut}>
@@ -22,7 +22,7 @@ const CreateUser: React.FC = () => {
         description="Cadastre um novo usuário no sistema"
         action={
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
+            <Button variant="outline" onClick={onCancel} disabled={isLoading}>
               <Icon icon={ArrowLeft} size={16} className="mr-2" />
               Voltar
             </Button>
@@ -39,7 +39,7 @@ const CreateUser: React.FC = () => {
       <Card className="p-6">
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <UserForm mode="create" onAddressesChange={handleAddressesChange} />
+            <UserForm mode="create" />
           </form>
         </FormProvider>
       </Card>
