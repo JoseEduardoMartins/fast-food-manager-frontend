@@ -10,7 +10,10 @@ import { BranchList } from './Branches/BranchList';
 import { CreateBranch } from './Branches/CreateBranch';
 import { BranchDetails } from './Branches/BranchDetails';
 import { EditBranch } from './Branches/EditBranch';
-import Orders from './Orders';
+import OrderList from './Orders/OrderList';
+import CreateOrder from './Orders/CreateOrder';
+import OrderDetails from './Orders/OrderDetails';
+import EditOrder from './Orders/EditOrder';
 import Menus from './Menus';
 import Products from './Products';
 import Ingredients from './Ingredients';
@@ -131,7 +134,31 @@ export const AppRoutes = (
       path={ROUTES.ORDERS}
       element={
         <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']}>
-          <Orders />
+          <OrderList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.ORDERS_CREATE}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']}>
+          <CreateOrder />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.ORDERS_DETAILS}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']}>
+          <OrderDetails />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.ORDERS_EDIT}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']}>
+          <EditOrder />
         </ProtectedRoute>
       }
     />
