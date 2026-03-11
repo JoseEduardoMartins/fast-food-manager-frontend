@@ -42,7 +42,7 @@ export const useEditIngredient = () => {
       form.reset({
         name: data.name,
         description: data.description ?? '',
-        isActive: data.isActive,
+        unit: data.unit,
       });
       setError(null);
     } catch (err: unknown) {
@@ -62,7 +62,7 @@ export const useEditIngredient = () => {
       await updateIngredient(id, {
         name: data.name,
         description: data.description?.trim() || undefined,
-        isActive: data.isActive,
+        unit: data.unit,
       });
       toast.success('Ingrediente atualizado com sucesso!');
       navigate(ROUTES.INGREDIENTS_DETAILS.replace(':id', id));

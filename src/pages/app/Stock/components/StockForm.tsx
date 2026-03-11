@@ -16,7 +16,7 @@ import type { ListIngredientsParams } from '@services/ingredients';
 interface StockFormProps {
   mode: 'create' | 'view' | 'edit';
   branchId?: string;
-  ingredientId?: string;
+  ingredientId?: string | number;
 }
 
 export const StockForm: React.FC<StockFormProps> = ({
@@ -67,10 +67,10 @@ export const StockForm: React.FC<StockFormProps> = ({
         <div className="md:col-span-2">
           <AsyncSelect<Ingredient, ListIngredientsParams>
             label="Ingrediente"
-            value={watch('ingredientId') || ingredientId || ''}
+            value={watch('ingredientId') || (ingredientId != null ? String(ingredientId) : '')}
             onChange={(e) => setValue('ingredientId', e.target.value)}
             loadOptions={loadIngredients}
-            getValue={(i) => i.id}
+            getValue={(i) => String(i.id)}
             getLabel={(i) => i.name}
             placeholder="Selecione o ingrediente"
             disabled={isViewOnly || mode === 'edit'}

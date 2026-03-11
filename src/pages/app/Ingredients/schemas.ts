@@ -1,8 +1,13 @@
 /**
  * Ingredient form validation schema
+ * unit: g, kg, ml, L, un
  */
 
 import { z } from 'zod';
+
+const ingredientUnitEnum = z.enum(['g', 'kg', 'ml', 'L', 'un'], {
+  message: 'Unidade inválida',
+});
 
 export const ingredientFormSchema = z.object({
   name: z
@@ -15,7 +20,7 @@ export const ingredientFormSchema = z.object({
     .max(1000, 'Descrição deve ter no máximo 1000 caracteres')
     .optional()
     .or(z.literal('')),
-  isActive: z.boolean().optional(),
+  unit: ingredientUnitEnum,
 });
 
 export type IngredientFormData = z.infer<typeof ingredientFormSchema>;

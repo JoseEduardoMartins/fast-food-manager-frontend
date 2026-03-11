@@ -103,8 +103,8 @@ export const useStockList = () => {
 
   const getBranchName = (branchId: string) =>
     branches.find((b) => b.id === branchId)?.name ?? branchId.slice(0, 8);
-  const getIngredientName = (ingredientId: string) =>
-    ingredients.find((i) => i.id === ingredientId)?.name ?? ingredientId.slice(0, 8);
+  const getIngredientName = (ingredientId: number) =>
+    ingredients.find((i) => i.id === ingredientId)?.name ?? String(ingredientId);
 
   return {
     items,

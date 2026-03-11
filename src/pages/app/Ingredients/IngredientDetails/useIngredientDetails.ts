@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
-import { getIngredientById, updateIngredient, deleteIngredient } from '@services/ingredients';
+import { getIngredientById, deleteIngredient } from '@services/ingredients';
 import type { Ingredient } from '@services/ingredients';
 import { ingredientFormSchema, type IngredientFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
@@ -19,7 +19,6 @@ export const useIngredientDetails = () => {
   const [ingredient, setIngredient] = useState<Ingredient | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [toggling, setToggling] = useState(false);
 
   const form = useForm<IngredientFormData>({
     resolver: zodResolver(ingredientFormSchema) as Resolver<IngredientFormData>,
@@ -42,7 +41,7 @@ export const useIngredientDetails = () => {
       form.reset({
         name: data.name,
         description: data.description ?? '',
-        isActive: data.isActive,
+        unit: data.unit,
       });
       setError(null);
     } catch (err: unknown) {
@@ -51,25 +50,6 @@ export const useIngredientDetails = () => {
       toast.error('Erro ao carregar ingrediente');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleToggleActive = async () => {
-    if (!id || !ingredient) return;
-    try {
-      setToggling(true);
-      setError(null);
-      await updateIngredient(id, { isActive: !ingredient.isActive });
-      toast.success(
-        `Ingrediente ${ingredient.isActive ? 'desativado' : 'ativado'} com sucesso!`
-      );
-      await loadIngredient();
-    } catch (err: unknown) {
-      const e = err as { response?: { data?: { message?: string } } };
-      setError(e.response?.data?.message ?? 'Erro ao alterar status');
-      toast.error(e.response?.data?.message ?? 'Erro ao alterar status');
-    } finally {
-      setToggling(false);
     }
   };
 
@@ -109,9 +89,7 @@ export const useIngredientDetails = () => {
     loading,
     error,
     setError,
-    toggling,
     form,
-    handleToggleActive,
     handleDelete,
     handleEdit,
     handleBack,

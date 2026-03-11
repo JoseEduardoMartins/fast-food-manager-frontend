@@ -10,7 +10,7 @@ export type IngredientTransactionType = 'input' | 'output';
 
 export interface IngredientTransaction {
   id: string;
-  ingredientId: string;
+  ingredientId: number;
   branchId: string;
   type: IngredientTransactionType;
   quantity: number;
@@ -23,7 +23,7 @@ export interface IngredientTransaction {
 export interface ListIngredientTransactionsParams {
   pageIndex?: number;
   pageSize?: number;
-  ingredientId?: string;
+  ingredientId?: number;
   branchId?: string;
   type?: IngredientTransactionType;
   quantity?: number;
@@ -40,7 +40,7 @@ export interface ListIngredientTransactionsResponse {
 }
 
 export interface CreateIngredientTransactionRequest {
-  ingredientId: string;
+  ingredientId: number;
   branchId: string;
   type: IngredientTransactionType;
   quantity: number;

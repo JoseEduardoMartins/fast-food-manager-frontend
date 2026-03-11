@@ -22,7 +22,7 @@ export const useCreateIngredient = () => {
     defaultValues: {
       name: '',
       description: '',
-      isActive: true,
+      unit: 'kg',
     },
   });
 
@@ -33,10 +33,10 @@ export const useCreateIngredient = () => {
       const { id } = await createIngredient({
         name: data.name,
         description: data.description?.trim() || undefined,
-        isActive: data.isActive,
+        unit: data.unit,
       });
       toast.success('Ingrediente criado com sucesso!');
-      navigate(ROUTES.INGREDIENTS_DETAILS.replace(':id', id));
+      navigate(ROUTES.INGREDIENTS_DETAILS.replace(':id', String(id)));
     } catch (err: unknown) {
       const e = err as { response?: { data?: { message?: string } } };
       const msg = e.response?.data?.message ?? 'Erro ao criar ingrediente';

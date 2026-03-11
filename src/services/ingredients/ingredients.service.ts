@@ -25,7 +25,7 @@ export const listIngredients = async (
 };
 
 export const getIngredientById = async (
-  id: string,
+  id: number | string,
   selectFields?: string[]
 ): Promise<Ingredient> => {
   const queryString = buildQueryParams({ selectFields });
@@ -46,12 +46,12 @@ export const createIngredient = async (
 };
 
 export const updateIngredient = async (
-  id: string,
+  id: number | string,
   data: UpdateIngredientRequest
 ): Promise<void> => {
   await http.patch(`/ingredients/${id}`, data);
 };
 
-export const deleteIngredient = async (id: string): Promise<void> => {
+export const deleteIngredient = async (id: number | string): Promise<void> => {
   await http.delete(`/ingredients/${id}`);
 };

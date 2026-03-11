@@ -47,7 +47,7 @@ export const useCreateMovement = () => {
           : undefined;
       await createIngredientTransaction({
         branchId: data.branchId,
-        ingredientId: data.ingredientId,
+        ingredientId: Number(data.ingredientId),
         type: data.type,
         quantity: Number(data.quantity),
         unitPrice: unitCentavos,

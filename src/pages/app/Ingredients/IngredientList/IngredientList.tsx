@@ -12,14 +12,11 @@ import {
   ErrorAlert,
   FilterForm,
   FormField,
-  Label,
-  Select,
   Card,
   Table,
   TablePagination,
   Button,
   Icon,
-  Badge,
 } from '@components';
 import { useAuth } from '@contexts';
 import type { Ingredient } from '@services/ingredients';
@@ -35,8 +32,6 @@ const IngredientList: React.FC = () => {
     error,
     searchName,
     setSearchName,
-    selectedStatus,
-    setSelectedStatus,
     pagination,
     handleDelete,
     handlePageChange,
@@ -61,15 +56,12 @@ const IngredientList: React.FC = () => {
         },
       },
       {
-        accessorKey: 'isActive',
-        header: 'Status',
+        accessorKey: 'unit',
+        header: 'Unidade',
         cell: (info) => {
-          const isActive = info.getValue() as boolean;
-          return (
-            <Badge variant={isActive ? 'success' : 'error'}>
-              {isActive ? 'Ativo' : 'Inativo'}
-            </Badge>
-          );
+          const unit = info.getValue() as string;
+          const labels: Record<string, string> = { g: 'g', kg: 'kg', ml: 'ml', L: 'L', un: 'un.' };
+          return labels[unit] ?? unit;
         },
       },
       {
@@ -92,7 +84,7 @@ const IngredientList: React.FC = () => {
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(ROUTES.INGREDIENTS_DETAILS.replace(':id', ingredient.id));
+                  navigate(ROUTES.INGREDIENTS_DETAILS.replace(':id', String(ingredient.id)));
                 }}
                 title="Ver detalhes"
               >
@@ -103,7 +95,7 @@ const IngredientList: React.FC = () => {
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(ROUTES.INGREDIENTS_EDIT.replace(':id', ingredient.id));
+                  navigate(ROUTES.INGREDIENTS_EDIT.replace(':id', String(ingredient.id)));
                 }}
                 title="Editar ingrediente"
               >
@@ -153,19 +145,6 @@ const IngredientList: React.FC = () => {
             e.key === 'Enter' && handleSearch()
           }
         />
-        <div>
-          <Label className="mb-2 block">Status</Label>
-          <Select
-            value={selectedStatus}
-            onChange={(e) =>
-              setSelectedStatus(e.target.value as 'all' | 'active' | 'inactive')
-            }
-          >
-            <option value="all">Todos</option>
-            <option value="active">Ativos</option>
-            <option value="inactive">Inativos</option>
-          </Select>
-        </div>
       </FilterForm>
 
       <Card>
@@ -173,7 +152,7 @@ const IngredientList: React.FC = () => {
           data={ingredients}
           columns={columns}
           loading={loading}
-          onRowClick={(row) => navigate(ROUTES.INGREDIENTS_DETAILS.replace(':id', row.id))}
+          onRowClick={(row) => navigate(ROUTES.INGREDIENTS_DETAILS.replace(':id', String(row.id)))}
         />
         <TablePagination
           pageIndex={pagination.pageIndex}

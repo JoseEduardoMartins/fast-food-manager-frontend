@@ -11,7 +11,6 @@ export const useIngredientList = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchName, setSearchName] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [pagination, setPagination] = useState({
     total: 0,
     pageIndex: 0,
@@ -29,9 +28,6 @@ export const useIngredientList = () => {
         pageSize: pagination.pageSize,
         sort: { fields: ['name'], order: ['ASC'] },
       };
-      if (selectedStatus !== 'all') {
-        params.isActive = selectedStatus === 'active';
-      }
       if (searchName.trim()) {
         params.name = searchName.trim();
       }
@@ -50,13 +46,13 @@ export const useIngredientList = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, selectedStatus, searchName]);
+  }, [pagination.pageIndex, pagination.pageSize, searchName]);
 
   useEffect(() => {
     loadIngredients();
   }, [loadIngredients]);
 
-  const handleDelete = async (id: string, ingredientName: string): Promise<void> => {
+  const handleDelete = async (id: number, ingredientName: string): Promise<void> => {
     const confirmed = window.confirm(
       `Tem certeza que deseja excluir o ingrediente "${ingredientName}"? Não é possível excluir um ingrediente em uso.`
     );
@@ -87,7 +83,6 @@ export const useIngredientList = () => {
 
   const handleClearSearch = () => {
     setSearchName('');
-    setSelectedStatus('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
@@ -97,8 +92,6 @@ export const useIngredientList = () => {
     error,
     searchName,
     setSearchName,
-    selectedStatus,
-    setSelectedStatus,
     pagination,
     handleDelete,
     handlePageChange,

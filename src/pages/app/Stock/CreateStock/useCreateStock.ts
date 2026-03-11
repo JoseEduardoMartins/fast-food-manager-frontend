@@ -39,7 +39,7 @@ export const useCreateStock = () => {
         : undefined;
       const { id } = await createBranchIngredient({
         branchId: data.branchId,
-        ingredientId: data.ingredientId,
+        ingredientId: Number(data.ingredientId),
         stockQuantity: Number(data.stockQuantity),
         stockMinQuantity: Number(data.stockMinQuantity),
         purchasePrice: purchaseCentavos,

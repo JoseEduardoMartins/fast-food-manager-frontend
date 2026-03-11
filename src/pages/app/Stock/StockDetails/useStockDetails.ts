@@ -50,7 +50,7 @@ export const useStockDetails = () => {
       setItem(data);
       form.reset({
         branchId: data.branchId,
-        ingredientId: data.ingredientId,
+        ingredientId: String(data.ingredientId),
         stockQuantity: data.stockQuantity,
         stockMinQuantity: data.stockMinQuantity,
         purchasePrice: data.purchasePrice / 100,

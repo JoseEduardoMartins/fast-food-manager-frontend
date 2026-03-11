@@ -8,7 +8,7 @@ import type { SortConfig } from '@services/countries';
 export interface BranchIngredient {
   id: string;
   branchId: string;
-  ingredientId: string;
+  ingredientId: number;
   stockQuantity: number;
   stockMinQuantity: number;
   purchasePrice: number;
@@ -21,7 +21,7 @@ export interface ListBranchIngredientsParams {
   pageIndex?: number;
   pageSize?: number;
   branchId?: string;
-  ingredientId?: string;
+  ingredientId?: number;
   stockQuantity?: number;
   purchasePrice?: number;
   selectFields?: string[];
@@ -38,7 +38,7 @@ export interface ListBranchIngredientsResponse {
 
 export interface CreateBranchIngredientRequest {
   branchId: string;
-  ingredientId: string;
+  ingredientId: number;
   stockQuantity: number;
   stockMinQuantity: number;
   purchasePrice: number;

@@ -58,7 +58,7 @@ export const MovementForm: React.FC = () => {
             value={watch('ingredientId')}
             onChange={(e) => setValue('ingredientId', e.target.value)}
             loadOptions={loadIngredients}
-            getValue={(i) => i.id}
+            getValue={(i) => String(i.id)}
             getLabel={(i) => i.name}
             placeholder="Selecione o ingrediente"
             reloadOnParamsChange={false}

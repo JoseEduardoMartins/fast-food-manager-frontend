@@ -57,7 +57,7 @@ const StockList: React.FC = () => {
       {
         accessorKey: 'ingredientId',
         header: 'Ingrediente',
-        cell: (info) => getIngredientName(info.getValue() as string),
+        cell: (info) => getIngredientName(info.getValue() as number),
       },
       {
         accessorKey: 'stockQuantity',

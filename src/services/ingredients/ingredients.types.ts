@@ -1,15 +1,17 @@
 /**
  * Ingredient service types
- * CRUD for ingredients (name, description, isActive)
+ * CRUD for ingredients (name, description, unit) - ID is numeric
  */
 
 import type { SortConfig } from '@services/countries';
 
+export type IngredientUnit = 'g' | 'kg' | 'ml' | 'L' | 'un';
+
 export interface Ingredient {
-  id: string;
+  id: number;
   name: string;
   description?: string;
-  isActive: boolean;
+  unit: IngredientUnit;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -18,7 +20,8 @@ export interface ListIngredientsParams {
   pageIndex?: number;
   pageSize?: number;
   name?: string;
-  isActive?: boolean;
+  description?: string;
+  unit?: IngredientUnit;
   selectFields?: string[];
   ids?: number[];
   ignoredIds?: number[];
@@ -36,15 +39,15 @@ export interface ListIngredientsResponse {
 export interface CreateIngredientRequest {
   name: string;
   description?: string;
-  isActive?: boolean;
+  unit: IngredientUnit;
 }
 
 export interface UpdateIngredientRequest {
   name?: string;
   description?: string;
-  isActive?: boolean;
+  unit?: IngredientUnit;
 }
 
 export interface CreateIngredientResponse {
-  id: string;
+  id: number;
 }

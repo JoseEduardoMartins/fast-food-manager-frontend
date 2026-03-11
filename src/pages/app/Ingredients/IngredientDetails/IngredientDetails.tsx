@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { FormProvider } from 'react-hook-form';
-import { ArrowLeft, Edit, Trash2, Power } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import {
   AppLayout,
   PageHeader,
@@ -24,9 +24,7 @@ const IngredientDetails: React.FC = () => {
     loading,
     error,
     setError,
-    toggling,
     form,
-    handleToggleActive,
     handleDelete,
     handleEdit,
     handleBack,
@@ -70,14 +68,6 @@ const IngredientDetails: React.FC = () => {
             <Button variant="outline" onClick={handleEdit}>
               <Icon icon={Edit} size={16} className="mr-2" />
               Editar
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleToggleActive}
-              disabled={toggling}
-            >
-              <Icon icon={Power} size={16} className="mr-2" />
-              {ingredient.isActive ? 'Desativar' : 'Ativar'}
             </Button>
             <Button variant="error" onClick={handleDelete}>
               <Icon icon={Trash2} size={16} className="mr-2" />
