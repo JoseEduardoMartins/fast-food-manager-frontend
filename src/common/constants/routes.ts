@@ -45,6 +45,10 @@ export const ROUTES = {
   INGREDIENTS_DETAILS: '/ingredients/:id',
   INGREDIENTS_EDIT: '/ingredients/:id/edit',
   STOCK: '/stock',
+  STOCK_CREATE: '/stock/create',
+  STOCK_DETAILS: '/stock/:id',
+  STOCK_EDIT: '/stock/:id/edit',
+  STOCK_MOVEMENT: '/stock/movement',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

@@ -26,7 +26,11 @@ import IngredientList from './Ingredients/IngredientList';
 import CreateIngredient from './Ingredients/CreateIngredient';
 import IngredientDetails from './Ingredients/IngredientDetails';
 import EditIngredient from './Ingredients/EditIngredient';
-import Stock from './Stock';
+import StockList from './Stock/StockList';
+import CreateStock from './Stock/CreateStock';
+import StockDetails from './Stock/StockDetails';
+import EditStock from './Stock/EditStock';
+import StockMovement from './Stock/StockMovement';
 import { ROUTES } from '@common/constants';
 
 /**
@@ -271,7 +275,39 @@ export const AppRoutes = (
       path={ROUTES.STOCK}
       element={
         <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
-          <Stock />
+          <StockList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.STOCK_CREATE}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+          <CreateStock />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.STOCK_MOVEMENT}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+          <StockMovement />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.STOCK_DETAILS}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+          <StockDetails />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.STOCK_EDIT}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+          <EditStock />
         </ProtectedRoute>
       }
     />
