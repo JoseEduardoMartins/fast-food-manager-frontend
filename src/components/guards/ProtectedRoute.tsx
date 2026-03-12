@@ -10,6 +10,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@contexts';
 import { ROUTES } from '@common/constants';
 import type { UserRole } from '@services/auth';
+import { getUserRoleCode } from '@common/helpers';
 
 /**
  * Protected Route Props
@@ -52,8 +53,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
   }
 
   // Role-based fallback (when permissions not loaded yet or not used for this route)
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-    return <Navigate to={ROUTES.DASHBOARD} replace />;
+  if (allowedRoles && user) {
+    const userRoleCode = getUserRoleCode(user.role);
+    
+    if (!allowedRoles.includes(userRoleCode as UserRole)) {
+      return <Navigate to={ROUTES.DASHBOARD} replace />;
+    }
   }
 
   return <>{children}</>;

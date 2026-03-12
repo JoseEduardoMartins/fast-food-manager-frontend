@@ -4,6 +4,7 @@ import { Users, Building2, Store, Package, UtensilsCrossed, LeafyGreen, DollarSi
 import { AppLayout, Title, Label, Button, Card, PageHeader, StatCard } from '@components';
 import { useAuth } from '@contexts';
 import { ROUTES } from '@common/constants';
+import { getUserRoleCode } from '@common/helpers';
 
 // Cards for regular users (owners, managers, etc)
 const regularUserCards = [
@@ -77,7 +78,7 @@ const adminCards = [
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = getUserRoleCode(user?.role) === 'admin';
 
   return (
     <AppLayout user={user} onSignOut={signOut}>

@@ -5,7 +5,7 @@
 
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Lock } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 import {
   AppLayout,
@@ -91,9 +91,7 @@ const UserList: React.FC = () => {
                   {role.name}
                 </Badge>
                 {role.isSystem && (
-                  <span className="text-xs text-gray-500" title="Perfil do sistema">
-                    🔒
-                  </span>
+                  <Icon icon={Lock} size={14} className="text-gray-500" title="Perfil do sistema" />
                 )}
               </div>
             );

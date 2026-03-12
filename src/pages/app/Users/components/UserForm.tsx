@@ -4,11 +4,12 @@
  * Uses React Hook Form context
  */
 
-import { Badge, FormField, Label, Select } from '@components';
+import { Badge, FormField, Label, Select, Icon } from '@components';
 import type { User, UserAddressInput } from '@services/users';
 import type { Role } from '@services/roles';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
+import { Lock } from 'lucide-react';
 import type { UserFormData } from '../schemas';
 import { AddressManager } from './AddressManager';
 import { PlanCards } from './PlanCards';
@@ -111,8 +112,9 @@ export const UserForm: React.FC<UserFormProps> = ({
                 {typeof user?.role === 'object' ? user.role.name : 'Sem perfil'}
               </Badge>
               {typeof user?.role === 'object' && user.role.isSystem && (
-                <span className="text-xs text-gray-500" title="Perfil do sistema">
-                  🔒 Sistema
+                <span className="flex items-center gap-1 text-xs text-gray-500" title="Perfil do sistema">
+                  <Icon icon={Lock} size={12} />
+                  Sistema
                 </span>
               )}
             </div>
@@ -130,7 +132,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                 {roles.map((role) => (
                   <option key={role.id} value={role.id}>
                     {role.name}
-                    {role.isSystem ? ' 🔒' : ''}
+                    {role.isSystem ? ' (Sistema)' : ''}
                   </option>
                 ))}
               </Select>

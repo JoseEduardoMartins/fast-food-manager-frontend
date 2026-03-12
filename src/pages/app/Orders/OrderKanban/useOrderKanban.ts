@@ -14,12 +14,13 @@ import {
   ORDER_STATUS_EXCLUDED_FROM_KANBAN,
   type OrderKanbanRole,
 } from '@common/constants/orderEnums';
+import { getUserRoleCode } from '@common/helpers';
 
 export type OrdersByStatus = Partial<Record<OrderStatus, Order[]>>;
 
 export const useOrderKanban = () => {
   const { user } = useAuth();
-  const userRole = (user?.role ?? 'attendant') as OrderKanbanRole;
+  const userRole = getUserRoleCode(user?.role) as OrderKanbanRole;
 
   const [ordersByStatus, setOrdersByStatus] = useState<OrdersByStatus>({});
   const [loading, setLoading] = useState(true);

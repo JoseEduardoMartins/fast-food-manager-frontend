@@ -1,0 +1,80 @@
+---
+description: Git commit workflow - only commit when explicitly requested by user
+alwaysApply: true
+---
+
+# Git Commit Workflow
+
+## ⚠️ CRITICAL RULE: Never Commit Without Explicit Request
+
+**NEVER create git commits unless the user explicitly asks you to.**
+
+This is VERY IMPORTANT. You should ONLY commit when:
+- User says "faça commit"
+- User says "commit"
+- User says "commitar"
+- User explicitly requests a git commit
+
+## ❌ DO NOT Commit
+
+- After completing a task
+- After fixing bugs
+- After making changes
+- "To save progress"
+- "To demonstrate completion"
+- At any other time without explicit user request
+
+## ✅ Correct Workflow
+
+When user asks for commit:
+
+1. Run in parallel:
+   - `git status` - see staged/unstaged files
+   - `git diff` - review changes
+   - `git log --oneline -10` - check commit history
+
+2. Write meaningful commit message following the pattern:
+   - Format: `type: description`
+   - Types: `feat`, `fix`, `refactor`, `chore`, `docs`, etc.
+   - Use present tense
+   - Be concise but descriptive
+
+3. Execute commit:
+   ```bash
+   git add -A && git commit -m "$(cat <<'EOF'
+   type: short description
+   
+   Detailed explanation if needed
+   EOF
+   )" && git status
+   ```
+
+## Examples
+
+### ✅ GOOD - User Explicitly Requests
+```
+User: "faça commit"
+Assistant: [runs git status, diff, log in parallel]
+Assistant: [creates commit with proper message]
+```
+
+### ❌ BAD - Committing Without Request
+```
+User: "adicione validação no formulário"
+Assistant: [makes changes]
+Assistant: [commits automatically] ← WRONG!
+```
+
+### ✅ GOOD - Just Make Changes
+```
+User: "adicione validação no formulário"
+Assistant: [makes changes]
+Assistant: "Validação adicionada com sucesso!"
+[NO COMMIT - waits for user to request it]
+```
+
+## Remember
+
+- User controls when to commit
+- Your job is to make changes, user decides when to save them
+- If unsure, ASK: "Deseja que eu faça o commit dessas alterações?"
