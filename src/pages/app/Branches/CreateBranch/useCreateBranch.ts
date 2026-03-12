@@ -3,8 +3,8 @@
  * Custom hook for create branch page logic
  */
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -16,6 +16,8 @@ import { ROUTES } from '@common/constants';
 
 export const useCreateBranch = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = (location.state || {}) as { companyId?: string; returnToCompany?: boolean };
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [addressData, setAddressData] = useState<any>(null);
@@ -24,12 +26,18 @@ export const useCreateBranch = () => {
     resolver: zodResolver(branchFormSchema),
     defaultValues: {
       name: '',
-      companyId: '',
+      companyId: state.companyId ?? '',
       menuId: '',
       addressId: '',
       phone: '',
     },
   });
+
+  useEffect(() => {
+    if (state.companyId) {
+      form.setValue('companyId', state.companyId);
+    }
+  }, [state.companyId, form]);
 
   const onSubmit = async (data: BranchFormData) => {
     setIsLoading(true);
@@ -63,7 +71,11 @@ export const useCreateBranch = () => {
 
       const response = await createBranch(createData);
       toast.success('Filial criada com sucesso!');
-      navigate(`${ROUTES.BRANCHES}/${response.id}`);
+      if (state.returnToCompany && state.companyId) {
+        navigate(ROUTES.COMPANIES_DETAILS.replace(':id', state.companyId));
+      } else {
+        navigate(`${ROUTES.BRANCHES}/${response.id}`);
+      }
     } catch (err: unknown) {
       console.error('Erro ao criar filial:', err);
       const error = err as { response?: { data?: { message?: string }; status?: number } };
@@ -82,7 +94,11 @@ export const useCreateBranch = () => {
   };
 
   const handleCancel = () => {
-    navigate(ROUTES.BRANCHES);
+    if (state.returnToCompany && state.companyId) {
+      navigate(ROUTES.COMPANIES_DETAILS.replace(':id', state.companyId));
+    } else {
+      navigate(ROUTES.BRANCHES);
+    }
   };
 
   const handleAddressDataChange = (data: {
@@ -105,5 +121,6 @@ export const useCreateBranch = () => {
     onSubmit,
     handleCancel,
     handleAddressDataChange,
+    companyIdFromState: state.companyId,
   };
 };

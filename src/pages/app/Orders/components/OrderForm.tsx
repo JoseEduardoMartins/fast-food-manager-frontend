@@ -37,13 +37,11 @@ import type { UserAddress } from '@services/users';
 interface OrderFormProps {
   isViewOnly?: boolean;
   branchId?: string;
-  menuId?: string; // optional: filter products by menu
 }
 
 export const OrderForm: React.FC<OrderFormProps> = ({
   isViewOnly = false,
   branchId,
-  menuId,
 }) => {
   const { watch, setValue, register, formState: { errors } } = useFormContext<OrderFormData>();
   const consumptionMode = watch('consumptionMode');
@@ -106,7 +104,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const loadProducts = async (params?: ListProductsParams): Promise<Product[]> => {
     try {
       const p: ListProductsParams = { pageSize: 200, sort: { fields: ['name'], order: ['ASC'] }, ...params };
-      if (menuId) p.menuId = menuId;
       const res = await listProducts(p);
       return res.data;
     } catch {

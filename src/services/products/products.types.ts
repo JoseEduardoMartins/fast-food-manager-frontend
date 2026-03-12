@@ -11,7 +11,6 @@ export interface Product {
   description?: string;
   price: number;
   isActive: boolean;
-  menuId?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -21,7 +20,6 @@ export interface ListProductsParams {
   pageSize?: number;
   name?: string;
   price?: number;
-  menuId?: string;
   isActive?: boolean;
   selectFields?: string[];
   ids?: number[];

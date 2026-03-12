@@ -3,14 +3,16 @@
  * Custom hook for company details/view page logic
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { getCompanyById, updateCompany, deleteCompany } from '@services/companies';
 import { getAddressById } from '@services/addresses';
+import { listBranches, deleteBranch } from '@services/branches';
 import type { Company } from '@services/companies';
+import type { Branch } from '@services/branches';
 import { companyFormSchema, type CompanyFormData } from '../schemas';
 import { ROUTES } from '@common/constants';
 
@@ -18,6 +20,8 @@ export const useCompanyDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [company, setCompany] = useState<Company | null>(null);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [branchesLoading, setBranchesLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [toggling, setToggling] = useState(false);
@@ -25,6 +29,19 @@ export const useCompanyDetails = () => {
   const form = useForm<CompanyFormData>({
     resolver: zodResolver(companyFormSchema),
   });
+
+  const loadBranches = useCallback(async () => {
+    if (!id) return;
+    try {
+      setBranchesLoading(true);
+      const res = await listBranches({ companyId: id, pageSize: 200 });
+      setBranches(res.data);
+    } catch (err) {
+      setBranches([]);
+    } finally {
+      setBranchesLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
     if (!id) {
@@ -41,6 +58,9 @@ export const useCompanyDetails = () => {
       setLoading(true);
       const companyData = await getCompanyById(id);
       setCompany(companyData);
+      
+      // Load branches for this company
+      loadBranches();
       
       // Fetch address data to populate form
       let addressData = {
@@ -137,6 +157,22 @@ export const useCompanyDetails = () => {
     }
   };
 
+  const handleDeleteBranch = async (branchId: string, branchName: string) => {
+    const confirmed = window.confirm(
+      `Tem certeza que deseja excluir a filial "${branchName}"?`
+    );
+    if (!confirmed) return;
+    try {
+      await deleteBranch(branchId);
+      toast.success('Filial excluída com sucesso!');
+      await loadBranches();
+    } catch (err: any) {
+      const msg = err.response?.data?.message ?? 'Erro ao excluir filial';
+      toast.error(msg);
+      setError(msg);
+    }
+  };
+
   const handleEdit = () => {
     if (!id) return;
     navigate(`${ROUTES.COMPANIES}/${id}/edit`);
@@ -152,6 +188,8 @@ export const useCompanyDetails = () => {
 
   return {
     company,
+    branches,
+    branchesLoading,
     loading,
     error,
     setError,
@@ -159,8 +197,10 @@ export const useCompanyDetails = () => {
     form,
     handleToggleActive,
     handleDelete,
+    handleDeleteBranch,
     handleEdit,
     handleBack,
     reloadCompany,
+    loadBranches,
   };
 };

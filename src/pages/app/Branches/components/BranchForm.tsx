@@ -20,13 +20,15 @@ interface BranchFormProps {
   branch?: Branch;
   mode: 'create' | 'view' | 'edit';
   onAddressDataChange?: (data: any) => void;
+  companyIdDisabled?: boolean;
 }
 
-export const BranchForm: React.FC<BranchFormProps> = ({ 
-  isViewOnly = false, 
-  branch, 
+export const BranchForm: React.FC<BranchFormProps> = ({
+  isViewOnly = false,
+  branch,
   mode,
   onAddressDataChange,
+  companyIdDisabled = false,
 }) => {
   const {
     register,
@@ -110,7 +112,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({
             loadingText="Carregando empresas..."
             noOptionsText="Nenhuma empresa disponível"
             errorText="Erro ao carregar empresas"
-            disabled={isViewOnly}
+            disabled={isViewOnly || companyIdDisabled}
             reloadOnParamsChange={false}
           />
           {errors.companyId && (

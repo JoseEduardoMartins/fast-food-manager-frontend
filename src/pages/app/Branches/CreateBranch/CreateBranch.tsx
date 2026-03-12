@@ -13,7 +13,7 @@ import { useCreateBranch } from './useCreateBranch';
 
 const CreateBranch: React.FC = () => {
   const { user, signOut } = useAuth();
-  const { form, isLoading, error, setError, onSubmit, handleCancel, handleAddressDataChange } = useCreateBranch();
+  const { form, isLoading, error, setError, onSubmit, handleCancel, handleAddressDataChange, companyIdFromState } = useCreateBranch();
 
   return (
     <AppLayout user={user} onSignOut={signOut}>
@@ -39,7 +39,7 @@ const CreateBranch: React.FC = () => {
       <Card className="p-6">
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <BranchForm mode="create" onAddressDataChange={handleAddressDataChange} />
+            <BranchForm mode="create" onAddressDataChange={handleAddressDataChange} companyIdDisabled={!!companyIdFromState} />
           </form>
         </FormProvider>
       </Card>
