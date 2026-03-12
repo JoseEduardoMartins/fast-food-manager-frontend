@@ -36,6 +36,13 @@ const SIDEBAR_ITEMS: SidebarItemConfig[] = [
     roles: ['admin', 'owner', 'manager', 'attendant', 'delivery'],
   },
   {
+    type: 'link',
+    path: ROUTES.STOCK,
+    label: 'Estoque',
+    icon: PackageOpen,
+    roles: ['admin', 'owner', 'manager', 'cook'],
+  },
+  {
     type: 'group',
     label: 'Cadastros',
     icon: FolderOpen,
@@ -47,7 +54,6 @@ const SIDEBAR_ITEMS: SidebarItemConfig[] = [
       { path: ROUTES.CATEGORIES, label: 'Categorias', icon: Layers, roles: ['admin', 'owner', 'manager', 'attendant'] },
       { path: ROUTES.PRODUCTS, label: 'Produtos', icon: Package, roles: ['admin', 'owner', 'manager', 'cook', 'attendant'] },
       { path: ROUTES.INGREDIENTS, label: 'Ingredientes', icon: Leaf, roles: ['admin', 'owner', 'manager', 'cook'] },
-      { path: ROUTES.STOCK, label: 'Estoque', icon: PackageOpen, roles: ['admin', 'owner', 'manager', 'cook'] },
     ],
   },
 ];

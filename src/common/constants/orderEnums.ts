@@ -21,7 +21,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   [ORDER_STATUS.cancelled]: 'Cancelado',
 };
 
-/** Colunas do Kanban de pedidos e quais roles podem ver cada uma */
+/** Colunas do Kanban na ordem do enum (received → preparing → ready → delivered). Cancelados não aparecem no board. */
 export const ORDER_KANBAN_COLUMNS: Array<{
   status: OrderStatus;
   label: string;

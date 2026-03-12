@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, ChevronRight } from 'lucide-react';
+import { Plus, ChevronRight, XCircle } from 'lucide-react';
 import {
   AppLayout,
   PageHeader,
@@ -38,6 +38,7 @@ const OrderKanban: React.FC = () => {
     error,
     setError,
     updateStatus,
+    cancelOrder,
     moveToNextStatus,
     updatingId,
     userRole,
@@ -45,6 +46,12 @@ const OrderKanban: React.FC = () => {
 
   const canCreateOrder =
     userRole === 'admin' || userRole === 'owner' || userRole === 'manager';
+
+  const canCancelOrder =
+    userRole === 'admin' ||
+    userRole === 'owner' ||
+    userRole === 'manager' ||
+    userRole === 'attendant';
 
   useEffect(() => {
     listBranches({ pageSize: 200, sort: { fields: ['name'], order: ['ASC'] } })
@@ -77,60 +84,69 @@ const OrderKanban: React.FC = () => {
       />
 
       {loading ? (
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {columns.map((col) => (
-            <Card key={col.status} className="min-w-[280px] shrink-0 p-4">
-              <h3 className="font-semibold text-foreground mb-3">{col.label}</h3>
-              <div className="text-muted-foreground text-sm">Carregando...</div>
-            </Card>
-          ))}
+        <div className="w-full min-w-0 overflow-x-auto pb-4">
+          <div className="flex gap-4 min-w-max">
+            {columns.map((col) => (
+              <Card key={col.status} className="min-w-[280px] shrink-0 p-4">
+                <h3 className="font-semibold text-foreground mb-3">{col.label}</h3>
+                <div className="text-muted-foreground text-sm">Carregando...</div>
+              </Card>
+            ))}
+          </div>
         </div>
       ) : (
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {columns.map((col) => {
-            const orders = ordersByStatus[col.status] ?? [];
-            return (
-              <Card
-                key={col.status}
-                className="min-w-[280px] w-[280px] shrink-0 flex flex-col max-h-[calc(100vh-12rem)]"
-              >
-                <div className="p-3 border-b border-border flex items-center justify-between">
-                  <h3 className="font-semibold text-foreground">{col.label}</h3>
-                  <span className="text-sm text-muted-foreground bg-muted px-2 py-0.5 rounded">
-                    {orders.length}
-                  </span>
-                </div>
-                <div className="p-2 flex-1 overflow-y-auto space-y-2">
-                  {orders.length === 0 ? (
-                    <p className="text-sm text-muted-foreground py-4 text-center">
-                      Nenhum pedido
-                    </p>
-                  ) : (
-                    orders.map((order) => {
-                      const next = moveToNextStatus(order);
-                      return (
-                        <OrderCard
-                          key={order.id}
-                          order={order}
-                          branchName={getBranchName(order.branchId)}
-                          nextStatus={next}
-                          onMoveToNext={
-                            next
-                              ? () => updateStatus(order.id, next)
-                              : undefined
-                          }
-                          onView={() =>
-                            navigate(ROUTES.ORDERS_DETAILS.replace(':id', order.id))
-                          }
-                          isUpdating={updatingId === order.id}
-                        />
-                      );
-                    })
-                  )}
-                </div>
-              </Card>
-            );
-          })}
+        <div className="w-full min-w-0 overflow-x-auto pb-4">
+          <div className="flex gap-4 min-w-max">
+            {columns.map((col) => {
+              const orders = ordersByStatus[col.status] ?? [];
+              return (
+                <Card
+                  key={col.status}
+                  className="min-w-[280px] w-[280px] shrink-0 flex flex-col max-h-[calc(100vh-12rem)]"
+                >
+                  <div className="p-3 border-b border-border flex items-center justify-between">
+                    <h3 className="font-semibold text-foreground">{col.label}</h3>
+                    <span className="text-sm text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                      {orders.length}
+                    </span>
+                  </div>
+                  <div className="p-2 flex-1 overflow-y-auto space-y-2 min-h-0">
+                    {orders.length === 0 ? (
+                      <p className="text-sm text-muted-foreground py-4 text-center">
+                        Nenhum pedido
+                      </p>
+                    ) : (
+                      orders.map((order) => {
+                        const next = moveToNextStatus(order);
+                        return (
+                          <OrderCard
+                            key={order.id}
+                            order={order}
+                            branchName={getBranchName(order.branchId)}
+                            nextStatus={next}
+                            onMoveToNext={
+                              next
+                                ? () => updateStatus(order.id, next)
+                                : undefined
+                            }
+                            onCancel={
+                              canCancelOrder
+                                ? () => cancelOrder(order.id)
+                                : undefined
+                            }
+                            onView={() =>
+                              navigate(ROUTES.ORDERS_DETAILS.replace(':id', order.id))
+                            }
+                            isUpdating={updatingId === order.id}
+                          />
+                        );
+                      })
+                    )}
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       )}
     </AppLayout>
@@ -142,6 +158,7 @@ function OrderCard({
   branchName,
   nextStatus,
   onMoveToNext,
+  onCancel,
   onView,
   isUpdating,
 }: {
@@ -149,9 +166,17 @@ function OrderCard({
   branchName: string;
   nextStatus: string | null;
   onMoveToNext?: () => void;
+  onCancel?: () => void;
   onView: () => void;
   isUpdating: boolean;
 }) {
+  const handleCancel = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('Cancelar este pedido? Esta ação não pode ser desfeita.')) {
+      onCancel?.();
+    }
+  };
+
   return (
     <div className="rounded-lg border border-border bg-background p-3 shadow-sm hover:border-primary/50 transition-colors">
       <button
@@ -171,27 +196,42 @@ function OrderCard({
           {new Date(order.createdAt).toLocaleString('pt-BR')}
         </p>
       </button>
-      {nextStatus && onMoveToNext && (
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full mt-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveToNext();
-          }}
-          disabled={isUpdating}
-        >
-          {isUpdating ? (
-            '...'
-          ) : (
-            <>
-              Próximo
-              <Icon icon={ChevronRight} size={14} className="ml-1" />
-            </>
-          )}
-        </Button>
-      )}
+      <div className="flex flex-col gap-1.5 mt-2">
+        {nextStatus && onMoveToNext && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveToNext();
+            }}
+            disabled={isUpdating}
+          >
+            {isUpdating ? (
+              '...'
+            ) : (
+              <>
+                Próximo
+                <Icon icon={ChevronRight} size={14} className="ml-1" />
+              </>
+            )}
+          </Button>
+        )}
+        {onCancel && (
+          <Button
+            variant="error"
+            size="sm"
+            className="w-full"
+            onClick={handleCancel}
+            disabled={isUpdating}
+            title="Cancelar pedido"
+          >
+            <Icon icon={XCircle} size={14} className="mr-1" />
+            Cancelar
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

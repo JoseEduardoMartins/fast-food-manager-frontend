@@ -61,33 +61,46 @@ export const useOrderKanban = () => {
 
   const updateStatus = useCallback(
     async (orderId: string, newStatus: OrderStatus) => {
-      if (!visibleStatuses.includes(newStatus)) return;
+      const isCancel = newStatus === 'cancelled';
+      const allowed = isCancel || visibleStatuses.includes(newStatus);
+      if (!allowed) return;
       setUpdatingId(orderId);
       try {
         await updateOrder(orderId, { status: newStatus });
-        setOrdersByStatus((prev) => {
-          let order: Order | undefined;
-          for (const status of visibleStatuses) {
-            const list = prev[status] ?? [];
-            order = list.find((o) => o.id === orderId);
-            if (order) break;
-          }
-          if (!order) return prev;
-          const next: OrdersByStatus = {};
-          for (const status of visibleStatuses) {
-            const list = prev[status] ?? [];
-            if (status === newStatus) {
-              next[status] = [
-                { ...order, status: newStatus },
-                ...list.filter((o) => o.id !== orderId),
-              ];
-            } else {
-              next[status] = list.filter((o) => o.id !== orderId);
+        if (isCancel) {
+          setOrdersByStatus((prev) => {
+            const next: OrdersByStatus = {};
+            for (const status of visibleStatuses) {
+              next[status] = (prev[status] ?? []).filter((o) => o.id !== orderId);
             }
-          }
-          return next;
-        });
-        toast.success('Status atualizado');
+            return next;
+          });
+          toast.success('Pedido cancelado');
+        } else {
+          setOrdersByStatus((prev) => {
+            let order: Order | undefined;
+            for (const status of visibleStatuses) {
+              const list = prev[status] ?? [];
+              order = list.find((o) => o.id === orderId);
+              if (order) break;
+            }
+            if (!order) return prev;
+            const next: OrdersByStatus = {};
+            for (const status of visibleStatuses) {
+              const list = prev[status] ?? [];
+              if (status === newStatus) {
+                next[status] = [
+                  { ...order, status: newStatus },
+                  ...list.filter((o) => o.id !== orderId),
+                ];
+              } else {
+                next[status] = list.filter((o) => o.id !== orderId);
+              }
+            }
+            return next;
+          });
+          toast.success('Status atualizado');
+        }
       } catch (err: unknown) {
         const e = err as { response?: { data?: { message?: string } } };
         toast.error(e.response?.data?.message ?? 'Erro ao atualizar status');
@@ -96,6 +109,11 @@ export const useOrderKanban = () => {
       }
     },
     [visibleStatuses]
+  );
+
+  const cancelOrder = useCallback(
+    (orderId: string) => updateStatus(orderId, 'cancelled'),
+    [updateStatus]
   );
 
   const moveToNextStatus = useCallback(
@@ -114,6 +132,7 @@ export const useOrderKanban = () => {
     error,
     setError,
     updateStatus,
+    cancelOrder,
     moveToNextStatus,
     loadOrders,
     updatingId,

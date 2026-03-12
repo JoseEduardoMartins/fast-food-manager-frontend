@@ -1,6 +1,6 @@
 /**
  * StockList Page
- * List branch-ingredients (stock per branch) with low-stock alerts
+ * List branch-ingredients (stock per branch) with level % and color by stock level
  */
 
 import React, { useMemo } from 'react';
@@ -27,6 +27,31 @@ import { useStockList } from './useStockList';
 
 const formatPrice = (centavos: number) =>
   `R$ ${(centavos / 100).toFixed(2).replace('.', ',')}`;
+
+/** Porcentagem em relação ao mínimo (100% = no mínimo). Cor: crítico < 100%, atenção 100–120%, OK > 120% */
+function stockLevelPercent(quantity: number, minQuantity: number): number | null {
+  if (minQuantity <= 0) return null;
+  return Math.round((quantity / minQuantity) * 100);
+}
+
+function StockLevelCell({ row }: { row: BranchIngredient }) {
+  const percent = stockLevelPercent(row.stockQuantity, row.stockMinQuantity);
+  if (percent === null) return <span className="text-muted-foreground">—</span>;
+  const critical = percent < 100;
+  const warning = percent >= 100 && percent <= 120;
+  const variant = critical ? 'error' : warning ? 'warning' : 'success';
+  const label =
+    percent < 100
+      ? `Crítico (${percent}% do mínimo) — comprar já`
+      : percent <= 120
+        ? `Atenção (${percent}% do mínimo) — repor em breve`
+        : `OK (${percent}% do mínimo)`;
+  return (
+    <Badge variant={variant} title={label}>
+      {percent}%
+    </Badge>
+  );
+}
 
 const StockList: React.FC = () => {
   const navigate = useNavigate();
@@ -70,6 +95,11 @@ const StockList: React.FC = () => {
         cell: (info) => info.getValue(),
       },
       {
+        id: 'level',
+        header: 'Nível',
+        cell: (info) => <StockLevelCell row={info.row.original} />,
+      },
+      {
         accessorKey: 'purchasePrice',
         header: 'Preço compra',
         cell: (info) => formatPrice(info.getValue() as number),
@@ -80,19 +110,6 @@ const StockList: React.FC = () => {
         cell: (info) => {
           const v = info.getValue() as number | undefined;
           return v != null ? formatPrice(v) : '-';
-        },
-      },
-      {
-        id: 'alert',
-        header: 'Alerta',
-        cell: (info) => {
-          const row = info.row.original;
-          const low = row.stockQuantity <= row.stockMinQuantity;
-          return low ? (
-            <Badge variant="error">Abaixo do mínimo</Badge>
-          ) : (
-            <Badge variant="success">OK</Badge>
-          );
         },
       },
       {
@@ -159,7 +176,7 @@ const StockList: React.FC = () => {
     <AppLayout user={currentUser} onSignOut={signOut}>
       <PageHeader
         title="Estoque"
-        description="Estoque de ingredientes por filial"
+        description="Acompanhe o nível de estoque por filial e veja o que precisa repor"
         action={
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => navigate(ROUTES.STOCK_MOVEMENT)}>

@@ -60,6 +60,26 @@ const StockDetails: React.FC = () => {
 
   const lowStock = item.stockQuantity <= item.stockMinQuantity;
 
+  const minQty = item.stockMinQuantity;
+  const percent =
+    minQty > 0 ? Math.round((item.stockQuantity / minQty) * 100) : null;
+  const levelVariant =
+    percent === null
+      ? 'default'
+      : percent < 100
+        ? 'error'
+        : percent <= 120
+          ? 'warning'
+          : 'success';
+  const levelLabel =
+    percent === null
+      ? ''
+      : percent < 100
+        ? `Crítico (${percent}% do mínimo) — comprar já`
+        : percent <= 120
+          ? `Atenção (${percent}% do mínimo) — repor em breve`
+          : `OK (${percent}% do mínimo)`;
+
   return (
     <AppLayout user={user} onSignOut={signOut}>
       <PageHeader
@@ -88,11 +108,18 @@ const StockDetails: React.FC = () => {
       />
       <ErrorAlert message={error ?? ''} onDismiss={() => setError(null)} dismissible />
       <Card className="p-6 mb-6">
-        {lowStock && (
-          <Badge variant="error" className="mb-4">
-            Estoque abaixo do mínimo
-          </Badge>
-        )}
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          {percent !== null && (
+            <Badge variant={levelVariant} title={levelLabel} className="text-sm px-3 py-1">
+              Nível: {percent}% do mínimo
+            </Badge>
+          )}
+          {lowStock && (
+            <Badge variant="error">
+              Estoque abaixo do mínimo
+            </Badge>
+          )}
+        </div>
         <FormProvider {...form}>
           <StockForm mode="view" branchId={item.branchId} ingredientId={item.ingredientId} />
         </FormProvider>
