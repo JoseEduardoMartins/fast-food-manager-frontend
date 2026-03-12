@@ -45,9 +45,7 @@ export const userFormSchema = z
   .object({
     name: z.string().min(1, 'Nome é obrigatório').trim(),
     email: z.string().email('Email inválido').min(1, 'Email é obrigatório'),
-    role: z.enum(['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'], {
-      message: 'Tipo de usuário é obrigatório',
-    }),
+    roleId: z.string().uuid('Perfil de acesso é obrigatório').min(1, 'Perfil de acesso é obrigatório'),
     password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
     confirmPassword: z.string().min(1, 'Confirmação de senha é obrigatória'),
     addresses: z.array(addressFormSchema),
@@ -64,9 +62,7 @@ export const userFormEditSchema = z
   .object({
     name: z.string().min(1, 'Nome é obrigatório').trim(),
     email: z.string().email('Email inválido').min(1, 'Email é obrigatório'),
-    role: z.enum(['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'], {
-      message: 'Tipo de usuário é obrigatório',
-    }),
+    roleId: z.string().uuid('Perfil de acesso é obrigatório').min(1, 'Perfil de acesso é obrigatório'),
     password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres').optional().or(z.literal('')),
     confirmPassword: z.string().optional().or(z.literal('')),
     addresses: z.array(addressFormSchema).optional(),

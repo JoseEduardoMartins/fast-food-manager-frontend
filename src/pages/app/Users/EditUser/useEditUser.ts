@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { getUserById, updateUser } from '@services/users';
 import type { User, UpdateUserRequest, UserAddressInput } from '@services/users';
+import { listRoles, type Role } from '@services/roles';
 import { userFormEditSchema, type UserFormEditData } from '../schemas';
 import { ROUTES } from '@common/constants';
 
@@ -21,10 +22,30 @@ export const useEditUser = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [addresses, setAddresses] = useState<UserAddressInput[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [rolesLoading, setRolesLoading] = useState(true);
 
   const form = useForm<UserFormEditData>({
     resolver: zodResolver(userFormEditSchema),
   });
+
+  // Carregar roles disponíveis
+  useEffect(() => {
+    const loadRoles = async () => {
+      try {
+        setRolesLoading(true);
+        const response = await listRoles({ pageSize: 100 });
+        setRoles(response.data);
+      } catch (err) {
+        console.error('Erro ao carregar perfis:', err);
+        toast.error('Erro ao carregar perfis de acesso');
+      } finally {
+        setRolesLoading(false);
+      }
+    };
+
+    loadRoles();
+  }, []);
 
   useEffect(() => {
     if (!id) {
@@ -42,13 +63,10 @@ export const useEditUser = () => {
       const userData = await getUserById(id);
       setUser(userData);
 
-      const allowedRoles = ['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'] as const;
-      const formRole = allowedRoles.includes(userData.role as any) ? userData.role : 'customer';
-
       form.reset({
         name: userData.name,
         email: userData.email,
-        role: formRole as any,
+        roleId: userData.roleId || '', // RBAC - pré-selecionar roleId
         password: '',
         confirmPassword: '',
       });
@@ -94,7 +112,7 @@ export const useEditUser = () => {
       const updateData: UpdateUserRequest = {
         name: data.name,
         email: data.email,
-        role: data.role,
+        roleId: data.roleId, // RBAC - envia roleId
         ...(data.password ? { password: data.password } : {}),
         addresses: cleanAddresses.length > 0 ? cleanAddresses : undefined,
       };
@@ -145,5 +163,7 @@ export const useEditUser = () => {
     reloadUser: loadUser,
     addresses,
     handleAddressesChange,
+    roles,
+    rolesLoading,
   };
 };

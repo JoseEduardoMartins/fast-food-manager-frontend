@@ -13,7 +13,7 @@ import { useCreateUser } from './useCreateUser';
 
 const CreateUser: React.FC = () => {
   const { user, signOut } = useAuth();
-  const { form, isLoading, error, setError, onSubmit, onCancel } = useCreateUser();
+  const { form, isLoading, error, setError, onSubmit, onCancel, roles, rolesLoading } = useCreateUser();
 
   return (
     <AppLayout user={user} onSignOut={signOut}>
@@ -26,7 +26,7 @@ const CreateUser: React.FC = () => {
               <Icon icon={ArrowLeft} size={16} className="mr-2" />
               Voltar
             </Button>
-            <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading}>
+            <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading || rolesLoading}>
               <Icon icon={Save} size={16} className="mr-2" />
               {isLoading ? 'Criando...' : 'Criar Usuário'}
             </Button>
@@ -39,7 +39,7 @@ const CreateUser: React.FC = () => {
       <Card className="p-6">
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <UserForm mode="create" />
+            <UserForm mode="create" roles={roles} rolesLoading={rolesLoading} />
           </form>
         </FormProvider>
       </Card>

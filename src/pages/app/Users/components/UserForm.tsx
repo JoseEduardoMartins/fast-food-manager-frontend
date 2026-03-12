@@ -5,7 +5,8 @@
  */
 
 import { Badge, FormField, Label, Select } from '@components';
-import type { UserRole, User, UserAddressInput } from '@services/users';
+import type { User, UserAddressInput } from '@services/users';
+import type { Role } from '@services/roles';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { UserFormData } from '../schemas';
@@ -18,19 +19,9 @@ interface UserFormProps {
   addresses?: UserAddressInput[];
   onAddressChange?: () => void;
   onAddressesChange?: (addresses: UserAddressInput[]) => void;
+  roles?: Role[]; // Lista de perfis disponíveis
+  rolesLoading?: boolean;
 }
-
-const roleLabels: Record<UserRole, string> = {
-  admin: 'Administrador',
-  owner: 'Proprietário',
-  manager: 'Gerente',
-  cook: 'Cozinheiro',
-  attendant: 'Atendente',
-  customer: 'Cliente',
-  delivery: 'Entregador',
-};
-
-const allowedRoles: UserRole[] = ['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'];
 
 export const UserForm: React.FC<UserFormProps> = ({
   mode,
@@ -38,6 +29,8 @@ export const UserForm: React.FC<UserFormProps> = ({
   addresses = [],
   onAddressChange,
   onAddressesChange,
+  roles = [],
+  rolesLoading = false,
 }) => {
   const {
     register,
@@ -45,8 +38,9 @@ export const UserForm: React.FC<UserFormProps> = ({
     watch,
   } = useFormContext<UserFormData>();
 
-  const role = watch('role');
-  const isOwner = role === 'owner';
+  const roleId = watch('roleId');
+  const selectedRole = roles.find((r) => r.id === roleId);
+  const isOwner = selectedRole?.code === 'owner';
   const isViewOnly = mode === 'view';
 
   return (
@@ -105,31 +99,40 @@ export const UserForm: React.FC<UserFormProps> = ({
         {/* Role Field - Full width */}
         <div className="md:col-span-2">
           <Label className="mb-2 block">
-            Tipo de Usuário
+            Perfil de Acesso
             {!isViewOnly && <span className="text-error ml-1">*</span>}
           </Label>
           {isViewOnly ? (
-            <div className="mt-1">
-              <Badge variant="secondary" className="text-base py-1 px-3">
-                {role}
+            <div className="mt-1 flex items-center gap-2">
+              <Badge variant={user?.roleData?.isSystem ? 'secondary' : 'default'} className="text-base py-1 px-3">
+                {user?.roleData?.name || 'Sem perfil'}
               </Badge>
+              {user?.roleData?.isSystem && (
+                <span className="text-xs text-gray-500" title="Perfil do sistema">
+                  🔒 Sistema
+                </span>
+              )}
             </div>
           ) : (
             <>
               <Select
                 required={!isViewOnly}
-                {...register('role')}
-                error={!!errors.role}
-                disabled={isViewOnly}
+                {...register('roleId')}
+                error={!!errors.roleId}
+                disabled={isViewOnly || rolesLoading}
               >
-                <option value="">Selecione um tipo</option>
-                {allowedRoles.map((role) => (
-                  <option key={role} value={role}>
-                    {roleLabels[role]}
+                <option value="">
+                  {rolesLoading ? 'Carregando perfis...' : 'Selecione um perfil'}
+                </option>
+                {roles.map((role) => (
+                  <option key={role.id} value={role.id}>
+                    {role.name}
+                    {role.isSystem ? ' 🔒' : ''}
                   </option>
                 ))}
               </Select>
-              {errors.role && <p className="text-sm text-error mt-1">{errors.role?.message}</p>}
+              {errors.roleId && <p className="text-sm text-error mt-1">{errors.roleId?.message}</p>}
+              {rolesLoading && <p className="text-sm text-gray-500 mt-1">Carregando perfis disponíveis...</p>}
             </>
           )}
         </div>

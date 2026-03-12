@@ -97,6 +97,17 @@ export interface UserBranch {
 }
 
 /**
+ * Role from RBAC system
+ */
+export interface Role {
+  id: string;
+  name: string;
+  code: string;
+  isSystem?: boolean;
+  description?: string | null;
+}
+
+/**
  * User data structure
  * Vínculos N:N via userCompanies e userBranches (não mais companyId/branchId)
  */
@@ -104,7 +115,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  role: UserRole; // Legacy - mantido para compatibilidade com auth
+  roleId?: string; // RBAC - ID do perfil de acesso
+  roleData?: Role; // RBAC - dados completos do perfil
   isActive: boolean;
   isVerified: boolean;
   isDeleted?: boolean;
@@ -155,7 +168,8 @@ export interface CreateUserRequest {
   name: string;
   email: string;
   password: string;
-  role: UserRole;
+  role?: UserRole; // Legacy - opcional para compatibilidade
+  roleId: string; // RBAC - ID do perfil de acesso (obrigatório)
   isActive?: boolean;
   companies?: Array<{ companyId: string; linkType: LinkType }>;
   branches?: Array<{ branchId: string; linkType: LinkType }>;
@@ -170,7 +184,8 @@ export interface UpdateUserRequest {
   name?: string;
   email?: string;
   password?: string;
-  role?: UserRole;
+  role?: UserRole; // Legacy - opcional para compatibilidade
+  roleId?: string; // RBAC - ID do perfil de acesso
   isActive?: boolean;
   companies?: Array<{ companyId: string; linkType: LinkType }>;
   branches?: Array<{ branchId: string; linkType: LinkType }>;
@@ -192,7 +207,8 @@ export interface ListUsersParams {
   pageSize?: number;
   name?: string;
   email?: string;
-  role?: UserRole;
+  role?: UserRole; // Legacy
+  roleId?: string; // RBAC - filtrar por perfil de acesso
   companyId?: string;
   branchId?: string;
   isActive?: boolean;

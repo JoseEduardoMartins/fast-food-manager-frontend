@@ -13,7 +13,7 @@ import { useEditUser } from './useEditUser';
 
 const EditUser: React.FC = () => {
   const { user: currentUser, signOut } = useAuth();
-  const { user, loading, saving, error, setError, form, onSubmit, handleCancel, reloadUser, handleAddressesChange, addresses } = useEditUser();
+  const { user, loading, saving, error, setError, form, onSubmit, handleCancel, reloadUser, handleAddressesChange, addresses, roles, rolesLoading } = useEditUser();
 
   if (loading) {
     return (
@@ -71,6 +71,8 @@ const EditUser: React.FC = () => {
               addresses={addresses}
               onAddressChange={reloadUser}
               onAddressesChange={handleAddressesChange}
+              roles={roles}
+              rolesLoading={rolesLoading}
             />
           </form>
         </FormProvider>

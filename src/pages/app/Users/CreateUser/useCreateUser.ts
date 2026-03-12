@@ -7,7 +7,8 @@ import { ROUTES } from '@common/constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { CreateUserRequest } from '@services/users';
 import { createUser } from '@services/users';
-import { useState } from 'react';
+import { listRoles, type Role } from '@services/roles';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -17,10 +18,30 @@ export const useCreateUser = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [rolesLoading, setRolesLoading] = useState(true);
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userFormSchema),
   });
+
+  // Carregar roles disponíveis
+  useEffect(() => {
+    const loadRoles = async () => {
+      try {
+        setRolesLoading(true);
+        const response = await listRoles({ pageSize: 100 });
+        setRoles(response.data);
+      } catch (err) {
+        console.error('Erro ao carregar perfis:', err);
+        toast.error('Erro ao carregar perfis de acesso');
+      } finally {
+        setRolesLoading(false);
+      }
+    };
+
+    loadRoles();
+  }, []);
 
   const onSubmit = async (data: UserFormData) => {
     setIsLoading(true);
@@ -31,7 +52,7 @@ export const useCreateUser = () => {
         name: data.name,
         email: data.email,
         password: data.password,
-        role: data.role,
+        roleId: data.roleId, // RBAC - envia roleId
         isActive: true, // Always active on creation
         addresses: data.addresses,
       };
@@ -70,5 +91,7 @@ export const useCreateUser = () => {
     setError,
     onSubmit,
     onCancel,
+    roles,
+    rolesLoading,
   };
 };

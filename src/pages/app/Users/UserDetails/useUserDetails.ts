@@ -42,15 +42,11 @@ export const useUserDetails = () => {
       const userData = await getUserById(id);
       setUser(userData);
       
-      // Only include role in form if it's an allowed role (not admin)
-      const allowedRoles = ['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'] as const;
-      const formRole = allowedRoles.includes(userData.role as any) ? userData.role : 'customer';
-      
-      // Set form values for view mode
+      // Set form values for view mode (roleId para RBAC)
       form.reset({
         name: userData.name,
         email: userData.email,
-        role: formRole as any,
+        roleId: userData.roleId || '',
         password: '',
         confirmPassword: '',
       });

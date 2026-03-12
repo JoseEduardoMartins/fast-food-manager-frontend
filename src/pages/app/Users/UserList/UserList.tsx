@@ -77,11 +77,28 @@ const UserList: React.FC = () => {
         cell: (info) => info.getValue(),
       },
       {
-        accessorKey: 'role',
-        header: 'Tipo',
+        accessorKey: 'roleData',
+        header: 'Perfil de Acesso',
         cell: (info) => {
-          const role = info.getValue() as UserRole;
-          return <Badge variant="secondary">{roleLabels[role]}</Badge>;
+          const user = info.row.original;
+          const roleData = user.roleData;
+          
+          if (!roleData) {
+            return <Badge variant="error">Sem perfil</Badge>;
+          }
+          
+          return (
+            <div className="flex items-center gap-2">
+              <Badge variant={roleData.isSystem ? 'secondary' : 'default'}>
+                {roleData.name}
+              </Badge>
+              {roleData.isSystem && (
+                <span className="text-xs text-gray-500" title="Perfil do sistema">
+                  🔒
+                </span>
+              )}
+            </div>
+          );
         },
       },
       {
