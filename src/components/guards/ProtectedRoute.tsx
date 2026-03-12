@@ -43,15 +43,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
   }
 
   // Permission-based: if we have permissions from backend and allowedPermissions is set, check them
-  if (allowedPermissions && allowedPermissions.length > 0) {
-    const hasAny = permissions.length > 0 && allowedPermissions.some((p) => hasPermission(p));
+  if (allowedPermissions && allowedPermissions.length > 0 && permissions.length > 0) {
+    const hasAny = allowedPermissions.some((p) => hasPermission(p));
     if (!hasAny) {
       return <Navigate to={ROUTES.DASHBOARD} replace />;
     }
     return <>{children}</>;
   }
 
-  // Role-based fallback (when permissions not used for this route)
+  // Role-based fallback (when permissions not loaded yet or not used for this route)
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }

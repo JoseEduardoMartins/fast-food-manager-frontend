@@ -126,7 +126,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.COMPANIES}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.companies.list]}>
           <CompanyList />
         </ProtectedRoute>
       }
@@ -134,7 +134,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.COMPANIES_CREATE}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.companies.create]}>
           <CreateCompany />
         </ProtectedRoute>
       }
@@ -142,7 +142,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.COMPANIES_DETAILS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.companies.read]}>
           <CompanyDetails />
         </ProtectedRoute>
       }
@@ -150,7 +150,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.COMPANIES_EDIT}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.companies.update]}>
           <EditCompany />
         </ProtectedRoute>
       }
@@ -158,7 +158,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.BRANCHES}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.branches.list]}>
           <BranchList />
         </ProtectedRoute>
       }
@@ -166,7 +166,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.BRANCHES_CREATE}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.branches.create]}>
           <CreateBranch />
         </ProtectedRoute>
       }
@@ -174,7 +174,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.BRANCHES_DETAILS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.branches.read]}>
           <BranchDetails />
         </ProtectedRoute>
       }
@@ -182,7 +182,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.BRANCHES_EDIT}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.branches.update]}>
           <EditBranch />
         </ProtectedRoute>
       }
@@ -190,7 +190,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.ORDERS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']} allowedPermissions={[PERMISSIONS.orders.list]}>
           <OrderKanban />
         </ProtectedRoute>
       }
@@ -198,7 +198,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.ORDERS_CREATE}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']} allowedPermissions={[PERMISSIONS.orders.create]}>
           <CreateOrder />
         </ProtectedRoute>
       }
@@ -206,7 +206,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.ORDERS_DETAILS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']} allowedPermissions={[PERMISSIONS.orders.read]}>
           <OrderDetails />
         </ProtectedRoute>
       }
@@ -214,7 +214,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.ORDERS_EDIT}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant', 'delivery']} allowedPermissions={[PERMISSIONS.orders.update]}>
           <EditOrder />
         </ProtectedRoute>
       }
@@ -222,7 +222,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.MENUS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']} allowedPermissions={[PERMISSIONS.menus.list]}>
           <MenuList />
         </ProtectedRoute>
       }
@@ -230,7 +230,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.MENUS_CREATE}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']} allowedPermissions={[PERMISSIONS.menus.create]}>
           <CreateMenu />
         </ProtectedRoute>
       }
@@ -238,7 +238,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.MENUS_DETAILS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']} allowedPermissions={[PERMISSIONS.menus.read]}>
           <MenuDetails />
         </ProtectedRoute>
       }
@@ -246,7 +246,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.MENUS_EDIT}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']} allowedPermissions={[PERMISSIONS.menus.update]}>
           <EditMenu />
         </ProtectedRoute>
       }
@@ -254,7 +254,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.CATEGORIES}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']} allowedPermissions={[PERMISSIONS.categories.list]}>
           <CategoryList />
         </ProtectedRoute>
       }
@@ -262,7 +262,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.CATEGORIES_CREATE}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']} allowedPermissions={[PERMISSIONS.categories.create]}>
           <CreateCategory />
         </ProtectedRoute>
       }
@@ -270,7 +270,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.CATEGORIES_DETAILS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']} allowedPermissions={[PERMISSIONS.categories.read]}>
           <CategoryDetails />
         </ProtectedRoute>
       }
@@ -278,7 +278,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.CATEGORIES_EDIT}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'attendant']} allowedPermissions={[PERMISSIONS.categories.update]}>
           <EditCategory />
         </ProtectedRoute>
       }
@@ -286,7 +286,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.PRODUCTS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']} allowedPermissions={[PERMISSIONS.products.list]}>
           <ProductList />
         </ProtectedRoute>
       }
@@ -294,7 +294,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.PRODUCTS_CREATE}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']} allowedPermissions={[PERMISSIONS.products.create]}>
           <CreateProduct />
         </ProtectedRoute>
       }
@@ -302,7 +302,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.PRODUCTS_DETAILS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']} allowedPermissions={[PERMISSIONS.products.read]}>
           <ProductDetails />
         </ProtectedRoute>
       }
@@ -310,7 +310,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.PRODUCTS_EDIT}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook', 'attendant']} allowedPermissions={[PERMISSIONS.products.update]}>
           <EditProduct />
         </ProtectedRoute>
       }
@@ -318,7 +318,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.INGREDIENTS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.ingredients.list]}>
           <IngredientList />
         </ProtectedRoute>
       }
@@ -326,7 +326,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.INGREDIENTS_CREATE}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.ingredients.create]}>
           <CreateIngredient />
         </ProtectedRoute>
       }
@@ -334,7 +334,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.INGREDIENTS_DETAILS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.ingredients.read]}>
           <IngredientDetails />
         </ProtectedRoute>
       }
@@ -342,7 +342,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.INGREDIENTS_EDIT}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.ingredients.update]}>
           <EditIngredient />
         </ProtectedRoute>
       }
@@ -350,7 +350,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.STOCK}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.products.list]}>
           <StockList />
         </ProtectedRoute>
       }
@@ -358,7 +358,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.STOCK_CREATE}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.products.create]}>
           <CreateStock />
         </ProtectedRoute>
       }
@@ -366,7 +366,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.STOCK_MOVEMENT}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.products.update]}>
           <StockMovement />
         </ProtectedRoute>
       }
@@ -374,7 +374,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.STOCK_DETAILS}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.products.read]}>
           <StockDetails />
         </ProtectedRoute>
       }
@@ -382,7 +382,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.STOCK_EDIT}
       element={
-        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']}>
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.products.update]}>
           <EditStock />
         </ProtectedRoute>
       }
