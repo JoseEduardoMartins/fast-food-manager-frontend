@@ -4,9 +4,9 @@
 
 import React from 'react';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
-import { AppLayout, PageHeader, ErrorAlert, Button, Icon, Card } from '@components';
+import { AppLayout, PageHeader, ErrorAlert, Button, Icon, Card, Label } from '@components';
 import { useAuth } from '@contexts';
-import { PERMISSIONS } from '@common/constants/permissions';
+import { PERMISSIONS, PERMISSIONS_BY_RESOURCE } from '@common/constants/permissions';
 import { useRoleDetails } from './useRoleDetails';
 
 const RoleDetails: React.FC = () => {
@@ -28,8 +28,8 @@ const RoleDetails: React.FC = () => {
     return null;
   }
 
-  const permissionsList = role.permissions ?? [];
-  const resourceLabels: Record<string, string> = {
+  const permissionsList = new Set(role.permissions ?? []);
+  const RESOURCE_LABELS: Record<string, string> = {
     users: 'Usuários',
     companies: 'Empresas',
     branches: 'Filiais',
@@ -76,22 +76,39 @@ const RoleDetails: React.FC = () => {
           <span className="font-medium">{role.isSystem ? 'Sistema' : 'Customizado'}</span>
         </div>
         <div>
-          <h3 className="text-lg font-semibold mb-3">Permissões ({permissionsList.length})</h3>
-          <ul className="flex flex-wrap gap-2">
-            {permissionsList.map((code) => {
-              const [resource, action] = code.split('.');
-              const label = resource ? `${resourceLabels[resource] ?? resource}.${action}` : code;
-              return (
-                <li key={code}>
-                  <span className="inline-flex items-center rounded-md bg-muted px-2 py-1 text-sm">
-                    {label}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-          {permissionsList.length === 0 && (
+          <h3 className="text-lg font-semibold mb-3">
+            Permissões ({permissionsList.size})
+          </h3>
+          {permissionsList.size === 0 && (
             <p className="text-gray-500">Nenhuma permissão atribuída.</p>
+          )}
+          {permissionsList.size > 0 && (
+            <div className="space-y-6">
+              {Object.entries(PERMISSIONS_BY_RESOURCE).map(([resource, codes]) => (
+                <div key={resource}>
+                  <Label className="block font-medium mb-2">
+                    {RESOURCE_LABELS[resource] ?? resource}
+                  </Label>
+                  <div className="flex flex-wrap gap-3">
+                    {codes.map((code) => {
+                      const granted = permissionsList.has(code);
+                      const [, action] = code.split('.');
+                      return (
+                        <label key={code} className="flex items-center gap-2 cursor-default">
+                          <input
+                            type="checkbox"
+                            checked={granted}
+                            disabled
+                            className="h-4 w-4"
+                          />
+                          <span className="text-sm">{action}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </Card>

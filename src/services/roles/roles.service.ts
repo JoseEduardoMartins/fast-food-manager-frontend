@@ -22,7 +22,18 @@ export const listRoles = async (params?: ListRolesParams): Promise<ListRolesResp
 
 export const getRoleById = async (id: string): Promise<Role> => {
   const response = await http.get<Role>(`/roles/${id}`);
-  return response.data;
+  const data = response.data;
+
+  // Backend retorna rolePermissions[].permission.code; mapeamos para Role.permissions (string[])
+  const mappedPermissions =
+    data.rolePermissions
+      ?.map((rp) => rp.permission?.code)
+      .filter((code): code is string => !!code) ?? [];
+
+  return {
+    ...data,
+    permissions: mappedPermissions,
+  };
 };
 
 export const createRole = async (data: CreateRoleRequest): Promise<CreateRoleResponse> => {
