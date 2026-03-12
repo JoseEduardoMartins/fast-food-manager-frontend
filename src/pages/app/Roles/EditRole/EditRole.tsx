@@ -6,20 +6,8 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Save } from 'lucide-react';
 import { AppLayout, PageHeader, ErrorAlert, Button, Icon, Card, FormField, Label } from '@components';
 import { useAuth } from '@contexts';
-import { PERMISSIONS_BY_RESOURCE } from '@common/constants/permissions';
+import { PERMISSIONS_BY_RESOURCE, RESOURCE_LABELS } from '@common/constants';
 import { useEditRole } from './useEditRole';
-
-const RESOURCE_LABELS: Record<string, string> = {
-  users: 'Usuários',
-  companies: 'Empresas',
-  branches: 'Filiais',
-  menus: 'Menus',
-  categories: 'Categorias',
-  products: 'Produtos',
-  orders: 'Pedidos',
-  ingredients: 'Ingredientes',
-  roles: 'Perfis de Acesso',
-};
 
 const EditRole: React.FC = () => {
   const { user: currentUser, signOut } = useAuth();

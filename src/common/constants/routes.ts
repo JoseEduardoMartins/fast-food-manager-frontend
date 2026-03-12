@@ -58,6 +58,8 @@ export const ROUTES = {
   STOCK_DETAILS: '/stock/:id',
   STOCK_EDIT: '/stock/:id/edit',
   STOCK_MOVEMENT: '/stock/movement',
+  DELIVERIES: '/deliveries',
+  MY_DELIVERIES: '/my-deliveries',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

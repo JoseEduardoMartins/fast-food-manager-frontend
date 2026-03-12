@@ -16,7 +16,6 @@ import {
   FormField,
   Badge,
   Label,
-  Select,
 } from '@components';
 import { useAuth } from '@contexts';
 import { AddressManager } from '../Users/components/AddressManager';
@@ -26,15 +25,20 @@ import type { ProfileFormData } from '../Users/schemas';
 import type { Role } from '@services/roles';
 
 interface ProfileFormViewProps {
+  profile: any;
   roles: Role[];
 }
 
-function ProfileFormView({ roles }: ProfileFormViewProps) {
+function ProfileFormView({ profile, roles }: ProfileFormViewProps) {
   const { watch } = useFormContext<ProfileFormData>();
   const name = watch('name');
   const email = watch('email');
-  const roleId = watch('roleId');
-  const selectedRole = roles.find((r) => r.id === roleId);
+  
+  // Get role from profile data (not from form)
+  const userRole = profile?.role;
+  const selectedRole = typeof userRole === 'object' && userRole !== null 
+    ? userRole 
+    : roles.find((r) => r.id === profile?.roleId);
   
   return (
     <div className="space-y-6">
@@ -56,6 +60,9 @@ function ProfileFormView({ roles }: ProfileFormViewProps) {
               </span>
             )}
           </div>
+          <p className="text-sm text-gray-500 mt-1">
+            O perfil de acesso só pode ser alterado por um administrador
+          </p>
         </div>
       )}
     </div>
@@ -63,12 +70,20 @@ function ProfileFormView({ roles }: ProfileFormViewProps) {
 }
 
 interface ProfileFormEditProps {
+  profile: any;
   roles: Role[];
   rolesLoading: boolean;
 }
 
-function ProfileFormEdit({ roles, rolesLoading }: ProfileFormEditProps) {
+function ProfileFormEdit({ profile, roles, rolesLoading }: ProfileFormEditProps) {
   const { register, formState: { errors } } = useFormContext<ProfileFormData>();
+  
+  // Get role from profile data (not from form)
+  const userRole = profile?.role;
+  const selectedRole = typeof userRole === 'object' && userRole !== null 
+    ? userRole 
+    : roles.find((r) => r.id === profile?.roleId);
+  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -107,30 +122,31 @@ function ProfileFormEdit({ roles, rolesLoading }: ProfileFormEditProps) {
         />
       </div>
       
-      {/* Perfil de Acesso */}
+      {/* Perfil de Acesso - Somente visualização por segurança */}
       <div>
-        <Label className="mb-2 block">
-          Perfil de Acesso
-          <span className="text-error ml-1">*</span>
-        </Label>
-        <Select
-          required
-          {...register('roleId')}
-          error={!!errors.roleId}
-          disabled={rolesLoading}
-        >
-          <option value="">
-            {rolesLoading ? 'Carregando perfis...' : 'Selecione um perfil'}
-          </option>
-          {roles.map((role) => (
-            <option key={role.id} value={role.id}>
-              {role.name}
-              {role.isSystem ? ' (Sistema)' : ''}
-            </option>
-          ))}
-        </Select>
-        {errors.roleId && <p className="text-sm text-error mt-1">{errors.roleId?.message}</p>}
-        {rolesLoading && <p className="text-sm text-gray-500 mt-1">Carregando perfis disponíveis...</p>}
+        <Label className="mb-2 block">Perfil de Acesso</Label>
+        <div className="mt-1 flex items-center gap-2">
+          {selectedRole ? (
+            <>
+              <Badge variant={selectedRole.isSystem ? 'secondary' : 'default'} className="text-base py-1 px-3">
+                {selectedRole.name}
+              </Badge>
+              {selectedRole.isSystem && (
+                <span className="flex items-center gap-1 text-xs text-gray-500" title="Perfil do sistema">
+                  <Icon icon={Lock} size={12} />
+                  Sistema
+                </span>
+              )}
+            </>
+          ) : rolesLoading ? (
+            <span className="text-gray-500">Carregando...</span>
+          ) : (
+            <span className="text-gray-500">Sem perfil</span>
+          )}
+        </div>
+        <p className="text-sm text-gray-500 mt-1">
+          O perfil de acesso só pode ser alterado por um administrador
+        </p>
       </div>
     </div>
   );
@@ -218,7 +234,7 @@ const Profile: React.FC = () => {
         <FormProvider {...form}>
           {isEditing ? (
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <ProfileFormEdit roles={roles} rolesLoading={rolesLoading} />
+              <ProfileFormEdit profile={profile} roles={roles} rolesLoading={rolesLoading} />
               <div className="mt-8">
                 <AddressManager
                   mode="edit"
@@ -231,7 +247,7 @@ const Profile: React.FC = () => {
             </form>
           ) : (
             <>
-              <ProfileFormView roles={roles} />
+              <ProfileFormView profile={profile} roles={roles} />
               <div className="mt-8">
                 <AddressManager
                   mode="view"

@@ -16,6 +16,8 @@ import {
   Leaf,
   PackageOpen,
   ShieldCheck,
+  Truck,
+  MapPin,
 } from 'lucide-react';
 import { cn } from '@common/helpers';
 import { Icon } from '../../atoms';
@@ -112,6 +114,10 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
           return ShoppingCart;
         case 'stock':
           return PackageOpen;
+        case 'deliveries':
+          return Truck;
+        case 'my-deliveries':
+          return MapPin;
         case 'registrations':
           return FolderOpen;
         case 'users':

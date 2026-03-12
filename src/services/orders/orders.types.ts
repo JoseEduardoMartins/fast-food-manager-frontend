@@ -5,6 +5,33 @@
 
 import type { SortConfig } from '@services/countries';
 import type { OrderStatus, PaymentMethod, ConsumptionMode } from '@common/constants/orderEnums';
+import type { User } from '@services/users';
+import type { Address } from '@services/addresses';
+
+/**
+ * Branch (minimal) for order display
+ */
+export interface Branch {
+  id: string;
+  name: string;
+  companyId: string;
+  phone?: string;
+  isActive: boolean;
+}
+
+/**
+ * OrderDelivery (minimal) for order display
+ */
+export interface OrderDeliveryInfo {
+  id: string;
+  orderId: string;
+  userId: string;
+  status: string;
+  assignedAt?: string;
+  deliveredAt?: string;
+  note?: string;
+  deliveryUser?: User;
+}
 
 export interface Order {
   id: string;
@@ -18,6 +45,13 @@ export interface Order {
   deliveryAddressId?: string;
   createdAt: string;
   updatedAt: string;
+  
+  // Relações (quando incluídas via selectFields)
+  client?: User;
+  attendant?: User;
+  branch?: Branch;
+  deliveryAddress?: Address;
+  orderDelivery?: OrderDeliveryInfo;
 }
 
 export interface ListOrdersParams {

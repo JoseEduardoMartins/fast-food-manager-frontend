@@ -62,7 +62,6 @@ export const useProfile = (userId: string | undefined) => {
       form.reset({
         name: data.name,
         email: data.email,
-        roleId: data.roleId || '',
         password: '',
         confirmPassword: '',
       });
@@ -101,7 +100,6 @@ export const useProfile = (userId: string | undefined) => {
       const payload: UpdateUserRequest = {
         name: data.name,
         email: data.email,
-        roleId: data.roleId,
         ...(data.password ? { password: data.password } : {}),
         addresses: cleanAddresses.length > 0 ? cleanAddresses : undefined,
       };

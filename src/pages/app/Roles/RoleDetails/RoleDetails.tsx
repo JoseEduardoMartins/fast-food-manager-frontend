@@ -7,6 +7,7 @@ import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import { AppLayout, PageHeader, ErrorAlert, Button, Icon, Card, Label } from '@components';
 import { useAuth } from '@contexts';
 import { PERMISSIONS, PERMISSIONS_BY_RESOURCE } from '@common/constants/permissions';
+import { RESOURCE_LABELS } from '@common/constants/resourceLabels';
 import { useRoleDetails } from './useRoleDetails';
 
 const RoleDetails: React.FC = () => {
@@ -29,17 +30,6 @@ const RoleDetails: React.FC = () => {
   }
 
   const permissionsList = new Set(role.permissions ?? []);
-  const RESOURCE_LABELS: Record<string, string> = {
-    users: 'Usuários',
-    companies: 'Empresas',
-    branches: 'Filiais',
-    menus: 'Menus',
-    categories: 'Categorias',
-    products: 'Produtos',
-    orders: 'Pedidos',
-    ingredients: 'Ingredientes',
-    roles: 'Perfis de Acesso',
-  };
 
   return (
     <AppLayout user={currentUser} onSignOut={signOut}>

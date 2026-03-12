@@ -34,6 +34,7 @@ import StockDetails from './Stock/StockDetails';
 import EditStock from './Stock/EditStock';
 import StockMovement from './Stock/StockMovement';
 import { RoleList, RoleDetails, CreateRole, EditRole } from './Roles';
+import { DeliveryList, MyDeliveries } from './Deliveries';
 import { ROUTES } from '@common/constants';
 import { PERMISSIONS } from '@common/constants/permissions';
 
@@ -384,6 +385,22 @@ export const AppRoutes = (
       element={
         <ProtectedRoute allowedRoles={['admin', 'owner', 'manager', 'cook']} allowedPermissions={[PERMISSIONS.products.update]}>
           <EditStock />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.DELIVERIES}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner', 'manager']} allowedPermissions={[PERMISSIONS.orderDeliveries.list]}>
+          <DeliveryList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.MY_DELIVERIES}
+      element={
+        <ProtectedRoute allowedRoles={['delivery']} allowedPermissions={[PERMISSIONS.orderDeliveries.list]}>
+          <MyDeliveries />
         </ProtectedRoute>
       }
     />

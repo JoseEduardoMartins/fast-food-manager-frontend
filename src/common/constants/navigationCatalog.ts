@@ -13,6 +13,8 @@ import {
   Layers,
   Package,
   Leaf,
+  Truck,
+  MapPin,
 } from 'lucide-react';
 
 import { ROUTES } from './routes';
@@ -72,6 +74,22 @@ export const NAVIGATION_CATALOG: NavigationCatalogItem[] = [
     path: ROUTES.STOCK,
     permission: PERMISSIONS.products.list,
     icon: PackageOpen,
+  },
+  {
+    type: 'link',
+    id: 'deliveries',
+    label: 'Gerenciar Entregas',
+    path: ROUTES.DELIVERIES,
+    permission: PERMISSIONS.orderDeliveries.list,
+    icon: Truck,
+  },
+  {
+    type: 'link',
+    id: 'my-deliveries',
+    label: 'Minhas Entregas',
+    path: ROUTES.MY_DELIVERIES,
+    permission: PERMISSIONS.orderDeliveries.list,
+    icon: MapPin,
   },
   {
     type: 'group',

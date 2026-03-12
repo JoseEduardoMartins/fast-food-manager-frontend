@@ -79,13 +79,13 @@ export type UserFormData = z.infer<typeof userFormSchema>;
 export type UserFormEditData = z.infer<typeof userFormEditSchema>;
 
 /**
- * Profile form - name, email, roleId, optional password
+ * Profile form - name, email, optional password
+ * roleId is read-only for security (only admins can change user roles)
  */
 export const profileFormSchema = z
   .object({
     name: z.string().min(1, 'Nome é obrigatório').trim(),
     email: z.string().email('Email inválido').min(1, 'Email é obrigatório'),
-    roleId: z.string().uuid('Perfil de acesso é obrigatório').min(1, 'Perfil de acesso é obrigatório'),
     password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres').optional().or(z.literal('')),
     confirmPassword: z.string().optional().or(z.literal('')),
   })

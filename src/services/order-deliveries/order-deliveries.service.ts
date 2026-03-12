@@ -1,7 +1,6 @@
 /**
- * Order deliveries service
- * CRUD operations for order deliveries (delivery mode)
- * Based on backend API documentation
+ * Order Deliveries service
+ * Manages delivery assignments and tracking
  */
 
 import { http } from '@config';
@@ -19,30 +18,19 @@ export const listOrderDeliveries = async (
   params?: ListOrderDeliveriesParams
 ): Promise<ListOrderDeliveriesResponse> => {
   const queryString = buildQueryParams(params as Record<string, QueryParamValue>);
-  const response = await http.get<ListOrderDeliveriesResponse>(
-    `/order-deliveries${queryString}`
-  );
+  const response = await http.get<ListOrderDeliveriesResponse>(`/order-deliveries${queryString}`);
   return response.data;
 };
 
-export const getOrderDeliveryById = async (
-  id: string,
-  selectFields?: string[]
-): Promise<OrderDelivery> => {
-  const queryString = buildQueryParams({ selectFields });
-  const response = await http.get<OrderDelivery>(
-    `/order-deliveries/${id}${queryString}`
-  );
+export const getOrderDeliveryById = async (id: string): Promise<OrderDelivery> => {
+  const response = await http.get<OrderDelivery>(`/order-deliveries/${id}`);
   return response.data;
 };
 
 export const createOrderDelivery = async (
   data: CreateOrderDeliveryRequest
 ): Promise<CreateOrderDeliveryResponse> => {
-  const response = await http.post<CreateOrderDeliveryResponse>(
-    '/order-deliveries',
-    data
-  );
+  const response = await http.post<CreateOrderDeliveryResponse>('/order-deliveries', data);
   return response.data;
 };
 

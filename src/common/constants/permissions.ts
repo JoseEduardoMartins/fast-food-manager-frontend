@@ -68,6 +68,20 @@ export const PERMISSIONS = {
     update: 'roles.update',
     delete: 'roles.delete',
   },
+  orderDeliveries: {
+    list: 'order-deliveries.list',
+    read: 'order-deliveries.read',
+    create: 'order-deliveries.create',
+    update: 'order-deliveries.update',
+    delete: 'order-deliveries.delete',
+  },
+  addresses: {
+    list: 'addresses.list',
+    read: 'addresses.read',
+    create: 'addresses.create',
+    update: 'addresses.update',
+    delete: 'addresses.delete',
+  },
 } as const;
 
 export type PermissionCode = string;
