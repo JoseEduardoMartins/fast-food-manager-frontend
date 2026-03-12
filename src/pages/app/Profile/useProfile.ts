@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { getUserById, updateUser } from '@services/users';
 import type { User, UpdateUserRequest, UserAddressInput } from '@services/users';
+import { listRoles, type Role } from '@services/roles';
 import { profileFormSchema, type ProfileFormData } from '../Users/schemas';
 
 export const useProfile = (userId: string | undefined) => {
@@ -18,10 +19,30 @@ export const useProfile = (userId: string | undefined) => {
   const [error, setError] = useState<string | null>(null);
   const [addresses, setAddresses] = useState<UserAddressInput[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [rolesLoading, setRolesLoading] = useState(true);
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
   });
+
+  // Carregar roles disponíveis
+  useEffect(() => {
+    const loadRoles = async () => {
+      try {
+        setRolesLoading(true);
+        const response = await listRoles({ pageSize: 100 });
+        setRoles(response.data);
+      } catch (err) {
+        console.error('Erro ao carregar perfis:', err);
+        toast.error('Erro ao carregar perfis de acesso');
+      } finally {
+        setRolesLoading(false);
+      }
+    };
+
+    loadRoles();
+  }, []);
 
   useEffect(() => {
     if (!userId) {
@@ -41,6 +62,7 @@ export const useProfile = (userId: string | undefined) => {
       form.reset({
         name: data.name,
         email: data.email,
+        roleId: data.roleId || '',
         password: '',
         confirmPassword: '',
       });
@@ -79,6 +101,7 @@ export const useProfile = (userId: string | undefined) => {
       const payload: UpdateUserRequest = {
         name: data.name,
         email: data.email,
+        roleId: data.roleId,
         ...(data.password ? { password: data.password } : {}),
         addresses: cleanAddresses.length > 0 ? cleanAddresses : undefined,
       };
@@ -118,5 +141,7 @@ export const useProfile = (userId: string | undefined) => {
     setIsEditing,
     onSubmit,
     reloadProfile: loadProfile,
+    roles,
+    rolesLoading,
   };
 };

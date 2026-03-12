@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { FormProvider, useFormContext } from 'react-hook-form';
-import { Edit, Save, X } from 'lucide-react';
+import { Edit, Save, X, Lock } from 'lucide-react';
 import {
   AppLayout,
   PageHeader,
@@ -15,37 +15,59 @@ import {
   Card,
   FormField,
   Badge,
+  Label,
+  Select,
 } from '@components';
 import { useAuth } from '@contexts';
 import { AddressManager } from '../Users/components/AddressManager';
 import { UserInfoSubHeader } from '../Users/components/UserInfoSubHeader';
 import { useProfile } from './useProfile';
 import type { ProfileFormData } from '../Users/schemas';
-import type { UserRole } from '@services/users';
+import type { Role } from '@services/roles';
 
-const roleLabels: Record<UserRole, string> = {
-  admin: 'Administrador',
-  owner: 'Proprietário',
-  manager: 'Gerente',
-  cook: 'Cozinheiro',
-  attendant: 'Atendente',
-  customer: 'Cliente',
-  delivery: 'Entregador',
-};
+interface ProfileFormViewProps {
+  roles: Role[];
+}
 
-function ProfileFormView() {
+function ProfileFormView({ roles }: ProfileFormViewProps) {
   const { watch } = useFormContext<ProfileFormData>();
   const name = watch('name');
   const email = watch('email');
+  const roleId = watch('roleId');
+  const selectedRole = roles.find((r) => r.id === roleId);
+  
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <FormField label="Nome" value={name} readOnly />
-      <FormField label="Email" value={email} readOnly />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField label="Nome" value={name} readOnly />
+        <FormField label="Email" value={email} readOnly />
+      </div>
+      {selectedRole && (
+        <div>
+          <Label className="mb-2 block">Perfil de Acesso</Label>
+          <div className="mt-1 flex items-center gap-2">
+            <Badge variant={selectedRole.isSystem ? 'secondary' : 'default'} className="text-base py-1 px-3">
+              {selectedRole.name}
+            </Badge>
+            {selectedRole.isSystem && (
+              <span className="flex items-center gap-1 text-xs text-gray-500" title="Perfil do sistema">
+                <Icon icon={Lock} size={12} />
+                Sistema
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function ProfileFormEdit() {
+interface ProfileFormEditProps {
+  roles: Role[];
+  rolesLoading: boolean;
+}
+
+function ProfileFormEdit({ roles, rolesLoading }: ProfileFormEditProps) {
   const { register, formState: { errors } } = useFormContext<ProfileFormData>();
   return (
     <div className="space-y-6">
@@ -84,6 +106,32 @@ function ProfileFormEdit() {
           placeholder="Repita a senha"
         />
       </div>
+      
+      {/* Perfil de Acesso */}
+      <div>
+        <Label className="mb-2 block">
+          Perfil de Acesso
+          <span className="text-error ml-1">*</span>
+        </Label>
+        <Select
+          required
+          {...register('roleId')}
+          error={!!errors.roleId}
+          disabled={rolesLoading}
+        >
+          <option value="">
+            {rolesLoading ? 'Carregando perfis...' : 'Selecione um perfil'}
+          </option>
+          {roles.map((role) => (
+            <option key={role.id} value={role.id}>
+              {role.name}
+              {role.isSystem ? ' (Sistema)' : ''}
+            </option>
+          ))}
+        </Select>
+        {errors.roleId && <p className="text-sm text-error mt-1">{errors.roleId?.message}</p>}
+        {rolesLoading && <p className="text-sm text-gray-500 mt-1">Carregando perfis disponíveis...</p>}
+      </div>
     </div>
   );
 }
@@ -103,6 +151,8 @@ const Profile: React.FC = () => {
     setIsEditing,
     onSubmit,
     reloadProfile,
+    roles,
+    rolesLoading,
   } = useProfile(currentUser?.id);
 
   if (!currentUser) {
@@ -165,17 +215,10 @@ const Profile: React.FC = () => {
       {profile && <UserInfoSubHeader user={profile} />}
 
       <Card className="p-6">
-        <div className="mb-6">
-          <span className="text-gray-600 dark:text-gray-400 mr-2">Tipo de usuário:</span>
-          <Badge variant="secondary" className="text-base py-1 px-3">
-            {roleLabels[profile.role]}
-          </Badge>
-        </div>
-
         <FormProvider {...form}>
           {isEditing ? (
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <ProfileFormEdit />
+              <ProfileFormEdit roles={roles} rolesLoading={rolesLoading} />
               <div className="mt-8">
                 <AddressManager
                   mode="edit"
@@ -188,7 +231,7 @@ const Profile: React.FC = () => {
             </form>
           ) : (
             <>
-              <ProfileFormView />
+              <ProfileFormView roles={roles} />
               <div className="mt-8">
                 <AddressManager
                   mode="view"
