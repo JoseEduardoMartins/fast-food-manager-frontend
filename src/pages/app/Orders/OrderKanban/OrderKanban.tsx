@@ -4,7 +4,7 @@
  * admin/owner/manager: todas | cozinheiro: Recebido, Em preparo, Pronto | atendente/entrega: Pronto, Entregue
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronRight, XCircle } from 'lucide-react';
 import {
@@ -19,17 +19,14 @@ import { useAuth } from '@contexts';
 import type { Order } from '@services/orders';
 import { CONSUMPTION_MODE_LABELS } from '@common/constants/orderEnums';
 import { ROUTES } from '@common/constants';
+import { formatCurrency } from '@common/helpers';
+import { useBranches } from '@common/hooks';
 import { useOrderKanban } from './useOrderKanban';
-import { listBranches } from '@services/branches';
-import type { Branch } from '@services/branches';
-
-const formatMoney = (centavos: number) =>
-  `R$ ${(centavos / 100).toFixed(2).replace('.', ',')}`;
 
 const OrderKanban: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser, signOut } = useAuth();
-  const [branches, setBranches] = useState<Branch[]>([]);
+  const { getBranchName } = useBranches();
 
   const {
     columns,
@@ -52,15 +49,6 @@ const OrderKanban: React.FC = () => {
     userRole === 'owner' ||
     userRole === 'manager' ||
     userRole === 'attendant';
-
-  useEffect(() => {
-    listBranches({ pageSize: 200, sort: { fields: ['name'], order: ['ASC'] } })
-      .then((res) => setBranches(res.data))
-      .catch(() => setBranches([]));
-  }, []);
-
-  const getBranchName = (branchId: string) =>
-    branches.find((b) => b.id === branchId)?.name ?? branchId.slice(0, 8) + '…';
 
   return (
     <AppLayout user={currentUser} onSignOut={signOut}>
@@ -187,7 +175,7 @@ function OrderCard({
         <p className="font-mono text-xs text-muted-foreground mb-1">
           #{order.id.slice(0, 8)}
         </p>
-        <p className="font-medium text-foreground">{formatMoney(order.total)}</p>
+        <p className="font-medium text-foreground">{formatCurrency(order.total)}</p>
         <p className="text-xs text-muted-foreground mt-1">{branchName}</p>
         <p className="text-xs text-muted-foreground">
           {CONSUMPTION_MODE_LABELS[order.consumptionMode]}

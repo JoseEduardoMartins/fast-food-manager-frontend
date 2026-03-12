@@ -29,15 +29,14 @@ import {
   CONSUMPTION_MODE_LABELS,
 } from '@common/constants/orderEnums';
 import { ROUTES } from '@common/constants';
+import { formatCurrency } from '@common/helpers';
+import { useBranches } from '@common/hooks';
 import { useOrderList } from './useOrderList';
-import { listBranches } from '@services/branches';
-import type { Branch } from '@services/branches';
-import { useState, useEffect } from 'react';
 
 const OrderList: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser, signOut } = useAuth();
-  const [branches, setBranches] = useState<Branch[]>([]);
+  const { branches, getBranchName } = useBranches();
 
   const {
     orders,
@@ -59,12 +58,6 @@ const OrderList: React.FC = () => {
     setError,
   } = useOrderList();
 
-  useEffect(() => {
-    listBranches({ pageSize: 200, sort: { fields: ['name'], order: ['ASC'] } })
-      .then((res) => setBranches(res.data))
-      .catch(() => setBranches([]));
-  }, []);
-
   const columns = useMemo<ColumnDef<Order>[]>(
     () => [
       {
@@ -78,11 +71,7 @@ const OrderList: React.FC = () => {
       {
         accessorKey: 'branchId',
         header: 'Filial',
-        cell: (info) => {
-          const branchId = info.getValue() as string;
-          const branch = branches.find((b) => b.id === branchId);
-          return branch?.name ?? branchId.slice(0, 8) + '…';
-        },
+        cell: (info) => getBranchName(info.getValue() as string),
       },
       {
         accessorKey: 'status',
@@ -103,10 +92,7 @@ const OrderList: React.FC = () => {
       {
         accessorKey: 'total',
         header: 'Total',
-        cell: (info) => {
-          const total = info.getValue() as number;
-          return `R$ ${(total / 100).toFixed(2).replace('.', ',')}`;
-        },
+        cell: (info) => formatCurrency(info.getValue() as number),
       },
       {
         accessorKey: 'paymentMethod',
@@ -177,7 +163,7 @@ const OrderList: React.FC = () => {
         },
       },
     ],
-    [handleDelete, navigate, branches]
+    [getBranchName, handleDelete, navigate]
   );
 
   return (

@@ -21,6 +21,7 @@ import {
   CONSUMPTION_MODE_LABELS,
   ORDER_DELIVERY_STATUS_LABELS,
 } from '@common/constants/orderEnums';
+import { formatCurrency } from '@common/helpers';
 import { useOrderDetails } from './useOrderDetails';
 
 const OrderDetails: React.FC = () => {
@@ -98,7 +99,7 @@ const OrderDetails: React.FC = () => {
             </div>
             <div>
               <dt className="text-muted-foreground">Total</dt>
-              <dd>R$ {(order.total / 100).toFixed(2).replace('.', ',')}</dd>
+              <dd>{formatCurrency(order.total)}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground">Pagamento</dt>
@@ -158,10 +159,7 @@ const OrderDetails: React.FC = () => {
                   {item.note ? ` (${item.note})` : ''}
                 </span>
                 <span>
-                  R$ {(item.unitPrice / 100).toFixed(2).replace('.', ',')} un. → R${' '}
-                  {((item.quantity * item.unitPrice) / 100)
-                    .toFixed(2)
-                    .replace('.', ',')}
+                  {formatCurrency(item.unitPrice)} un. → {formatCurrency(item.quantity * item.unitPrice)}
                 </span>
               </li>
             ))}

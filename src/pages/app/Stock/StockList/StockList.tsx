@@ -23,10 +23,8 @@ import {
 import { useAuth } from '@contexts';
 import type { BranchIngredient } from '@services/branch-ingredients';
 import { ROUTES } from '@common/constants';
+import { formatCurrency } from '@common/helpers';
 import { useStockList } from './useStockList';
-
-const formatPrice = (centavos: number) =>
-  `R$ ${(centavos / 100).toFixed(2).replace('.', ',')}`;
 
 /** Porcentagem em relação ao mínimo (100% = no mínimo). Cor: crítico < 100%, atenção 100–120%, OK > 120% */
 function stockLevelPercent(quantity: number, minQuantity: number): number | null {
@@ -102,14 +100,14 @@ const StockList: React.FC = () => {
       {
         accessorKey: 'purchasePrice',
         header: 'Preço compra',
-        cell: (info) => formatPrice(info.getValue() as number),
+        cell: (info) => formatCurrency(info.getValue() as number),
       },
       {
         accessorKey: 'salePrice',
         header: 'Preço venda',
         cell: (info) => {
           const v = info.getValue() as number | undefined;
-          return v != null ? formatPrice(v) : '-';
+          return v != null ? formatCurrency(v) : '-';
         },
       },
       {

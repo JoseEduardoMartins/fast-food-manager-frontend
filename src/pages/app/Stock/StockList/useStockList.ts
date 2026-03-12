@@ -5,16 +5,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { useBranches } from '@common/hooks';
 import { listBranchIngredients, deleteBranchIngredient } from '@services/branch-ingredients';
-import { listBranches } from '@services/branches';
 import { listIngredients } from '@services/ingredients';
 import type { BranchIngredient, ListBranchIngredientsParams } from '@services/branch-ingredients';
-import type { Branch } from '@services/branches';
 import type { Ingredient } from '@services/ingredients';
 
 export const useStockList = () => {
+  const { branches, getBranchName } = useBranches({ pageSize: 500 });
   const [items, setItems] = useState<BranchIngredient[]>([]);
-  const [branches, setBranches] = useState<Branch[]>([]);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBranchId, setSelectedBranchId] = useState<string>('all');
@@ -26,16 +25,14 @@ export const useStockList = () => {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const loadBranchesAndIngredients = useCallback(async () => {
+  const loadIngredients = useCallback(async () => {
     try {
-      const [branchRes, ingRes] = await Promise.all([
-        listBranches({ pageSize: 500, sort: { fields: ['name'], order: ['ASC'] } }),
-        listIngredients({ pageSize: 500, sort: { fields: ['name'], order: ['ASC'] } }),
-      ]);
-      setBranches(branchRes.data);
+      const ingRes = await listIngredients({
+        pageSize: 500,
+        sort: { fields: ['name'], order: ['ASC'] },
+      });
       setIngredients(ingRes.data);
     } catch {
-      setBranches([]);
       setIngredients([]);
     }
   }, []);
@@ -70,8 +67,8 @@ export const useStockList = () => {
   }, [pagination.pageIndex, pagination.pageSize, selectedBranchId]);
 
   useEffect(() => {
-    loadBranchesAndIngredients();
-  }, [loadBranchesAndIngredients]);
+    loadIngredients();
+  }, [loadIngredients]);
 
   useEffect(() => {
     loadStock();
@@ -101,8 +98,6 @@ export const useStockList = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
-  const getBranchName = (branchId: string) =>
-    branches.find((b) => b.id === branchId)?.name ?? branchId.slice(0, 8);
   const getIngredientName = (ingredientId: number) =>
     ingredients.find((i) => i.id === ingredientId)?.name ?? String(ingredientId);
 

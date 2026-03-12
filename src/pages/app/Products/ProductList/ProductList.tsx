@@ -24,10 +24,8 @@ import {
 import { useAuth } from '@contexts';
 import type { Product } from '@services/products';
 import { ROUTES } from '@common/constants';
+import { formatCurrency } from '@common/helpers';
 import { useProductList } from './useProductList';
-
-const formatPrice = (centavos: number) =>
-  `R$ ${(centavos / 100).toFixed(2).replace('.', ',')}`;
 
 const ProductList: React.FC = () => {
   const navigate = useNavigate();
@@ -58,7 +56,7 @@ const ProductList: React.FC = () => {
       {
         accessorKey: 'price',
         header: 'Preço',
-        cell: (info) => formatPrice(info.getValue() as number),
+        cell: (info) => formatCurrency(info.getValue() as number),
       },
       {
         accessorKey: 'isActive',

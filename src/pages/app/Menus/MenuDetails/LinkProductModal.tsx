@@ -4,12 +4,10 @@
 
 import React, { useState } from 'react';
 import { Modal, Button, AsyncSelect } from '@components';
+import { formatCurrency } from '@common/helpers';
 import { listProducts } from '@services/products';
 import type { Product } from '@services/products';
 import type { ListProductsParams } from '@services/products';
-
-const formatPrice = (centavos: number) =>
-  `R$ ${(centavos / 100).toFixed(2).replace('.', ',')}`;
 
 interface LinkProductModalProps {
   isOpen: boolean;
@@ -71,7 +69,7 @@ export const LinkProductModal: React.FC<LinkProductModalProps> = ({
           onChange={(e) => setSelectedProductId(e.target.value)}
           loadOptions={loadProducts}
           getValue={(p) => p.id}
-          getLabel={(p) => `${p.name} – ${formatPrice(p.price)}`}
+          getLabel={(p) => `${p.name} – ${formatCurrency(p.price)}`}
           placeholder="Buscar e selecionar um produto..."
           reloadOnParamsChange={false}
         />
