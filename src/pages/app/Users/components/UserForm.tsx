@@ -104,10 +104,13 @@ export const UserForm: React.FC<UserFormProps> = ({
           </Label>
           {isViewOnly ? (
             <div className="mt-1 flex items-center gap-2">
-              <Badge variant={user?.roleData?.isSystem ? 'secondary' : 'default'} className="text-base py-1 px-3">
-                {user?.roleData?.name || 'Sem perfil'}
+              <Badge 
+                variant={typeof user?.role === 'object' && user.role.isSystem ? 'secondary' : 'default'} 
+                className="text-base py-1 px-3"
+              >
+                {typeof user?.role === 'object' ? user.role.name : 'Sem perfil'}
               </Badge>
-              {user?.roleData?.isSystem && (
+              {typeof user?.role === 'object' && user.role.isSystem && (
                 <span className="text-xs text-gray-500" title="Perfil do sistema">
                   🔒 Sistema
                 </span>

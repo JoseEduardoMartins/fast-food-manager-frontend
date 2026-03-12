@@ -115,9 +115,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: UserRole; // Legacy - mantido para compatibilidade com auth
+  role: UserRole | Role; // Pode ser enum legacy (auth) ou objeto Role (RBAC do backend)
   roleId?: string; // RBAC - ID do perfil de acesso
-  roleData?: Role; // RBAC - dados completos do perfil
   isActive: boolean;
   isVerified: boolean;
   isDeleted?: boolean;

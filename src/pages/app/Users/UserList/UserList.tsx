@@ -77,28 +77,34 @@ const UserList: React.FC = () => {
         cell: (info) => info.getValue(),
       },
       {
-        accessorKey: 'roleData',
+        accessorKey: 'role',
         header: 'Perfil de Acesso',
         cell: (info) => {
           const user = info.row.original;
-          const roleData = user.roleData;
+          const role = user.role;
           
-          if (!roleData) {
-            return <Badge variant="error">Sem perfil</Badge>;
+          // Se role for objeto (RBAC do backend)
+          if (typeof role === 'object' && role !== null) {
+            return (
+              <div className="flex items-center gap-2">
+                <Badge variant={role.isSystem ? 'secondary' : 'default'}>
+                  {role.name}
+                </Badge>
+                {role.isSystem && (
+                  <span className="text-xs text-gray-500" title="Perfil do sistema">
+                    🔒
+                  </span>
+                )}
+              </div>
+            );
           }
           
-          return (
-            <div className="flex items-center gap-2">
-              <Badge variant={roleData.isSystem ? 'secondary' : 'default'}>
-                {roleData.name}
-              </Badge>
-              {roleData.isSystem && (
-                <span className="text-xs text-gray-500" title="Perfil do sistema">
-                  🔒
-                </span>
-              )}
-            </div>
-          );
+          // Fallback para enum legacy (se ainda houver)
+          if (typeof role === 'string') {
+            return <Badge variant="secondary">{roleLabels[role as UserRole] || role}</Badge>;
+          }
+          
+          return <Badge variant="error">Sem perfil</Badge>;
         },
       },
       {
