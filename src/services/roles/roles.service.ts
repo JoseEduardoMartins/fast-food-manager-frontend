@@ -17,7 +17,24 @@ import type {
 export const listRoles = async (params?: ListRolesParams): Promise<ListRolesResponse> => {
   const queryString = buildQueryParams(params as Record<string, QueryParamValue>);
   const response = await http.get<ListRolesResponse>(`/roles${queryString}`);
-  return response.data;
+  
+  // Mapear rolePermissions para permissions em cada role
+  const mappedData = response.data.data.map((role) => {
+    const mappedPermissions =
+      role.rolePermissions
+        ?.map((rp) => rp.permission?.code)
+        .filter((code): code is string => !!code) ?? [];
+    
+    return {
+      ...role,
+      permissions: mappedPermissions,
+    };
+  });
+
+  return {
+    ...response.data,
+    data: mappedData,
+  };
 };
 
 export const getRoleById = async (id: string): Promise<Role> => {
