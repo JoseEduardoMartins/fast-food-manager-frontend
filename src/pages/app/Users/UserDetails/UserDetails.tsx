@@ -10,9 +10,10 @@ import { AppLayout, PageHeader, ErrorAlert, Button, Icon, Card } from '@componen
 import { useAuth } from '@contexts';
 import { UserForm, UserInfoSubHeader } from '../components';
 import { useUserDetails } from './useUserDetails';
+import { PERMISSIONS } from '@common/constants/permissions';
 
 const UserDetails: React.FC = () => {
-  const { user: currentUser, signOut } = useAuth();
+  const { user: currentUser, signOut, hasPermission } = useAuth();
   const {
     user,
     loading,
@@ -26,6 +27,9 @@ const UserDetails: React.FC = () => {
     handleBack,
     reloadUser,
   } = useUserDetails();
+
+  const canUpdate = hasPermission(PERMISSIONS.users.update);
+  const canDelete = hasPermission(PERMISSIONS.users.delete);
 
   if (loading) {
     return (
@@ -64,25 +68,33 @@ const UserDetails: React.FC = () => {
               <Icon icon={ArrowLeft} size={16} className="mr-2" />
               Voltar
             </Button>
-            <Button onClick={handleEdit}>
-              <Icon icon={Edit} size={16} className="mr-2" />
-              Editar
-            </Button>
-            <Button
-              variant={user.isActive ? 'warning' : 'success'}
-              onClick={handleToggleActive}
-              disabled={toggling}
-            >
-              <Icon icon={user.isActive ? UserX : UserCheck} size={16} className="mr-2" />
-              {toggling ? 'Alterando...' : user.isActive ? 'Desativar' : 'Ativar'}
-            </Button>
-            <Button
-              variant="error"
-              onClick={handleDelete}
-            >
-              <Icon icon={Trash2} size={16} className="mr-2" />
-              Excluir
-            </Button>
+            {canUpdate && (
+              <Button onClick={handleEdit}>
+                <Icon icon={Edit} size={16} className="mr-2" />
+                Editar
+              </Button>
+            )}
+            {canUpdate && (
+              <>
+                <Button
+                  variant={user.isActive ? 'warning' : 'success'}
+                  onClick={handleToggleActive}
+                  disabled={toggling}
+                >
+                  <Icon icon={user.isActive ? UserX : UserCheck} size={16} className="mr-2" />
+                  {toggling ? 'Alterando...' : user.isActive ? 'Desativar' : 'Ativar'}
+                </Button>
+              </>
+            )}
+            {canDelete && (
+              <Button
+                variant="error"
+                onClick={handleDelete}
+              >
+                <Icon icon={Trash2} size={16} className="mr-2" />
+                Excluir
+              </Button>
+            )}
           </div>
         }
       />

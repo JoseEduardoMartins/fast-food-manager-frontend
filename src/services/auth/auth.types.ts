@@ -58,6 +58,8 @@ export interface SignInResponse {
   token: string;
   refreshToken: string;
   user: User;
+  /** Permissions granted to the user (RBAC) */
+  permissions?: string[];
 }
 
 /**
@@ -82,4 +84,11 @@ export interface ApiErrorResponse {
   statusCode: number;
   message: string;
   error: string;
+}
+
+/** 401 with token: "PERMISSION_DENIED" = lack of permission (do not logout) */
+export interface PermissionDeniedResponse {
+  message?: string;
+  permission?: string;
+  token: 'PERMISSION_DENIED';
 }

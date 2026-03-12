@@ -1,9 +1,11 @@
 /**
  * HTTP error handler
- * Handles token refresh and error responses
+ * Handles token refresh and error responses.
+ * 401 with token "PERMISSION_DENIED" = lack of permission (do not logout).
  */
 
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { toast } from 'sonner';
 import { getRefreshToken, setAccessToken } from './cookies';
 import { refreshHttp, http } from './http';
 
@@ -24,6 +26,8 @@ const HTTP_STATUS_CODE = {
 
 interface ApiError {
   message?: string;
+  permission?: string;
+  token?: string;
 }
 
 /**
@@ -71,6 +75,16 @@ export const httpErrorHandler = async (
 ): Promise<any> => {
   const { status, config, response } = error;
 
+  if (status === HTTP_STATUS_CODE.unauthorized && response?.data) {
+    const data = response.data as ApiError;
+    if (data.token === 'PERMISSION_DENIED') {
+      if (typeof window !== 'undefined') {
+        toast.error('Você não tem permissão para esta ação.');
+      }
+      return Promise.reject(error);
+    }
+  }
+
   if (status === HTTP_STATUS_CODE.unauthorized && config) {
     const originalRequest = config as InternalAxiosRequestConfig & { _retry?: boolean };
 
@@ -115,7 +129,10 @@ export const httpErrorHandler = async (
     case HTTP_STATUS_CODE.unauthorized:
       console.error('Unauthorized:', message || response?.data);
       if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+        const data = response?.data as ApiError | undefined;
+        if (data?.token !== 'PERMISSION_DENIED') {
+          window.location.href = '/login';
+        }
       }
       break;
     case HTTP_STATUS_CODE.notFound:

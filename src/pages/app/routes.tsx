@@ -33,7 +33,9 @@ import CreateStock from './Stock/CreateStock';
 import StockDetails from './Stock/StockDetails';
 import EditStock from './Stock/EditStock';
 import StockMovement from './Stock/StockMovement';
+import { RoleList, RoleDetails, CreateRole, EditRole } from './Roles';
 import { ROUTES } from '@common/constants';
+import { PERMISSIONS } from '@common/constants/permissions';
 
 /**
  * Protected routes - require authentication
@@ -60,7 +62,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.USERS}
       element={
-        <ProtectedRoute allowedRoles={['admin']}>
+        <ProtectedRoute allowedRoles={['admin']} allowedPermissions={[PERMISSIONS.users.list]}>
           <UserList />
         </ProtectedRoute>
       }
@@ -68,7 +70,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.USERS_CREATE}
       element={
-        <ProtectedRoute allowedRoles={['admin']}>
+        <ProtectedRoute allowedRoles={['admin']} allowedPermissions={[PERMISSIONS.users.create]}>
           <CreateUser />
         </ProtectedRoute>
       }
@@ -76,7 +78,7 @@ export const AppRoutes = (
     <Route
       path={ROUTES.USERS_DETAILS}
       element={
-        <ProtectedRoute allowedRoles={['admin']}>
+        <ProtectedRoute allowedRoles={['admin']} allowedPermissions={[PERMISSIONS.users.read]}>
           <UserDetails />
         </ProtectedRoute>
       }
@@ -84,8 +86,40 @@ export const AppRoutes = (
     <Route
       path={ROUTES.USERS_EDIT}
       element={
-        <ProtectedRoute allowedRoles={['admin']}>
+        <ProtectedRoute allowedRoles={['admin']} allowedPermissions={[PERMISSIONS.users.update]}>
           <EditUser />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.ROLES}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.roles.list]}>
+          <RoleList />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.ROLES_CREATE}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.roles.create]}>
+          <CreateRole />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.ROLES_DETAILS}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.roles.read]}>
+          <RoleDetails />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.ROLES_EDIT}
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'owner']} allowedPermissions={[PERMISSIONS.roles.update]}>
+          <EditRole />
         </ProtectedRoute>
       }
     />

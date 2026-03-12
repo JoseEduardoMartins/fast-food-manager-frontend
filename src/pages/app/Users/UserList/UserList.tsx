@@ -25,6 +25,7 @@ import {
 import { useAuth } from '@contexts';
 import type { User, UserRole } from '@services/users';
 import { ROUTES } from '@common/constants';
+import { PERMISSIONS } from '@common/constants/permissions';
 import { useUserList } from './useUserList';
 
 const roleLabels: Record<UserRole, string> = {
@@ -39,7 +40,11 @@ const roleLabels: Record<UserRole, string> = {
 
 const UserList: React.FC = () => {
   const navigate = useNavigate();
-  const { user: currentUser, signOut } = useAuth();
+  const { user: currentUser, signOut, hasPermission } = useAuth();
+
+  const canCreate = hasPermission(PERMISSIONS.users.create);
+  const canUpdate = hasPermission(PERMISSIONS.users.update);
+  const canDelete = hasPermission(PERMISSIONS.users.delete);
   
   const {
     users,
@@ -117,34 +122,38 @@ const UserList: React.FC = () => {
               >
                 <Icon icon={Eye} size={16} />
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`${ROUTES.USERS}/${user.id}/edit`);
-                }}
-                title="Editar usuário"
-              >
-                <Icon icon={Edit} size={16} />
-              </Button>
-              <Button
-                variant="error"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(user.id, user.name);
-                }}
-                title="Excluir usuário"
-              >
-                <Icon icon={Trash2} size={16} />
-              </Button>
+              {canUpdate && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`${ROUTES.USERS}/${user.id}/edit`);
+                  }}
+                  title="Editar usuário"
+                >
+                  <Icon icon={Edit} size={16} />
+                </Button>
+              )}
+              {canDelete && (
+                <Button
+                  variant="error"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(user.id, user.name);
+                  }}
+                  title="Excluir usuário"
+                >
+                  <Icon icon={Trash2} size={16} />
+                </Button>
+              )}
             </div>
           );
         },
       },
     ],
-    [handleDelete, navigate]
+    [canUpdate, canDelete, handleDelete, navigate]
   );
 
   return (
@@ -153,10 +162,12 @@ const UserList: React.FC = () => {
         title="Gerenciamento de Usuários"
         description="Gerencie proprietários, gerentes, cozinheiros, atendentes e clientes"
         action={
-          <Button onClick={() => navigate(ROUTES.USERS_CREATE)}>
-            <Icon icon={Plus} size={16} className="mr-2" />
-            Novo Usuário
-          </Button>
+          canCreate ? (
+            <Button onClick={() => navigate(ROUTES.USERS_CREATE)}>
+              <Icon icon={Plus} size={16} className="mr-2" />
+              Novo Usuário
+            </Button>
+          ) : null
         }
       />
 

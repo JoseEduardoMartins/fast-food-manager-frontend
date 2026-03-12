@@ -10,7 +10,9 @@ export interface SidebarLinkItem {
   path: string;
   label: string;
   icon: LucideIcon;
-  /** Roles that can access this route. Empty = none. */
+  /** Permissions: user needs at least one to see (when permissions are used) */
+  permission?: string;
+  /** Roles that can access (fallback when permissions not used or empty) */
   roles: UserRole[];
 }
 
@@ -27,6 +29,9 @@ export interface SidebarGroupItem {
 export type SidebarItemConfig = SidebarLinkItem | SidebarGroupItem;
 
 export interface SidebarProps extends HTMLAttributes<HTMLElement> {
-  /** Current user role - items are filtered by allowed roles */
   userRole: UserRole;
+  /** User permissions from backend; when length > 0, items are filtered by permission */
+  permissions?: string[];
+  /** Check if user has permission */
+  hasPermission?: (permission: string) => boolean;
 }

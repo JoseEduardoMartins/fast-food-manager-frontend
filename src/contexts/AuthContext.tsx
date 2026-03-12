@@ -8,7 +8,7 @@ import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { http } from '@config';
 import { getAccessToken } from '@config';
-import { getUserFromStorage, setUserInStorage, removeUserFromStorage } from '@config';
+import { getUserFromStorage, setUserInStorage, removeUserFromStorage, getPermissionsFromStorage, setPermissionsInStorage, removePermissionsFromStorage } from '@config';
 import {
   signUp as signUpService,
   signIn as signInService,
@@ -34,8 +34,11 @@ export type ConfirmSignUpType = {
  */
 export type AuthContextType = {
   user: User | null;
+  permissions: string[];
   isAuthenticated: boolean;
   loading: boolean;
+  /** Check if user has a permission (use when permissions are loaded from backend) */
+  hasPermission: (permission: string) => boolean;
   signIn: (data: SignInRequest) => Promise<void>;
   signUp: (data: SignUpRequest) => Promise<void>;
   confirmSignUp: (data: ConfirmSignUpType) => Promise<void>;
@@ -63,9 +66,16 @@ const AuthContext = createContext({} as AuthContextType);
 export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [permissions, setPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const isAuthenticated = !!user;
+
+  const hasPermission = (permission: string): boolean => {
+    if (!permission) return true;
+    if (permissions.length === 0) return false;
+    return permissions.includes(permission);
+  };
 
   /**
    * Signs in a user
@@ -73,17 +83,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signIn = async (data: SignInRequest): Promise<void> => {
     const response = await signInService(data);
 
-    // Store user data in localStorage
     setUser(response.user);
     setUserInStorage(JSON.stringify(response.user));
 
-    // Token is already stored by signInService
-    // Set token in http defaults for immediate use
+    const perms = response.permissions ?? [];
+    setPermissions(perms);
+    setPermissionsInStorage(perms);
+
     if (response.token && http.defaults.headers) {
       http.defaults.headers.token = response.token;
     }
 
-    // Redirect to dashboard (same for all users, content adapts by role)
     navigate(ROUTES.DASHBOARD);
   };
 
@@ -140,7 +150,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signOut = async (): Promise<void> => {
     signOutService();
     setUser(null);
+    setPermissions([]);
     removeUserFromStorage();
+    removePermissionsFromStorage();
 
     // Clear token from http defaults
     if (http.defaults.headers) {
@@ -173,11 +185,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Try to recover user data from localStorage
     try {
       const storedUserData = getUserFromStorage();
-      
+
       if (storedUserData) {
-        // Parse and set user from localStorage
         const userData: User = JSON.parse(storedUserData);
         setUser(userData);
+        const storedPerms = getPermissionsFromStorage();
+        setPermissions(storedPerms);
         setLoading(false);
         return;
       }
@@ -193,10 +206,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // If invalid, the httpErrorHandler will handle it
       setLoading(false);
     } catch (error) {
-      // Invalid stored data or token, clear everything
       signOutService();
       removeUserFromStorage();
+      removePermissionsFromStorage();
       setUser(null);
+      setPermissions([]);
       if (http.defaults.headers) {
         delete http.defaults.headers.token;
       }
@@ -216,8 +230,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     <AuthContext.Provider
       value={{
         user,
+        permissions,
         isAuthenticated,
         loading,
+        hasPermission,
         signIn,
         signUp,
         confirmSignUp,

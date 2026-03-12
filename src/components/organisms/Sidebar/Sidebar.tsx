@@ -15,10 +15,12 @@ import {
   Package,
   Leaf,
   PackageOpen,
+  ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@common/helpers';
 import { Icon } from '../../atoms';
 import { ROUTES } from '@common/constants';
+import { PERMISSIONS } from '@common/constants/permissions';
 import type { SidebarItemConfig, SidebarGroupItem, SidebarLinkItem, SidebarProps } from './Sidebar.type';
 
 const SIDEBAR_ITEMS: SidebarItemConfig[] = [
@@ -41,6 +43,7 @@ const SIDEBAR_ITEMS: SidebarItemConfig[] = [
     path: ROUTES.ORDERS,
     label: 'Pedidos',
     icon: ShoppingCart,
+    permission: PERMISSIONS.orders.list,
     roles: ['admin', 'owner', 'manager', 'attendant', 'delivery'],
   },
   {
@@ -48,6 +51,7 @@ const SIDEBAR_ITEMS: SidebarItemConfig[] = [
     path: ROUTES.STOCK,
     label: 'Estoque',
     icon: PackageOpen,
+    permission: PERMISSIONS.products.list,
     roles: ['admin', 'owner', 'manager', 'cook'],
   },
   {
@@ -55,13 +59,14 @@ const SIDEBAR_ITEMS: SidebarItemConfig[] = [
     label: 'Cadastros',
     icon: FolderOpen,
     children: [
-      { path: ROUTES.USERS, label: 'Usuários', icon: Users, roles: ['admin'] },
-      { path: ROUTES.COMPANIES, label: 'Empresas', icon: Building2, roles: ['admin', 'owner'] },
-      { path: ROUTES.BRANCHES, label: 'Filiais', icon: Store, roles: ['admin', 'owner'] },
-      { path: ROUTES.MENUS, label: 'Menus', icon: UtensilsCrossed, roles: ['admin', 'owner', 'manager', 'attendant'] },
-      { path: ROUTES.CATEGORIES, label: 'Categorias', icon: Layers, roles: ['admin', 'owner', 'manager', 'attendant'] },
-      { path: ROUTES.PRODUCTS, label: 'Produtos', icon: Package, roles: ['admin', 'owner', 'manager', 'cook', 'attendant'] },
-      { path: ROUTES.INGREDIENTS, label: 'Ingredientes', icon: Leaf, roles: ['admin', 'owner', 'manager', 'cook'] },
+      { path: ROUTES.USERS, label: 'Usuários', icon: Users, permission: PERMISSIONS.users.list, roles: ['admin'] },
+      { path: ROUTES.ROLES, label: 'Perfis de Acesso', icon: ShieldCheck, permission: PERMISSIONS.roles.list, roles: ['admin', 'owner'] },
+      { path: ROUTES.COMPANIES, label: 'Empresas', icon: Building2, permission: PERMISSIONS.companies.list, roles: ['admin', 'owner'] },
+      { path: ROUTES.BRANCHES, label: 'Filiais', icon: Store, permission: PERMISSIONS.branches.list, roles: ['admin', 'owner'] },
+      { path: ROUTES.MENUS, label: 'Menus', icon: UtensilsCrossed, permission: PERMISSIONS.menus.list, roles: ['admin', 'owner', 'manager', 'attendant'] },
+      { path: ROUTES.CATEGORIES, label: 'Categorias', icon: Layers, permission: PERMISSIONS.categories.list, roles: ['admin', 'owner', 'manager', 'attendant'] },
+      { path: ROUTES.PRODUCTS, label: 'Produtos', icon: Package, permission: PERMISSIONS.products.list, roles: ['admin', 'owner', 'manager', 'cook', 'attendant'] },
+      { path: ROUTES.INGREDIENTS, label: 'Ingredientes', icon: Leaf, permission: PERMISSIONS.ingredients.list, roles: ['admin', 'owner', 'manager', 'cook'] },
     ],
   },
 ];
@@ -80,17 +85,24 @@ const linkActiveClass = 'bg-primary text-primary-foreground';
 const linkInactiveClass = 'text-muted-foreground hover:bg-muted hover:text-foreground';
 
 const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
-  ({ className, userRole, ...props }, ref) => {
+  ({ className, userRole, permissions = [], hasPermission = () => false, ...props }, ref) => {
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({ Cadastros: true });
+
+    const usePermissions = permissions.length > 0;
 
     const toggleGroup = (label: string) => {
       setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
     };
 
+    const canShowLink = (item: SidebarLinkItem | Omit<SidebarLinkItem, 'type'>) => {
+      if (usePermissions && item.permission) return hasPermission(item.permission);
+      return item.roles.includes(userRole);
+    };
+
     const visibleItems = SIDEBAR_ITEMS.filter((item) => {
-      if (isLink(item)) return item.roles.includes(userRole);
+      if (isLink(item)) return canShowLink(item);
       if (isGroup(item)) {
-        const visibleChildren = item.children.filter((c) => c.roles.includes(userRole));
+        const visibleChildren = item.children.filter((c) => canShowLink(c));
         return visibleChildren.length > 0;
       }
       return false;
@@ -131,9 +143,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
             }
 
             if (isGroup(item)) {
-              const visibleChildren = item.children.filter((c) =>
-                c.roles.includes(userRole)
-              );
+              const visibleChildren = item.children.filter((c) => canShowLink(c));
               if (visibleChildren.length === 0) return null;
 
               const isOpen = openGroups[item.label] ?? true;

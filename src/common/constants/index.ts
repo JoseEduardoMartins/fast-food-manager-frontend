@@ -1,5 +1,7 @@
 export { ROUTES } from './routes';
 export type { RoutePath } from './routes';
+export { PERMISSIONS, ALL_PERMISSION_CODES, PERMISSIONS_BY_RESOURCE } from './permissions';
+export type { PermissionCode } from './permissions';
 export { PLANS, DEFAULT_PLAN } from './plans';
 export type { Plan, PlanName, PlanLimits } from './plans';
 export { USER_TYPES, USER_TYPE_LABELS } from './userTypes';

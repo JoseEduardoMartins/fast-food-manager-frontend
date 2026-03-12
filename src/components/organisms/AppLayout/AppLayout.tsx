@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@common/helpers';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
+import { useAuth } from '@contexts';
 import type { AppLayoutProps } from './AppLayout.type';
 
 /**
@@ -12,6 +13,7 @@ import type { AppLayoutProps } from './AppLayout.type';
 const AppLayout = React.forwardRef<HTMLDivElement, AppLayoutProps>(
   ({ className, children, user, onSignOut, ...props }, ref) => {
     const navigate = useNavigate();
+    const { permissions, hasPermission } = useAuth();
 
     return (
       <div
@@ -26,7 +28,13 @@ const AppLayout = React.forwardRef<HTMLDivElement, AppLayoutProps>(
           onSignOut={onSignOut}
         />
         <div className="flex flex-1">
-          {user && <Sidebar userRole={user.role} />}
+          {user && (
+          <Sidebar
+            userRole={user.role}
+            permissions={permissions}
+            hasPermission={hasPermission}
+          />
+        )}
           <main className="flex-1 p-6">{children}</main>
         </div>
       </div>

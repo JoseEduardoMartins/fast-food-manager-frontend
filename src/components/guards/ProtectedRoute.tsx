@@ -16,16 +16,18 @@ import type { UserRole } from '@services/auth';
  */
 interface ProtectedRouteProps {
   children: ReactNode;
-  /** Optional array of roles allowed to access this route */
+  /** Optional array of roles allowed (used when permissions are not available) */
   allowedRoles?: UserRole[];
+  /** Optional array of permissions (any one grants access). Takes precedence over allowedRoles when user has permissions. */
+  allowedPermissions?: string[];
 }
 
 /**
  * Protected Route Component
  * Wraps routes that require authentication and optionally checks user role
  */
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
-  const { user, isAuthenticated, loading } = useAuth();
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles, allowedPermissions }) => {
+  const { user, isAuthenticated, loading, hasPermission, permissions } = useAuth();
 
   // Show loading state while checking authentication
   if (loading) {
@@ -36,16 +38,23 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
     );
   }
 
-  // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
-  // Check role authorization if allowedRoles is provided
+  // Permission-based: if we have permissions from backend and allowedPermissions is set, check them
+  if (allowedPermissions && allowedPermissions.length > 0) {
+    const hasAny = permissions.length > 0 && allowedPermissions.some((p) => hasPermission(p));
+    if (!hasAny) {
+      return <Navigate to={ROUTES.DASHBOARD} replace />;
+    }
+    return <>{children}</>;
+  }
+
+  // Role-based fallback (when permissions not used for this route)
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
-  // Render protected content
   return <>{children}</>;
 };
