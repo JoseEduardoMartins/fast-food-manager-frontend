@@ -14,6 +14,11 @@ const USER_STORAGE_KEY = 'fast-food-manager-user';
 const PERMISSIONS_STORAGE_KEY = 'fast-food-manager-permissions';
 
 /**
+ * Navigation storage key (menus/submenus from backend)
+ */
+const NAVIGATION_STORAGE_KEY = 'fast-food-manager-navigation';
+
+/**
  * Gets user data from localStorage
  */
 export const getUserFromStorage = (): string | null => {
@@ -97,6 +102,45 @@ export const removePermissionsFromStorage = (): void => {
   if (typeof window === 'undefined') return;
   try {
     localStorage.removeItem(`${PERMISSIONS_STORAGE_KEY}_${import.meta.env.MODE || 'development'}`);
+  } catch {
+    // ignore
+  }
+};
+
+/**
+ * Gets navigation json from localStorage
+ */
+export const getNavigationFromStorage = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return localStorage.getItem(`${NAVIGATION_STORAGE_KEY}_${import.meta.env.MODE || 'development'}`);
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Sets navigation json in localStorage
+ */
+export const setNavigationInStorage = (navigationJson: string): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(
+      `${NAVIGATION_STORAGE_KEY}_${import.meta.env.MODE || 'development'}`,
+      navigationJson
+    );
+  } catch {
+    // ignore
+  }
+};
+
+/**
+ * Removes navigation json from localStorage
+ */
+export const removeNavigationFromStorage = (): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(`${NAVIGATION_STORAGE_KEY}_${import.meta.env.MODE || 'development'}`);
   } catch {
     // ignore
   }

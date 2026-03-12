@@ -13,7 +13,7 @@ import type { AppLayoutProps } from './AppLayout.type';
 const AppLayout = React.forwardRef<HTMLDivElement, AppLayoutProps>(
   ({ className, children, user, onSignOut, ...props }, ref) => {
     const navigate = useNavigate();
-    const { permissions, hasPermission } = useAuth();
+    const { permissions, hasPermission, navigation } = useAuth();
 
     return (
       <div
@@ -33,6 +33,7 @@ const AppLayout = React.forwardRef<HTMLDivElement, AppLayoutProps>(
             userRole={user.role}
             permissions={permissions}
             hasPermission={hasPermission}
+            navigation={navigation}
           />
         )}
           <main className="flex-1 p-6">{children}</main>

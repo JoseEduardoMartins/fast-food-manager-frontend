@@ -8,7 +8,19 @@ import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { http } from '@config';
 import { getAccessToken } from '@config';
-import { getUserFromStorage, setUserInStorage, removeUserFromStorage, getPermissionsFromStorage, setPermissionsInStorage, removePermissionsFromStorage } from '@config';
+import {
+  getUserFromStorage,
+  setUserInStorage,
+  removeUserFromStorage,
+  getPermissionsFromStorage,
+  setPermissionsInStorage,
+  removePermissionsFromStorage,
+  getNavigationFromStorage,
+  setNavigationInStorage,
+  removeNavigationFromStorage,
+} from '@config';
+import { getNavigation } from '@services/navigation';
+import type { NavigationItem } from '@services/navigation';
 import {
   signUp as signUpService,
   signIn as signInService,
@@ -35,6 +47,7 @@ export type ConfirmSignUpType = {
 export type AuthContextType = {
   user: User | null;
   permissions: string[];
+  navigation: NavigationItem[];
   isAuthenticated: boolean;
   loading: boolean;
   /** Check if user has a permission (use when permissions are loaded from backend) */
@@ -67,6 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [permissions, setPermissions] = useState<string[]>([]);
+  const [navigation, setNavigation] = useState<NavigationItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const isAuthenticated = !!user;
@@ -89,6 +103,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const perms = response.permissions ?? [];
     setPermissions(perms);
     setPermissionsInStorage(perms);
+
+    // Load navigation from backend (already filtered by access profile)
+    try {
+      const nav = await getNavigation();
+      setNavigation(nav);
+      setNavigationInStorage(JSON.stringify(nav));
+    } catch {
+      // keep navigation empty; Sidebar will fallback to catalog
+      setNavigation([]);
+      setNavigationInStorage(JSON.stringify([]));
+    }
 
     if (response.token && http.defaults.headers) {
       http.defaults.headers.token = response.token;
@@ -151,8 +176,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signOutService();
     setUser(null);
     setPermissions([]);
+    setNavigation([]);
     removeUserFromStorage();
     removePermissionsFromStorage();
+    removeNavigationFromStorage();
 
     // Clear token from http defaults
     if (http.defaults.headers) {
@@ -191,6 +218,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(userData);
         const storedPerms = getPermissionsFromStorage();
         setPermissions(storedPerms);
+        const storedNav = getNavigationFromStorage();
+        if (storedNav) {
+          try {
+            const parsed = JSON.parse(storedNav);
+            setNavigation(Array.isArray(parsed) ? parsed : []);
+          } catch {
+            setNavigation([]);
+          }
+        }
         setLoading(false);
         return;
       }
@@ -209,8 +245,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       signOutService();
       removeUserFromStorage();
       removePermissionsFromStorage();
+      removeNavigationFromStorage();
       setUser(null);
       setPermissions([]);
+      setNavigation([]);
       if (http.defaults.headers) {
         delete http.defaults.headers.token;
       }
@@ -231,6 +269,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       value={{
         user,
         permissions,
+        navigation,
         isAuthenticated,
         loading,
         hasPermission,

@@ -34,4 +34,14 @@ export interface SidebarProps extends HTMLAttributes<HTMLElement> {
   permissions?: string[];
   /** Check if user has permission */
   hasPermission?: (permission: string) => boolean;
+  /** Navigation items from backend (already filtered by access profile) */
+  navigation?: Array<{
+    type: 'link' | 'group';
+    id: string;
+    label: string;
+    path?: string;
+    permission?: string;
+    icon?: string;
+    children?: any[];
+  }>;
 }
