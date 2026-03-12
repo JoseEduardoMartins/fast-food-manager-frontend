@@ -99,8 +99,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       name: data.name,
       email: data.email,
       role: data.role || 'customer',
-      companyId: data.companyId || null,
-      branchId: data.branchId || null,
       isActive: true,
       isVerified: false,
       createdAt: new Date().toISOString(),

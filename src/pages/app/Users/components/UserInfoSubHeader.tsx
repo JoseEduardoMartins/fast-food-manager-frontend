@@ -1,17 +1,25 @@
 /**
  * UserInfoSubHeader Component
- * Shows user metadata (status, verified, dates) below page header
+ * Shows user metadata (status, verified, dates, companies, branches) below page header
  */
 
 import React from 'react';
 import { Badge } from '@components';
-import type { User } from '@services/users';
+import type { User, UserCompany, UserBranch, LinkType } from '@services/users';
+
+const linkTypeLabel: Record<LinkType, string> = {
+  owner: 'Proprietário',
+  employee: 'Empregado',
+};
 
 interface UserInfoSubHeaderProps {
   user: User;
 }
 
 export const UserInfoSubHeader: React.FC<UserInfoSubHeaderProps> = ({ user }) => {
+  const userCompanies = user.userCompanies ?? [];
+  const userBranches = user.userBranches ?? [];
+
   return (
     <div className="mb-6 flex flex-wrap gap-6 text-sm">
       <div>
@@ -38,6 +46,26 @@ export const UserInfoSubHeader: React.FC<UserInfoSubHeaderProps> = ({ user }) =>
           {new Date(user.updatedAt).toLocaleString('pt-BR')}
         </span>
       </div>
+      {userCompanies.length > 0 && (
+        <div className="w-full">
+          <span className="text-gray-600 dark:text-gray-400 mr-2">Empresas:</span>
+          <span className="font-medium">
+            {userCompanies
+              .map((uc: UserCompany) => `${uc.company?.name ?? uc.companyId} (${linkTypeLabel[uc.linkType]})`)
+              .join(', ')}
+          </span>
+        </div>
+      )}
+      {userBranches.length > 0 && (
+        <div className="w-full">
+          <span className="text-gray-600 dark:text-gray-400 mr-2">Filiais:</span>
+          <span className="font-medium">
+            {userBranches
+              .map((ub: UserBranch) => `${ub.branch?.name ?? ub.branchId} (${linkTypeLabel[ub.linkType]})`)
+              .join(', ')}
+          </span>
+        </div>
+      )}
     </div>
   );
 };

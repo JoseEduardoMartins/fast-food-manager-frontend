@@ -12,6 +12,8 @@ export type UserRole =
   | 'customer'
   | 'delivery';
 
+export type LinkType = 'owner' | 'employee';
+
 /**
  * Address related types
  */
@@ -44,9 +46,9 @@ export interface Address {
   countryId: string;
   stateId: string;
   cityId: string;
-  country: Country;
-  state: State;
-  city: City;
+  country?: Country;
+  state?: State;
+  city?: City;
 }
 
 export interface UserAddress {
@@ -55,25 +57,61 @@ export interface UserAddress {
   addressId: string;
   label?: string;
   isDefault: boolean;
-  createdAt: string;
+  createdAt?: string;
   address: Address;
+}
+
+/** Company (minimal) for user profile display */
+export interface Company {
+  id: string;
+  name: string;
+  cnpj?: string;
+  phone?: string;
+  isActive: boolean;
+}
+
+/** Branch (minimal) for user profile display */
+export interface Branch {
+  id: string;
+  name: string;
+  companyId: string;
+  menuId?: string;
+  phone?: string;
+  isActive: boolean;
+}
+
+export interface UserCompany {
+  id: string;
+  userId: string;
+  companyId: string;
+  linkType: LinkType;
+  company?: Company;
+}
+
+export interface UserBranch {
+  id: string;
+  userId: string;
+  branchId: string;
+  linkType: LinkType;
+  branch?: Branch;
 }
 
 /**
  * User data structure
+ * Vínculos N:N via userCompanies e userBranches (não mais companyId/branchId)
  */
 export interface User {
   id: string;
   name: string;
   email: string;
   role: UserRole;
-  companyId: string | null;
-  branchId: string | null;
   isActive: boolean;
   isVerified: boolean;
   isDeleted?: boolean;
   createdAt: string;
   updatedAt: string;
+  userCompanies?: UserCompany[];
+  userBranches?: UserBranch[];
   userAddresses?: UserAddress[];
 }
 
@@ -118,9 +156,9 @@ export interface CreateUserRequest {
   email: string;
   password: string;
   role: UserRole;
-  companyId?: string;
-  branchId?: string;
   isActive?: boolean;
+  companies?: Array<{ companyId: string; linkType: LinkType }>;
+  branches?: Array<{ branchId: string; linkType: LinkType }>;
   addresses?: UserAddressInput[];
 }
 
@@ -133,9 +171,9 @@ export interface UpdateUserRequest {
   email?: string;
   password?: string;
   role?: UserRole;
-  companyId?: string;
-  branchId?: string;
   isActive?: boolean;
+  companies?: Array<{ companyId: string; linkType: LinkType }>;
+  branches?: Array<{ branchId: string; linkType: LinkType }>;
   addresses?: UserAddressInput[];
 }
 

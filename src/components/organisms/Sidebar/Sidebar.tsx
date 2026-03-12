@@ -7,6 +7,7 @@ import {
   ChevronRight,
   FolderOpen,
   Users,
+  UserCircle,
   Building2,
   Store,
   UtensilsCrossed,
@@ -27,6 +28,13 @@ const SIDEBAR_ITEMS: SidebarItemConfig[] = [
     label: 'Dashboard',
     icon: LayoutDashboard,
     roles: ['admin', 'owner', 'manager', 'cook', 'attendant', 'delivery'],
+  },
+  {
+    type: 'link',
+    path: ROUTES.PROFILE,
+    label: 'Meu Perfil',
+    icon: UserCircle,
+    roles: ['admin', 'owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'],
   },
   {
     type: 'link',

@@ -39,7 +39,7 @@ export const addressFormSchema = z.object({
 });
 
 /**
- * User form schema - used for both create and edit
+ * User form schema - used for create (password required)
  */
 export const userFormSchema = z
   .object({
@@ -58,6 +58,43 @@ export const userFormSchema = z
   });
 
 /**
+ * User form schema for edit - password optional (only when changing)
+ */
+export const userFormEditSchema = z
+  .object({
+    name: z.string().min(1, 'Nome é obrigatório').trim(),
+    email: z.string().email('Email inválido').min(1, 'Email é obrigatório'),
+    role: z.enum(['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'], {
+      message: 'Tipo de usuário é obrigatório',
+    }),
+    password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres').optional().or(z.literal('')),
+    confirmPassword: z.string().optional().or(z.literal('')),
+    addresses: z.array(addressFormSchema).optional(),
+  })
+  .refine((data) => !data.password || data.password === data.confirmPassword, {
+    message: 'Senhas não coincidem',
+    path: ['confirmPassword'],
+  });
+
+/**
  * Type inference from schema
  */
 export type UserFormData = z.infer<typeof userFormSchema>;
+export type UserFormEditData = z.infer<typeof userFormEditSchema>;
+
+/**
+ * Profile form - only name, email, optional password (no role)
+ */
+export const profileFormSchema = z
+  .object({
+    name: z.string().min(1, 'Nome é obrigatório').trim(),
+    email: z.string().email('Email inválido').min(1, 'Email é obrigatório'),
+    password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres').optional().or(z.literal('')),
+    confirmPassword: z.string().optional().or(z.literal('')),
+  })
+  .refine((data) => !data.password || data.password === data.confirmPassword, {
+    message: 'Senhas não coincidem',
+    path: ['confirmPassword'],
+  });
+
+export type ProfileFormData = z.infer<typeof profileFormSchema>;

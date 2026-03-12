@@ -43,6 +43,8 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
   const isViewOnly = mode === 'view';
   const canManageAddresses = mode === 'create' || mode === 'edit';
   const isCreateMode = mode === 'create';
+  const isEditControlled = mode === 'edit' && onAddressesChange != null;
+  const controlledList = isEditControlled ? (addresses as UserAddressInput[]) : [];
 
   // Load functions for AsyncSelect
   const loadCountries = async (params?: ListCountriesParams): Promise<Country[]> => {
@@ -172,22 +174,32 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
 
     let updatedAddresses: UserAddressInput[];
 
-    if (editingAddressIndex !== null) {
-      // Modo edição: atualiza endereço existente
-      updatedAddresses = localAddresses.map((addr, idx) =>
-        idx === editingAddressIndex ? addressWithDetails : addr
-      );
-      toast.success('Endereço atualizado');
-      setEditingAddressIndex(null);
+    if (isEditControlled) {
+      const baseList = controlledList;
+      if (editingAddressIndex !== null) {
+        updatedAddresses = baseList.map((addr, idx) =>
+          idx === editingAddressIndex ? addressWithDetails : addr
+        );
+        toast.success('Endereço atualizado');
+        setEditingAddressIndex(null);
+      } else {
+        updatedAddresses = [...baseList, addressWithDetails];
+        toast.success('Endereço adicionado');
+      }
     } else {
-      // Modo adição: adiciona novo endereço
-      updatedAddresses = [...localAddresses, addressWithDetails];
-      toast.success('Endereço adicionado');
+      if (editingAddressIndex !== null) {
+        updatedAddresses = localAddresses.map((addr, idx) =>
+          idx === editingAddressIndex ? addressWithDetails : addr
+        );
+        toast.success('Endereço atualizado');
+        setEditingAddressIndex(null);
+      } else {
+        updatedAddresses = [...localAddresses, addressWithDetails];
+        toast.success('Endereço adicionado');
+      }
     }
 
-    // Se o endereço sendo adicionado/editado é padrão, remove o padrão dos outros
     if (addressWithDetails.isDefault) {
-      // Verificar se já existe um endereço padrão
       const hasDefaultAddress = updatedAddresses.some((addr, idx) => {
         if (editingAddressIndex !== null) {
           return addr.isDefault && idx !== editingAddressIndex;
@@ -201,19 +213,20 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
       }
 
       updatedAddresses = updatedAddresses.map((addr, idx) => {
-        // Manter isDefault apenas no endereço atual
         if (editingAddressIndex !== null) {
-          // No modo edição, manter padrão apenas no índice editado
           return idx === editingAddressIndex ? addr : { ...addr, isDefault: false };
         } else {
-          // No modo adição, manter padrão apenas no último (recém-adicionado)
           return idx === updatedAddresses.length - 1 ? addr : { ...addr, isDefault: false };
         }
       });
     }
 
-    setLocalAddresses(updatedAddresses);
-    onAddressesChange?.(updatedAddresses);
+    if (isEditControlled) {
+      onAddressesChange(updatedAddresses);
+    } else {
+      setLocalAddresses(updatedAddresses);
+      onAddressesChange?.(updatedAddresses);
+    }
 
     setIsAddingAddress(false);
     setNewAddress({
@@ -230,9 +243,10 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
   };
 
   const handleEditAddress = (index: number) => {
-    const addressToEdit = localAddresses[index];
-    
-    // Preencher o formulário com os dados do endereço
+    const sourceList = isEditControlled ? controlledList : localAddresses;
+    const addressToEdit = sourceList[index];
+    if (!addressToEdit) return;
+
     setNewAddress({
       street: addressToEdit.street,
       number: addressToEdit.number || '',
@@ -285,13 +299,15 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
     }
 
     if (isCreateMode) {
-      // Modo create: remove do estado local
       const updatedAddresses = localAddresses.filter((_, i) => i !== index);
       setLocalAddresses(updatedAddresses);
       onAddressesChange?.(updatedAddresses);
       toast.success('Endereço removido');
+    } else if (isEditControlled) {
+      const updatedAddresses = controlledList.filter((_, i) => i !== index);
+      onAddressesChange(updatedAddresses);
+      toast.success('Endereço removido');
     } else if (userId && userAddressId) {
-      // Modo edit: remove via API
       try {
         await removeUserAddress(userId, userAddressId);
         toast.success('Endereço removido com sucesso');
@@ -337,12 +353,14 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
   };
 
   // Determine which addresses to display
-  const displayAddresses = isCreateMode 
+  const displayAddresses = isCreateMode
     ? localAddresses.map((addr, index) => ({
         ...addr,
         tempId: `temp-${index}`,
       }))
-    : addresses;
+    : isEditControlled
+      ? controlledList
+      : addresses;
 
   return (
     <div className="space-y-4">
@@ -504,13 +522,11 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
         </Card>
       ) : (
         <div className="space-y-3">
-          {isCreateMode ? (
-            // Render for create mode (local addresses)
-            localAddresses.map((addr, index) => {
+          {isCreateMode || isEditControlled ? (
+            (isCreateMode ? localAddresses : controlledList).map((addr, index) => {
               const location = formatAddressLocation(addr);
-              
               return (
-                <Card key={`temp-${index}`} className="p-4">
+                <Card key={isCreateMode ? `temp-${index}` : `edit-${index}-${addr.id ?? index}`} className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -567,8 +583,7 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
               );
             })
           ) : (
-            // Render for view/edit mode (server addresses)
-            addresses.map((userAddress, index) => {
+            (addresses as UserAddress[]).map((userAddress, index) => {
               const formatted = formatAddress(userAddress.address);
               const isEditing = editingAddressId === userAddress.id;
 
@@ -598,7 +613,7 @@ export const AddressManager: React.FC<AddressManagerProps> = ({
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => setEditingAddressId(isEditing ? null : userAddress.id)}
+                          onClick={() => setEditingAddressId(isEditing ? null : (userAddress.id ?? null))}
                           title="Editar endereço"
                         >
                           <Icon icon={Edit} size={16} />

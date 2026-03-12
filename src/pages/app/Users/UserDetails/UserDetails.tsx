@@ -94,7 +94,11 @@ const UserDetails: React.FC = () => {
       <Card className="p-6">
         <FormProvider {...form}>
           <form>
-            <UserForm mode="view" isViewOnly user={user} onAddressChange={reloadUser} />
+            <UserForm
+              mode="view"
+              user={user}
+              onAddressChange={reloadUser}
+            />
           </form>
         </FormProvider>
       </Card>

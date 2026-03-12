@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { getUserById, updateUser } from '@services/users';
 import type { User, UpdateUserRequest, UserAddressInput } from '@services/users';
-import { userFormSchema, type UserFormData } from '../schemas';
+import { userFormEditSchema, type UserFormEditData } from '../schemas';
 import { ROUTES } from '@common/constants';
 
 export const useEditUser = () => {
@@ -22,8 +22,8 @@ export const useEditUser = () => {
   const [error, setError] = useState<string | null>(null);
   const [addresses, setAddresses] = useState<UserAddressInput[]>([]);
 
-  const form = useForm<UserFormData>({
-    resolver: zodResolver(userFormSchema),
+  const form = useForm<UserFormEditData>({
+    resolver: zodResolver(userFormEditSchema),
   });
 
   useEffect(() => {
@@ -36,18 +36,15 @@ export const useEditUser = () => {
 
   const loadUser = async () => {
     if (!id) return;
-    
+
     try {
       setLoading(true);
-      // Fetch user with all data including addresses
       const userData = await getUserById(id);
       setUser(userData);
-      
-      // Only include role in form if it's an allowed role (not admin)
+
       const allowedRoles = ['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'] as const;
       const formRole = allowedRoles.includes(userData.role as any) ? userData.role : 'customer';
-      
-      // Reset form with user data
+
       form.reset({
         name: userData.name,
         email: userData.email,
@@ -55,7 +52,24 @@ export const useEditUser = () => {
         password: '',
         confirmPassword: '',
       });
-      
+
+      const initialAddresses: UserAddressInput[] = (userData.userAddresses ?? []).map((ua) => ({
+        id: ua.id,
+        street: ua.address.street,
+        number: ua.address.number,
+        complement: ua.address.complement,
+        zipcode: ua.address.zipcode,
+        countryId: ua.address.countryId,
+        stateId: ua.address.stateId,
+        cityId: ua.address.cityId,
+        label: ua.label,
+        isDefault: ua.isDefault,
+        country: ua.address.country,
+        state: ua.address.state,
+        city: ua.address.city,
+      }));
+      setAddresses(initialAddresses);
+
       setError(null);
     } catch (err: any) {
       console.error('Erro ao carregar usuário:', err);
@@ -68,21 +82,20 @@ export const useEditUser = () => {
     }
   };
 
-  const onSubmit = async (data: UserFormData) => {
+  const onSubmit = async (data: UserFormEditData) => {
     if (!id) return;
 
     setSaving(true);
     setError(null);
 
     try {
-      // Remove dados extras (country, state, city) antes de enviar ao backend
       const cleanAddresses = addresses.map(({ country, state, city, ...address }) => address);
 
       const updateData: UpdateUserRequest = {
         name: data.name,
         email: data.email,
         role: data.role,
-        password: data.password, // Password is now required
+        ...(data.password ? { password: data.password } : {}),
         addresses: cleanAddresses.length > 0 ? cleanAddresses : undefined,
       };
 

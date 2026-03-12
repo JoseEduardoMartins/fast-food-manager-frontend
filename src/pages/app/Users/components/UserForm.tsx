@@ -5,7 +5,7 @@
  */
 
 import { Badge, FormField, Label, Select } from '@components';
-import type { UserRole } from '@services/users';
+import type { UserRole, User, UserAddressInput } from '@services/users';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { UserFormData } from '../schemas';
@@ -14,6 +14,10 @@ import { PlanCards } from './PlanCards';
 
 interface UserFormProps {
   mode: 'create' | 'view' | 'edit';
+  user?: User | null;
+  addresses?: UserAddressInput[];
+  onAddressChange?: () => void;
+  onAddressesChange?: (addresses: UserAddressInput[]) => void;
 }
 
 const roleLabels: Record<UserRole, string> = {
@@ -28,7 +32,13 @@ const roleLabels: Record<UserRole, string> = {
 
 const allowedRoles: UserRole[] = ['owner', 'manager', 'cook', 'attendant', 'customer', 'delivery'];
 
-export const UserForm: React.FC<UserFormProps> = ({ mode }) => {
+export const UserForm: React.FC<UserFormProps> = ({
+  mode,
+  user,
+  addresses = [],
+  onAddressChange,
+  onAddressesChange,
+}) => {
   const {
     register,
     formState: { errors },
@@ -129,7 +139,13 @@ export const UserForm: React.FC<UserFormProps> = ({ mode }) => {
       {isOwner && <PlanCards disabled={isViewOnly} selectedPlan="preta" />}
 
       {/* Address Manager - Show in all modes */}
-      <AddressManager mode={mode} />
+      <AddressManager
+        mode={mode}
+        addresses={mode === 'edit' ? addresses : user?.userAddresses}
+        userId={user?.id}
+        onAddressChange={onAddressChange}
+        onAddressesChange={onAddressesChange}
+      />
     </div>
   );
 };

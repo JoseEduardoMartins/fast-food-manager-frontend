@@ -1,13 +1,13 @@
 /**
  * AddressManager types
+ * addresses can be UserAddress[] (view / server) or UserAddressInput[] (edit / controlled by parent)
  */
-
 import type { UserAddress, UserAddressInput } from '@services/users';
 
 export interface AddressManagerProps {
-  addresses?: UserAddress[];
+  addresses?: UserAddress[] | UserAddressInput[];
   mode: 'create' | 'view' | 'edit';
   userId?: string;
-  onAddressChange?: () => void; // Para modo edit/view (atualiza via API)
-  onAddressesChange?: (addresses: UserAddressInput[]) => void; // Para modo create (gerencia estado local)
+  onAddressChange?: () => void;
+  onAddressesChange?: (addresses: UserAddressInput[]) => void;
 }

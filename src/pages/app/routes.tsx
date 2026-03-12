@@ -1,6 +1,7 @@
 import { Route } from 'react-router-dom';
 import { ProtectedRoute } from '@components/guards';
 import Dashboard from './Dashboard';
+import Profile from './Profile';
 import UserList from './Users/UserList';
 import CreateUser from './Users/CreateUser';
 import UserDetails from './Users/UserDetails';
@@ -45,6 +46,14 @@ export const AppRoutes = (
       element={
         <ProtectedRoute>
           <Dashboard />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path={ROUTES.PROFILE}
+      element={
+        <ProtectedRoute>
+          <Profile />
         </ProtectedRoute>
       }
     />
