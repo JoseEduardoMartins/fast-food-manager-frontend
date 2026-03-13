@@ -11,7 +11,7 @@ import {
   AppLayout,
   PageHeader,
   ErrorAlert,
-  FilterForm,
+  FilterBar,
   FormField,
   Label,
   Select,
@@ -91,7 +91,8 @@ const CompanyList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Ações</div>,
+        meta: { align: 'center' as const },
+        header: 'Ações',
         cell: (info) => {
           const company = info.row.original;
           return (
@@ -152,33 +153,42 @@ const CompanyList: React.FC = () => {
 
       <ErrorAlert message={error || ''} onDismiss={() => setError(null)} dismissible />
 
-      <FilterForm onSearch={handleSearch} onClear={handleClearSearch}>
-        <FormField
-          label="Buscar por Nome"
-          placeholder="Nome da empresa..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
-        />
-        <FormField
-          label="Buscar por CNPJ"
-          placeholder="CNPJ..."
-          value={searchCnpj}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchCnpj(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
-        />
-        <div>
-          <Label className="mb-2 block">Filtrar por Status</Label>
-          <Select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value as 'all' | 'active' | 'inactive')}
-          >
-            <option value="all">Todas</option>
-            <option value="active">Ativas</option>
-            <option value="inactive">Inativas</option>
-          </Select>
-        </div>
-      </FilterForm>
+      <FilterBar
+        searchSlot={
+          <FormField
+            label="Buscar por Nome"
+            placeholder="Nome da empresa..."
+            value={searchName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
+          />
+        }
+        filterContent={
+          <>
+            <FormField
+              label="Buscar por CNPJ"
+              placeholder="CNPJ..."
+              value={searchCnpj}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchCnpj(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
+            />
+            <div>
+              <Label className="mb-2 block">Status</Label>
+              <Select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value as 'all' | 'active' | 'inactive')}
+              >
+                <option value="all">Todas</option>
+                <option value="active">Ativas</option>
+                <option value="inactive">Inativas</option>
+              </Select>
+            </div>
+          </>
+        }
+        onFilter={handleSearch}
+        onClear={handleClearSearch}
+        filterTitle="Filtros"
+      />
 
       <Card>
         <Table

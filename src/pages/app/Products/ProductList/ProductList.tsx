@@ -10,7 +10,7 @@ import {
   AppLayout,
   PageHeader,
   ErrorAlert,
-  FilterForm,
+  FilterBar,
   FormField,
   Label,
   Select,
@@ -80,7 +80,8 @@ const ProductList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Ações</div>,
+        meta: { align: 'center' as const },
+        header: 'Ações',
         cell: (info) => {
           const product = info.row.original;
           return (
@@ -141,30 +142,37 @@ const ProductList: React.FC = () => {
 
       <ErrorAlert message={error ?? ''} onDismiss={() => setError(null)} dismissible />
 
-      <FilterForm onSearch={handleSearch} onClear={handleClearSearch}>
-        <FormField
-          label="Buscar por nome"
-          placeholder="Nome do produto..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
-            e.key === 'Enter' && handleSearch()
-          }
-        />
-        <div>
-          <Label className="mb-2 block">Status</Label>
-          <Select
-            value={selectedStatus}
-            onChange={(e) =>
-              setSelectedStatus(e.target.value as 'all' | 'active' | 'inactive')
+      <FilterBar
+        searchSlot={
+          <FormField
+            label="Buscar por nome"
+            placeholder="Nome do produto..."
+            value={searchName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
+              e.key === 'Enter' && handleSearch()
             }
-          >
-            <option value="all">Todos</option>
-            <option value="active">Ativos</option>
-            <option value="inactive">Inativos</option>
-          </Select>
-        </div>
-      </FilterForm>
+          />
+        }
+        filterContent={
+          <div>
+            <Label className="mb-2 block">Status</Label>
+            <Select
+              value={selectedStatus}
+              onChange={(e) =>
+                setSelectedStatus(e.target.value as 'all' | 'active' | 'inactive')
+              }
+            >
+              <option value="all">Todos</option>
+              <option value="active">Ativos</option>
+              <option value="inactive">Inativos</option>
+            </Select>
+          </div>
+        }
+        onFilter={handleSearch}
+        onClear={handleClearSearch}
+        filterTitle="Filtros"
+      />
 
       <Card>
         <Table

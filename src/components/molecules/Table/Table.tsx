@@ -101,17 +101,23 @@ export function Table<TData>({
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className="border-b border-border">
-              {headerGroup.headers.map((header) => (
+              {headerGroup.headers.map((header) => {
+                const align = (header.column.columnDef.meta as { align?: 'left' | 'center' | 'right' })?.align;
+                return (
                 <th
                   key={header.id}
-                  className="text-left py-3 px-4 font-semibold"
+                  className={cn(
+                    'py-3 px-4 font-semibold',
+                    align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left'
+                  )}
                   style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
                 >
                   {header.isPlaceholder
                     ? null
                     : flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
-              ))}
+              );
+              })}
             </tr>
           ))}
         </thead>
@@ -125,11 +131,20 @@ export function Table<TData>({
               )}
               onClick={() => onRowClick && onRowClick(row.original)}
             >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="py-3 px-4">
+              {row.getVisibleCells().map((cell) => {
+                const align = (cell.column.columnDef.meta as { align?: 'left' | 'center' | 'right' })?.align;
+                return (
+                <td
+                  key={cell.id}
+                  className={cn(
+                    'py-3 px-4',
+                    align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left'
+                  )}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
-              ))}
+              );
+              })}
             </tr>
           ))}
         </tbody>

@@ -98,6 +98,11 @@ export const useStockList = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
+  const handleClear = () => {
+    setSelectedBranchId('all');
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  };
+
   const getIngredientName = (ingredientId: number) =>
     ingredients.find((i) => i.id === ingredientId)?.name ?? String(ingredientId);
 
@@ -113,6 +118,7 @@ export const useStockList = () => {
     handleDelete,
     handlePageChange,
     handleFilter,
+    handleClear,
     setError,
     loadStock,
     getBranchName,

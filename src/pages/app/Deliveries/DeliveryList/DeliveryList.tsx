@@ -108,7 +108,8 @@ const DeliveryList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Ações</div>,
+        meta: { align: 'center' as const },
+        header: 'Ações',
         cell: (info) => {
           const order = info.row.original;
           const hasDelivery = !!order.orderDelivery;

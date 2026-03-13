@@ -10,7 +10,7 @@ import {
   AppLayout,
   PageHeader,
   ErrorAlert,
-  FilterForm,
+  FilterBar,
   FormField,
   Card,
   Table,
@@ -74,7 +74,8 @@ const IngredientList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Ações</div>,
+        meta: { align: 'center' as const },
+        header: 'Ações',
         cell: (info) => {
           const ingredient = info.row.original;
           return (
@@ -135,17 +136,22 @@ const IngredientList: React.FC = () => {
 
       <ErrorAlert message={error ?? ''} onDismiss={() => setError(null)} dismissible />
 
-      <FilterForm onSearch={handleSearch} onClear={handleClearSearch}>
-        <FormField
-          label="Buscar por nome"
-          placeholder="Nome do ingrediente..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
-            e.key === 'Enter' && handleSearch()
-          }
-        />
-      </FilterForm>
+      <FilterBar
+        searchSlot={
+          <FormField
+            label="Buscar por nome"
+            placeholder="Nome do ingrediente..."
+            value={searchName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
+              e.key === 'Enter' && handleSearch()
+            }
+          />
+        }
+        onFilter={handleSearch}
+        onClear={handleClearSearch}
+        filterTitle="Filtros"
+      />
 
       <Card>
         <Table

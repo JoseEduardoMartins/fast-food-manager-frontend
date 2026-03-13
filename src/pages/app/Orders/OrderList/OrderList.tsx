@@ -11,7 +11,7 @@ import {
   AppLayout,
   PageHeader,
   ErrorAlert,
-  FilterForm,
+  FilterBar,
   Label,
   Select,
   Card,
@@ -120,7 +120,8 @@ const OrderList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Ações</div>,
+        meta: { align: 'center' as const },
+        header: 'Ações',
         cell: (info) => {
           const order = info.row.original;
           return (
@@ -185,64 +186,71 @@ const OrderList: React.FC = () => {
         dismissible
       />
 
-      <FilterForm onSearch={handleSearch} onClear={handleClearSearch}>
-        <div>
-          <Label className="mb-2 block">Filial</Label>
-          <Select
-            value={selectedBranch}
-            onChange={(e) => setSelectedBranch(e.target.value)}
-          >
-            <option value="all">Todas</option>
-            {branches.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <Label className="mb-2 block">Status</Label>
-          <Select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-          >
-            <option value="all">Todos</option>
-            {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <Label className="mb-2 block">Pagamento</Label>
-          <Select
-            value={selectedPayment}
-            onChange={(e) => setSelectedPayment(e.target.value)}
-          >
-            <option value="all">Todos</option>
-            {Object.entries(PAYMENT_METHOD_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <Label className="mb-2 block">Modo de consumo</Label>
-          <Select
-            value={selectedConsumption}
-            onChange={(e) => setSelectedConsumption(e.target.value)}
-          >
-            <option value="all">Todos</option>
-            {Object.entries(CONSUMPTION_MODE_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-        </div>
-      </FilterForm>
+      <FilterBar
+        filterContent={
+          <>
+            <div>
+              <Label className="mb-2 block">Filial</Label>
+              <Select
+                value={selectedBranch}
+                onChange={(e) => setSelectedBranch(e.target.value)}
+              >
+                <option value="all">Todas</option>
+                {branches.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <Label className="mb-2 block">Status</Label>
+              <Select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+              >
+                <option value="all">Todos</option>
+                {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <Label className="mb-2 block">Pagamento</Label>
+              <Select
+                value={selectedPayment}
+                onChange={(e) => setSelectedPayment(e.target.value)}
+              >
+                <option value="all">Todos</option>
+                {Object.entries(PAYMENT_METHOD_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <Label className="mb-2 block">Modo de consumo</Label>
+              <Select
+                value={selectedConsumption}
+                onChange={(e) => setSelectedConsumption(e.target.value)}
+              >
+                <option value="all">Todos</option>
+                {Object.entries(CONSUMPTION_MODE_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </>
+        }
+        onFilter={handleSearch}
+        onClear={handleClearSearch}
+        filterTitle="Filtros"
+      />
 
       <Card>
         <Table

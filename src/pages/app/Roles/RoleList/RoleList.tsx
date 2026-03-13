@@ -63,7 +63,8 @@ const RoleList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Ações</div>,
+        meta: { align: 'center' as const },
+        header: 'Ações',
         cell: (info) => {
           const role = info.row.original;
           const canEdit = canUpdate && !role.isSystem;

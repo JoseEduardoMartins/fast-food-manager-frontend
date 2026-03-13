@@ -11,7 +11,7 @@ import {
   AppLayout,
   PageHeader,
   ErrorAlert,
-  FilterForm,
+  FilterBar,
   FormField,
   Label,
   Select,
@@ -94,7 +94,8 @@ const BranchList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Ações</div>,
+        meta: { align: 'center' as const },
+        header: 'Ações',
         cell: (info) => {
           const branch = info.row.original;
           return (
@@ -155,36 +156,45 @@ const BranchList: React.FC = () => {
 
       <ErrorAlert message={error || ''} onDismiss={() => setError(null)} dismissible />
 
-      <FilterForm onSearch={handleSearch} onClear={handleClearSearch}>
-        <FormField
-          label="Buscar por Nome"
-          placeholder="Nome da filial..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
-        />
-        <div>
-          <Label className="mb-2 block">Filtrar por Empresa</Label>
-          <Select
-            value={selectedCompany}
-            onChange={(e) => setSelectedCompany(e.target.value)}
-          >
-            <option value="all">Todas</option>
-            {/* TODO: Carregar empresas dinamicamente */}
-          </Select>
-        </div>
-        <div>
-          <Label className="mb-2 block">Filtrar por Status</Label>
-          <Select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value as 'all' | 'active' | 'inactive')}
-          >
-            <option value="all">Todas</option>
-            <option value="active">Ativas</option>
-            <option value="inactive">Inativas</option>
-          </Select>
-        </div>
-      </FilterForm>
+      <FilterBar
+        searchSlot={
+          <FormField
+            label="Buscar por Nome"
+            placeholder="Nome da filial..."
+            value={searchName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
+          />
+        }
+        filterContent={
+          <>
+            <div>
+              <Label className="mb-2 block">Empresa</Label>
+              <Select
+                value={selectedCompany}
+                onChange={(e) => setSelectedCompany(e.target.value)}
+              >
+                <option value="all">Todas</option>
+                {/* TODO: Carregar empresas dinamicamente */}
+              </Select>
+            </div>
+            <div>
+              <Label className="mb-2 block">Status</Label>
+              <Select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value as 'all' | 'active' | 'inactive')}
+              >
+                <option value="all">Todas</option>
+                <option value="active">Ativas</option>
+                <option value="inactive">Inativas</option>
+              </Select>
+            </div>
+          </>
+        }
+        onFilter={handleSearch}
+        onClear={handleClearSearch}
+        filterTitle="Filtros"
+      />
 
       <Card>
         <Table

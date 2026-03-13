@@ -55,6 +55,20 @@ export default {
         fontFamily: {
           sans: ['var(--font-family-sans)'],
           mono: ['var(--font-family-mono)']
+        },
+        keyframes: {
+          'drawer-in-right': {
+            '0%': { transform: 'translateX(100%)' },
+            '100%': { transform: 'translateX(0)' }
+          },
+          'drawer-in-left': {
+            '0%': { transform: 'translateX(-100%)' },
+            '100%': { transform: 'translateX(0)' }
+          }
+        },
+        animation: {
+          'drawer-in-right': 'drawer-in-right 0.25s ease-out',
+          'drawer-in-left': 'drawer-in-left 0.25s ease-out'
         }
       },
   },

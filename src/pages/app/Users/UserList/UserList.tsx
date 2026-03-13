@@ -11,7 +11,7 @@ import {
   AppLayout,
   PageHeader,
   ErrorAlert,
-  FilterForm,
+  FilterBar,
   FormField,
   Label,
   Select,
@@ -127,7 +127,8 @@ const UserList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Ações</div>,
+        meta: { align: 'center' as const },
+        header: 'Ações',
         cell: (info) => {
           const user = info.row.original;
           return (
@@ -194,37 +195,46 @@ const UserList: React.FC = () => {
 
       <ErrorAlert message={error || ''} onDismiss={() => setError(null)} dismissible />
 
-      <FilterForm onSearch={handleSearch} onClear={handleClearSearch}>
-        <FormField
-          label="Buscar por Nome"
-          placeholder="Nome..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
-        />
-        <FormField
-          label="Buscar por Email"
-          type="email"
-          placeholder="Email..."
-          value={searchEmail}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchEmail(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
-        />
-        <div>
-          <Label className="mb-2 block">Filtrar por Tipo</Label>
-          <Select
-            value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value as UserRole | 'all')}
-          >
-            <option value="all">Todos</option>
-            <option value="owner">Proprietários</option>
-            <option value="manager">Gerentes</option>
-            <option value="cook">Cozinheiros</option>
-            <option value="attendant">Atendentes</option>
-            <option value="customer">Clientes</option>
-          </Select>
-        </div>
-      </FilterForm>
+      <FilterBar
+        searchSlot={
+          <FormField
+            label="Buscar por Nome"
+            placeholder="Nome..."
+            value={searchName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
+          />
+        }
+        filterContent={
+          <>
+            <FormField
+              label="Buscar por Email"
+              type="email"
+              placeholder="Email..."
+              value={searchEmail}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchEmail(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
+            />
+            <div>
+              <Label className="mb-2 block">Perfil</Label>
+              <Select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value as UserRole | 'all')}
+              >
+                <option value="all">Todos</option>
+                <option value="owner">Proprietários</option>
+                <option value="manager">Gerentes</option>
+                <option value="cook">Cozinheiros</option>
+                <option value="attendant">Atendentes</option>
+                <option value="customer">Clientes</option>
+              </Select>
+            </div>
+          </>
+        }
+        onFilter={handleSearch}
+        onClear={handleClearSearch}
+        filterTitle="Filtros"
+      />
 
       <Card>
         <Table

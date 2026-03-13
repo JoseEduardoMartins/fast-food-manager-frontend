@@ -11,6 +11,7 @@ import {
   AppLayout,
   PageHeader,
   ErrorAlert,
+  FilterBar,
   Label,
   Select,
   Card,
@@ -65,6 +66,7 @@ const StockList: React.FC = () => {
     handleDelete,
     handlePageChange,
     handleFilter,
+    handleClear,
     setError,
     getBranchName,
     getIngredientName,
@@ -112,7 +114,8 @@ const StockList: React.FC = () => {
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Ações</div>,
+        meta: { align: 'center' as const },
+        header: 'Ações',
         cell: (info) => {
           const row = info.row.original;
           const label = `${getBranchName(row.branchId)} / ${getIngredientName(row.ingredientId)}`;
@@ -191,8 +194,8 @@ const StockList: React.FC = () => {
 
       <ErrorAlert message={error ?? ''} onDismiss={() => setError(null)} dismissible />
 
-      <Card className="p-4 mb-6">
-        <div className="flex flex-wrap gap-4 items-end">
+      <FilterBar
+        filterContent={
           <div>
             <Label className="mb-2 block">Filial</Label>
             <Select
@@ -207,9 +210,11 @@ const StockList: React.FC = () => {
               ))}
             </Select>
           </div>
-          <Button onClick={handleFilter}>Filtrar</Button>
-        </div>
-      </Card>
+        }
+        onFilter={handleFilter}
+        onClear={handleClear}
+        filterTitle="Filtros"
+      />
 
       <Card>
         <Table
