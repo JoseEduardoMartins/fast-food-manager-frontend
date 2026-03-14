@@ -48,7 +48,10 @@ const CompanyDetails: React.FC = () => {
       {
         accessorKey: 'name',
         header: 'Nome',
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+          const branch = info.row.original;
+          return branch.nickname ? `${branch.name} (${branch.nickname})` : branch.name;
+        },
       },
       {
         accessorKey: 'phone',

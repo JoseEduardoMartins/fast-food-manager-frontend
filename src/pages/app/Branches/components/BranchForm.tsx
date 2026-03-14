@@ -89,6 +89,28 @@ export const BranchForm: React.FC<BranchFormProps> = ({
           disabled={isViewOnly}
         />
 
+        {/* Identificador da filial */}
+        <FormField
+          label="Identificador da filial"
+          required={!isViewOnly}
+          {...register('nickname', {
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+              const v = e.target.value;
+              const lower = v.toLowerCase();
+              if (v !== lower) setValue('nickname', lower);
+            },
+          })}
+          error={!!errors.nickname}
+          errorText={errors.nickname?.message}
+          placeholder="Ex: centro, sul, loja-01"
+          disabled={isViewOnly}
+          helperText={
+            !isViewOnly
+              ? 'Nome identificador único da filial nesta empresa. Use apenas letras minúsculas, números e hífen.'
+              : undefined
+          }
+        />
+
         {/* Phone Field */}
         <FormField
           label="Telefone"

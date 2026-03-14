@@ -14,6 +14,7 @@ import type { Address } from '@services/addresses';
 export interface Branch {
   id: string;
   name: string;
+  nickname?: string;
   companyId: string;
   phone?: string;
   isActive: boolean;

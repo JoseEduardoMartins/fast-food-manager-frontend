@@ -61,7 +61,12 @@ export const UserInfoSubHeader: React.FC<UserInfoSubHeaderProps> = ({ user }) =>
           <span className="text-gray-600 dark:text-gray-400 mr-2">Filiais:</span>
           <span className="font-medium">
             {userBranches
-              .map((ub: UserBranch) => `${ub.branch?.name ?? ub.branchId} (${linkTypeLabel[ub.linkType]})`)
+              .map((ub: UserBranch) => {
+                const label = ub.branch?.name ?? ub.branchId;
+                const nickname = ub.branch?.nickname;
+                const display = nickname ? `${label} (${nickname})` : label;
+                return `${display} - ${linkTypeLabel[ub.linkType]}`;
+              })
               .join(', ')}
           </span>
         </div>

@@ -73,6 +73,7 @@ export const useEditBranch = () => {
       
       form.reset({
         name: branchData.name,
+        nickname: branchData.nickname,
         companyId: branchData.companyId,
         menuId: branchData.menuId,
         addressId: branchData.addressId,
@@ -127,6 +128,7 @@ export const useEditBranch = () => {
 
       const updateData: UpdateBranchRequest = {
         name: data.name,
+        nickname: data.nickname,
         companyId: data.companyId,
         menuId: data.menuId,
         addressId: finalAddressId,
@@ -140,10 +142,13 @@ export const useEditBranch = () => {
     } catch (err: any) {
       console.error('Erro ao atualizar filial:', err);
       const errorMessage = err.response?.data?.message || 'Erro ao atualizar filial';
-      
+
       if (err.response?.status === 404) {
         setError('Empresa, menu ou endereço não encontrado');
         toast.error('Empresa, menu ou endereço não encontrado');
+      } else if (err.response?.status === 409) {
+        setError(errorMessage);
+        toast.error(errorMessage);
       } else {
         setError(errorMessage);
         toast.error(errorMessage);

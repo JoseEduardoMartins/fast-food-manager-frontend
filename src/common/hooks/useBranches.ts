@@ -31,7 +31,8 @@ export function useBranches(options?: { pageSize?: number }) {
   const getBranchName = useCallback(
     (branchId: string): string => {
       const b = branches.find((x) => x.id === branchId);
-      return b?.name ?? branchId.slice(0, 8) + '…';
+      if (!b) return branchId.slice(0, 8) + '…';
+      return b.nickname ? `${b.name} (${b.nickname})` : b.name;
     },
     [branches]
   );

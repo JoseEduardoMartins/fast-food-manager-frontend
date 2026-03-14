@@ -182,7 +182,7 @@ const DeliveryList: React.FC = () => {
                 <option value="all">Todas</option>
                 {branches.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {b.name}
+                    {b.nickname ? `${b.name} (${b.nickname})` : b.name}
                   </option>
                 ))}
               </Select>

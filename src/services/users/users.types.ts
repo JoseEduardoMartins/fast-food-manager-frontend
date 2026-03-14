@@ -74,6 +74,7 @@ export interface Company {
 export interface Branch {
   id: string;
   name: string;
+  nickname?: string;
   companyId: string;
   menuId?: string;
   phone?: string;

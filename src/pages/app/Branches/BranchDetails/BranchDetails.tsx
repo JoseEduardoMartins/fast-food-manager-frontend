@@ -62,7 +62,7 @@ const BranchDetails: React.FC = () => {
   return (
     <AppLayout user={user} onSignOut={signOut}>
       <PageHeader
-        title={branch.name}
+        title={branch.nickname ? `${branch.name} (${branch.nickname})` : branch.name}
         description="Detalhes da filial"
         action={
           <div className="flex gap-2">

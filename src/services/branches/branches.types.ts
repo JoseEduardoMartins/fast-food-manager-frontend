@@ -41,6 +41,7 @@ export interface CompanyWithDetails {
 export interface Branch {
   id: string;
   name: string;
+  nickname: string;
   companyId: string;
   company?: CompanyWithDetails; // Automatically populated by backend via leftJoin
   menuId: string;
@@ -58,6 +59,7 @@ export interface ListBranchesParams {
   pageIndex?: number;
   pageSize?: number;
   name?: string;
+  nickname?: string;
   companyId?: string;
   menuId?: string;
   addressId?: string;
@@ -84,6 +86,7 @@ export interface ListBranchesResponse {
  */
 export interface CreateBranchRequest {
   name: string;
+  nickname: string;
   companyId: string;
   menuId: string;
   addressId: string;
@@ -103,6 +106,7 @@ export interface CreateBranchResponse {
  */
 export interface UpdateBranchRequest {
   name?: string;
+  nickname?: string;
   companyId?: string;
   menuId?: string;
   addressId?: string;

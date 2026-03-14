@@ -26,6 +26,7 @@ export const useCreateBranch = () => {
     resolver: zodResolver(branchFormSchema),
     defaultValues: {
       name: '',
+      nickname: '',
       companyId: state.companyId ?? '',
       menuId: '',
       addressId: '',
@@ -62,6 +63,7 @@ export const useCreateBranch = () => {
 
       const createData: CreateBranchRequest = {
         name: data.name,
+        nickname: data.nickname,
         companyId: data.companyId,
         menuId: data.menuId,
         addressId: finalAddressId,
@@ -84,6 +86,9 @@ export const useCreateBranch = () => {
       if (error.response?.status === 404) {
         setError('Empresa, menu ou endereço não encontrado');
         toast.error('Empresa, menu ou endereço não encontrado');
+      } else if (error.response?.status === 409) {
+        setError(errorMessage);
+        toast.error(errorMessage);
       } else {
         setError(errorMessage);
         toast.error(errorMessage);

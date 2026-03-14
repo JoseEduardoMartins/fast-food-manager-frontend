@@ -55,7 +55,7 @@ export const StockForm: React.FC<StockFormProps> = ({
             onChange={(e) => setValue('branchId', e.target.value)}
             loadOptions={loadBranches}
             getValue={(b) => b.id}
-            getLabel={(b) => b.name}
+            getLabel={(b) => (b.nickname ? `${b.name} (${b.nickname})` : b.name)}
             placeholder="Selecione a filial"
             disabled={isViewOnly || mode === 'edit'}
             reloadOnParamsChange={false}

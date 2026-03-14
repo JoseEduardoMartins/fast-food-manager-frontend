@@ -45,6 +45,7 @@ export const useBranchDetails = () => {
       
       form.reset({
         name: branchData.name,
+        nickname: branchData.nickname,
         companyId: branchData.companyId,
         menuId: branchData.menuId,
         addressId: branchData.addressId,

@@ -140,7 +140,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
             onChange={(e) => setValue('branchId', e.target.value)}
             loadOptions={loadBranches}
             getValue={(b) => b.id}
-            getLabel={(b) => b.name}
+            getLabel={(b) => (b.nickname ? `${b.name} (${b.nickname})` : b.name)}
             placeholder="Selecione a filial"
             loadingText="Carregando filiais..."
             noOptionsText="Nenhuma filial disponível"
