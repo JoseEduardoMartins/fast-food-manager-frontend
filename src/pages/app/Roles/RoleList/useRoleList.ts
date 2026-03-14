@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebouncedEffect } from '@common/hooks';
 import { toast } from 'sonner';
 import { listRoles, deleteRole } from '@services/roles';
 import type { Role, ListRolesParams } from '@services/roles';
@@ -62,6 +63,16 @@ export const useRoleList = () => {
   useEffect(() => {
     loadRoles();
   }, [loadRoles]);
+
+  const isFirstSearchRender = useRef(true);
+  useDebouncedEffect(() => {
+    if (isFirstSearchRender.current) {
+      isFirstSearchRender.current = false;
+      return;
+    }
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadRoles(0);
+  }, [searchName], 400);
 
   const handleDelete = async (id: string, name: string) => {
     if (!window.confirm(`Excluir o perfil "${name}"? Esta ação não pode ser desfeita.`)) return;

@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebouncedEffect } from '@common/hooks';
 import { toast } from 'sonner';
 import { listIngredients, deleteIngredient } from '@services/ingredients';
 import type { Ingredient, IngredientUnit, ListIngredientsParams } from '@services/ingredients';
@@ -62,6 +63,16 @@ export const useIngredientList = () => {
   useEffect(() => {
     loadIngredients();
   }, [loadIngredients]);
+
+  const isFirstSearchRender = useRef(true);
+  useDebouncedEffect(() => {
+    if (isFirstSearchRender.current) {
+      isFirstSearchRender.current = false;
+      return;
+    }
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadIngredients(0);
+  }, [searchName], 400);
 
   const handleDelete = async (id: number, ingredientName: string): Promise<void> => {
     const confirmed = window.confirm(

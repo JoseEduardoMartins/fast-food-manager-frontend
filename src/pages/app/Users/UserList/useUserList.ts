@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebouncedEffect } from '@common/hooks';
 import { toast } from 'sonner';
 import { listUsers, updateUser, deleteUser } from '@services/users';
 import type { User, UserRole, ListUsersParams } from '@services/users';
@@ -80,6 +81,16 @@ export const useUserList = () => {
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
+
+  const isFirstSearchRender = useRef(true);
+  useDebouncedEffect(() => {
+    if (isFirstSearchRender.current) {
+      isFirstSearchRender.current = false;
+      return;
+    }
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadUsers(0);
+  }, [searchName, searchEmail], 400);
 
   const handleDelete = async (id: string, userName: string): Promise<void> => {
     const confirmed = window.confirm(

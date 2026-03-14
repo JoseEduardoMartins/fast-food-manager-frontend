@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebouncedEffect } from '@common/hooks';
 import { toast } from 'sonner';
 import { listMenus, deleteMenu } from '@services/menus';
 import type { Menu, ListMenusParams } from '@services/menus';
@@ -62,6 +63,16 @@ export const useMenuList = () => {
   useEffect(() => {
     loadMenus();
   }, [loadMenus]);
+
+  const isFirstSearchRender = useRef(true);
+  useDebouncedEffect(() => {
+    if (isFirstSearchRender.current) {
+      isFirstSearchRender.current = false;
+      return;
+    }
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadMenus(0);
+  }, [searchName], 400);
 
   const handleDelete = async (id: string, menuName: string): Promise<void> => {
     const confirmed = window.confirm(

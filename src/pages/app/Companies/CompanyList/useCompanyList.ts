@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebouncedEffect } from '@common/hooks';
 import { toast } from 'sonner';
 import { listCompanies, deleteCompany } from '@services/companies';
 import type { Company, ListCompaniesParams } from '@services/companies';
@@ -74,6 +75,16 @@ export const useCompanyList = () => {
   useEffect(() => {
     loadCompanies();
   }, [loadCompanies]);
+
+  const isFirstSearchRender = useRef(true);
+  useDebouncedEffect(() => {
+    if (isFirstSearchRender.current) {
+      isFirstSearchRender.current = false;
+      return;
+    }
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadCompanies(0);
+  }, [searchName, searchCnpj], 400);
 
   const handleDelete = async (id: string, companyName: string): Promise<void> => {
     const confirmed = window.confirm(

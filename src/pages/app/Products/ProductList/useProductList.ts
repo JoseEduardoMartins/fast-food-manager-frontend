@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebouncedEffect } from '@common/hooks';
 import { toast } from 'sonner';
 import { listProducts, deleteProduct } from '@services/products';
 import type { Product, ListProductsParams } from '@services/products';
@@ -62,6 +63,16 @@ export const useProductList = () => {
   useEffect(() => {
     loadProducts();
   }, [loadProducts]);
+
+  const isFirstSearchRender = useRef(true);
+  useDebouncedEffect(() => {
+    if (isFirstSearchRender.current) {
+      isFirstSearchRender.current = false;
+      return;
+    }
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadProducts(0);
+  }, [searchName], 400);
 
   const handleDelete = async (id: string, productName: string): Promise<void> => {
     const confirmed = window.confirm(

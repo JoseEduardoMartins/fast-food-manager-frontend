@@ -3,6 +3,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebouncedEffect } from '@common/hooks';
 import { toast } from 'sonner';
 import { listCategories, deleteCategory } from '@services/categories';
 import { listMenus } from '@services/menus';
@@ -85,6 +86,16 @@ export const useCategoryList = () => {
   useEffect(() => {
     loadCategories();
   }, [loadCategories]);
+
+  const isFirstSearchRender = useRef(true);
+  useDebouncedEffect(() => {
+    if (isFirstSearchRender.current) {
+      isFirstSearchRender.current = false;
+      return;
+    }
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadCategories(0);
+  }, [searchName], 400);
 
   const handleDelete = async (id: string, categoryName: string): Promise<void> => {
     const confirmed = window.confirm(
