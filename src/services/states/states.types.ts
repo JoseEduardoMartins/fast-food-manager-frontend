@@ -27,6 +27,8 @@ export interface State {
 export interface ListStatesParams {
   pageIndex?: number;
   pageSize?: number;
+  /** Busca parcial em name e shortName (recomendado) */
+  term?: string;
   name?: string;
   shortName?: string;
   countryId?: string;

@@ -73,6 +73,8 @@ export interface UpdateMenuRequest {
 export interface ListMenusParams {
   pageIndex?: number;
   pageSize?: number;
+  /** Busca parcial em name (recomendado) */
+  term?: string;
   name?: string;
   isActive?: boolean;
   selectFields?: string[];

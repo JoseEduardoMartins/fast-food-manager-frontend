@@ -33,7 +33,7 @@ export const useProductList = () => {
         params.isActive = selectedStatus === 'active';
       }
       if (searchName.trim()) {
-        params.name = searchName.trim();
+        params.term = searchName.trim();
       }
       const response = await listProducts(params);
       setProducts(response.data);

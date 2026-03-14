@@ -33,7 +33,7 @@ export const useMenuList = () => {
         params.isActive = selectedStatus === 'active';
       }
       if (searchName.trim()) {
-        params.name = searchName.trim();
+        params.term = searchName.trim();
       }
       const response = await listMenus(params);
       setMenus(response.data);

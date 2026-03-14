@@ -5,6 +5,13 @@
 
 import { z } from 'zod';
 
+export const productIngredientSchema = z.object({
+  id: z.string().optional(),
+  ingredientId: z.coerce.number(),
+  units: z.coerce.number().min(1, 'Unidades deve ser ≥ 1'),
+  quantityPerUnit: z.coerce.number().min(1, 'Quantidade por unidade deve ser ≥ 1'),
+});
+
 export const productFormSchema = z.object({
   name: z
     .string()
@@ -18,6 +25,7 @@ export const productFormSchema = z.object({
     .or(z.literal('')),
   price: z.coerce.number().min(0, 'Preço deve ser ≥ 0'),
   isActive: z.boolean().optional(),
+  ingredients: z.array(productIngredientSchema).optional().default([]),
 });
 
 export type ProductFormData = z.infer<typeof productFormSchema>;

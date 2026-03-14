@@ -19,6 +19,8 @@ export interface Ingredient {
 export interface ListIngredientsParams {
   pageIndex?: number;
   pageSize?: number;
+  /** Busca parcial em name e description (recomendado) */
+  term?: string;
   name?: string;
   description?: string;
   unit?: IngredientUnit;

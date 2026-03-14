@@ -25,6 +25,8 @@ export interface Company {
 export interface ListCompaniesParams {
   pageIndex?: number;
   pageSize?: number;
+  /** Busca parcial em name (recomendado) */
+  term?: string;
   name?: string;
   cnpj?: string;
   addressId?: string;

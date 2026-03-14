@@ -38,7 +38,7 @@ export const useCompanyList = () => {
       }
 
       if (searchName) {
-        params.name = searchName;
+        params.term = searchName;
       }
 
       if (searchCnpj) {

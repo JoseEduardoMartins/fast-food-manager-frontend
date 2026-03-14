@@ -52,7 +52,7 @@ export const useCategoryList = () => {
         params.isActive = selectedStatus === 'active';
       }
       if (searchName.trim()) {
-        params.name = searchName.trim();
+        params.term = searchName.trim();
       }
       const response = await listCategories(params);
       setCategories(response.data);

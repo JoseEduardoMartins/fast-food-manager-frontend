@@ -25,6 +25,7 @@ export const useCreateProduct = () => {
       description: '',
       price: 0,
       isActive: true,
+      ingredients: [],
     },
   });
 
@@ -33,11 +34,19 @@ export const useCreateProduct = () => {
     setError(null);
     try {
       const priceCentavos = Math.round(Number(data.price) * 100);
+      const ingredients = (data.ingredients ?? [])
+        .filter((i) => i.ingredientId >= 1)
+        .map((i) => ({
+          ingredientId: i.ingredientId,
+          units: i.units,
+          quantityPerUnit: i.quantityPerUnit,
+        }));
       const { id } = await createProduct({
         name: data.name,
         description: data.description?.trim() || undefined,
         price: priceCentavos,
         isActive: data.isActive,
+        ingredients: ingredients.length > 0 ? ingredients : undefined,
       });
       toast.success('Produto criado com sucesso!');
       navigate(ROUTES.PRODUCTS_DETAILS.replace(':id', id));

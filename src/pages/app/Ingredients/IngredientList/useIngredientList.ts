@@ -29,7 +29,7 @@ export const useIngredientList = () => {
         sort: { fields: ['name'], order: ['ASC'] },
       };
       if (searchName.trim()) {
-        params.name = searchName.trim();
+        params.term = searchName.trim();
       }
       const response = await listIngredients(params);
       setIngredients(response.data);

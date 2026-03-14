@@ -26,6 +26,8 @@ export interface City {
 export interface ListCitiesParams {
   pageIndex?: number;
   pageSize?: number;
+  /** Busca parcial em name (recomendado) */
+  term?: string;
   name?: string;
   stateId?: string;
   sort?: SortConfig;

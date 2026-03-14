@@ -19,6 +19,8 @@ export interface ListCategoriesParams {
   pageIndex?: number;
   pageSize?: number;
   menuId?: string;
+  /** Busca parcial em name (recomendado) */
+  term?: string;
   name?: string;
   order?: number;
   isActive?: boolean;

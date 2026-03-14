@@ -45,6 +45,12 @@ export const useEditProduct = () => {
         description: data.description ?? '',
         price: data.price / 100,
         isActive: data.isActive,
+        ingredients: (data.ingredients ?? []).map((i) => ({
+          id: i.id,
+          ingredientId: i.ingredientId,
+          units: i.units,
+          quantityPerUnit: i.quantityPerUnit,
+        })),
       });
       setError(null);
     } catch (err: unknown) {
@@ -62,11 +68,20 @@ export const useEditProduct = () => {
     setError(null);
     try {
       const priceCentavos = Math.round(Number(data.price) * 100);
+      const ingredients = (data.ingredients ?? [])
+        .filter((i) => i.ingredientId >= 1)
+        .map((i) => ({
+          ...(i.id && { id: i.id }),
+          ingredientId: i.ingredientId,
+          units: i.units,
+          quantityPerUnit: i.quantityPerUnit,
+        }));
       await updateProduct(id, {
         name: data.name,
         description: data.description?.trim() || undefined,
         price: priceCentavos,
         isActive: data.isActive,
+        ingredients,
       });
       toast.success('Produto atualizado com sucesso!');
       navigate(ROUTES.PRODUCTS_DETAILS.replace(':id', id));

@@ -27,6 +27,8 @@ export interface SortConfig {
 export interface ListCountriesParams {
   pageIndex?: number;
   pageSize?: number;
+  /** Busca parcial em name e shortName (recomendado) */
+  term?: string;
   name?: string;
   shortName?: string;
   phoneCode?: string;
