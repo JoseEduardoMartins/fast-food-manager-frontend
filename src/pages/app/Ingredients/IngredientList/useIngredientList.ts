@@ -2,15 +2,16 @@
  * useIngredientList Hook
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { listIngredients, deleteIngredient } from '@services/ingredients';
-import type { Ingredient, ListIngredientsParams } from '@services/ingredients';
+import type { Ingredient, IngredientUnit, ListIngredientsParams } from '@services/ingredients';
 
 export const useIngredientList = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchName, setSearchName] = useState('');
+  const [selectedUnit, setSelectedUnit] = useState<IngredientUnit | 'all'>('all');
   const [pagination, setPagination] = useState({
     total: 0,
     pageIndex: 0,
@@ -19,17 +20,27 @@ export const useIngredientList = () => {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const loadIngredients = useCallback(async () => {
+  const filtersRef = useRef({ searchName, selectedUnit });
+  useEffect(() => {
+    filtersRef.current = { searchName, selectedUnit };
+  }, [searchName, selectedUnit]);
+
+  const loadIngredients = useCallback(async (overridePageIndex?: number) => {
+    const { searchName, selectedUnit } = filtersRef.current;
+    const pageIndex = overridePageIndex ?? pagination.pageIndex;
     try {
       setLoading(true);
       setError(null);
       const params: ListIngredientsParams = {
-        pageIndex: pagination.pageIndex,
+        pageIndex,
         pageSize: pagination.pageSize,
         sort: { fields: ['name'], order: ['ASC'] },
       };
       if (searchName.trim()) {
         params.term = searchName.trim();
+      }
+      if (selectedUnit !== 'all') {
+        params.unit = selectedUnit;
       }
       const response = await listIngredients(params);
       setIngredients(response.data);
@@ -46,7 +57,7 @@ export const useIngredientList = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, searchName]);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     loadIngredients();
@@ -79,11 +90,14 @@ export const useIngredientList = () => {
 
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadIngredients(0);
   };
 
   const handleClearSearch = () => {
     setSearchName('');
+    setSelectedUnit('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setTimeout(() => loadIngredients(0), 0);
   };
 
   return {
@@ -92,6 +106,8 @@ export const useIngredientList = () => {
     error,
     searchName,
     setSearchName,
+    selectedUnit,
+    setSelectedUnit,
     pagination,
     handleDelete,
     handlePageChange,

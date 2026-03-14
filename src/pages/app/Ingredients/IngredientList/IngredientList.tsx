@@ -12,6 +12,8 @@ import {
   ErrorAlert,
   FilterBar,
   FormField,
+  Label,
+  Select,
   Card,
   Table,
   TablePagination,
@@ -32,6 +34,8 @@ const IngredientList: React.FC = () => {
     error,
     searchName,
     setSearchName,
+    selectedUnit,
+    setSelectedUnit,
     pagination,
     handleDelete,
     handlePageChange,
@@ -147,6 +151,22 @@ const IngredientList: React.FC = () => {
               e.key === 'Enter' && handleSearch()
             }
           />
+        }
+        filterContent={
+          <div>
+            <Label className="mb-2 block">Unidade</Label>
+            <Select
+              value={selectedUnit}
+              onChange={(e) => setSelectedUnit(e.target.value as typeof selectedUnit)}
+            >
+              <option value="all">Todas</option>
+              <option value="g">Gramas (g)</option>
+              <option value="kg">Quilogramas (kg)</option>
+              <option value="ml">Mililitros (ml)</option>
+              <option value="L">Litros (L)</option>
+              <option value="un">Unidade (un)</option>
+            </Select>
+          </div>
         }
         onFilter={handleSearch}
         onClear={handleClearSearch}

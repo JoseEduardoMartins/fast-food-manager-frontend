@@ -52,6 +52,8 @@ const UserList: React.FC = () => {
     error,
     selectedRole,
     setSelectedRole,
+    selectedStatus,
+    setSelectedStatus,
     searchName,
     setSearchName,
     searchEmail,
@@ -222,11 +224,24 @@ const UserList: React.FC = () => {
                 onChange={(e) => setSelectedRole(e.target.value as UserRole | 'all')}
               >
                 <option value="all">Todos</option>
+                <option value="admin">Administradores</option>
                 <option value="owner">Proprietários</option>
                 <option value="manager">Gerentes</option>
                 <option value="cook">Cozinheiros</option>
                 <option value="attendant">Atendentes</option>
                 <option value="customer">Clientes</option>
+                <option value="delivery">Entregadores</option>
+              </Select>
+            </div>
+            <div>
+              <Label className="mb-2 block">Status</Label>
+              <Select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value as 'all' | 'active' | 'inactive')}
+              >
+                <option value="all">Todos</option>
+                <option value="active">Ativos</option>
+                <option value="inactive">Inativos</option>
               </Select>
             </div>
           </>

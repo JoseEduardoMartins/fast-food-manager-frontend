@@ -58,10 +58,13 @@ const StockList: React.FC = () => {
   const {
     items,
     branches,
+    ingredients,
     loading,
     error,
     selectedBranchId,
     setSelectedBranchId,
+    selectedIngredientId,
+    setSelectedIngredientId,
     pagination,
     handleDelete,
     handlePageChange,
@@ -196,20 +199,36 @@ const StockList: React.FC = () => {
 
       <FilterBar
         filterContent={
-          <div>
-            <Label className="mb-2 block">Filial</Label>
-            <Select
-              value={selectedBranchId}
-              onChange={(e) => setSelectedBranchId(e.target.value)}
-            >
-              <option value="all">Todas</option>
-              {branches.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </Select>
-          </div>
+          <>
+            <div>
+              <Label className="mb-2 block">Filial</Label>
+              <Select
+                value={selectedBranchId}
+                onChange={(e) => setSelectedBranchId(e.target.value)}
+              >
+                <option value="all">Todas</option>
+                {branches.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <Label className="mb-2 block">Ingrediente</Label>
+              <Select
+                value={selectedIngredientId}
+                onChange={(e) => setSelectedIngredientId(e.target.value)}
+              >
+                <option value="all">Todos</option>
+                {ingredients.map((i) => (
+                  <option key={i.id} value={i.id}>
+                    {i.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </>
         }
         onFilter={handleFilter}
         onClear={handleClear}

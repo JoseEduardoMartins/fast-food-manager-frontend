@@ -2,7 +2,7 @@
  * useProductList Hook
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { listProducts, deleteProduct } from '@services/products';
 import type { Product, ListProductsParams } from '@services/products';
@@ -20,12 +20,19 @@ export const useProductList = () => {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const loadProducts = useCallback(async () => {
+  const filtersRef = useRef({ selectedStatus, searchName });
+  useEffect(() => {
+    filtersRef.current = { selectedStatus, searchName };
+  }, [selectedStatus, searchName]);
+
+  const loadProducts = useCallback(async (overridePageIndex?: number) => {
+    const { selectedStatus, searchName } = filtersRef.current;
+    const pageIndex = overridePageIndex ?? pagination.pageIndex;
     try {
       setLoading(true);
       setError(null);
       const params: ListProductsParams = {
-        pageIndex: pagination.pageIndex,
+        pageIndex,
         pageSize: pagination.pageSize,
         sort: { fields: ['name'], order: ['ASC'] },
       };
@@ -50,7 +57,7 @@ export const useProductList = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, selectedStatus, searchName]);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     loadProducts();
@@ -83,12 +90,14 @@ export const useProductList = () => {
 
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadProducts(0);
   };
 
   const handleClearSearch = () => {
     setSearchName('');
     setSelectedStatus('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setTimeout(() => loadProducts(0), 0);
   };
 
   return {

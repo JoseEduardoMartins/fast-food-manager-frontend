@@ -11,6 +11,10 @@ import {
   AppLayout,
   PageHeader,
   ErrorAlert,
+  FilterBar,
+  FormField,
+  Label,
+  Select,
   Card,
   Table,
   TablePagination,
@@ -27,7 +31,21 @@ import { useRoleList } from './useRoleList';
 const RoleList: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser, signOut, hasPermission } = useAuth();
-  const { roles, loading, error, setError, pagination, handleDelete, handlePageChange } = useRoleList();
+  const {
+    roles,
+    loading,
+    error,
+    setError,
+    searchName,
+    setSearchName,
+    selectedType,
+    setSelectedType,
+    pagination,
+    handleDelete,
+    handlePageChange,
+    handleSearch,
+    handleClearSearch,
+  } = useRoleList();
 
   const canCreate = hasPermission(PERMISSIONS.roles.create);
   const canUpdate = hasPermission(PERMISSIONS.roles.update);
@@ -132,6 +150,36 @@ const RoleList: React.FC = () => {
       />
 
       <ErrorAlert message={error ?? ''} onDismiss={() => setError(null)} dismissible />
+
+      <FilterBar
+        searchSlot={
+          <FormField
+            label="Buscar por nome"
+            placeholder="Nome do perfil..."
+            value={searchName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
+              e.key === 'Enter' && handleSearch()
+            }
+          />
+        }
+        filterContent={
+          <div>
+            <Label className="mb-2 block">Tipo</Label>
+            <Select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value as typeof selectedType)}
+            >
+              <option value="all">Todos</option>
+              <option value="system">Sistema</option>
+              <option value="custom">Customizado</option>
+            </Select>
+          </div>
+        }
+        onFilter={handleSearch}
+        onClear={handleClearSearch}
+        filterTitle="Filtros"
+      />
 
       <Card>
         <Table

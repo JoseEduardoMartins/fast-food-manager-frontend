@@ -3,13 +3,16 @@
  * Custom hook for branch list page logic
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { listBranches, deleteBranch } from '@services/branches';
+import { listCompanies } from '@services/companies';
 import type { Branch, ListBranchesParams } from '@services/branches';
+import type { Company } from '@services/companies';
 
 export const useBranchList = () => {
   const [branches, setBranches] = useState<Branch[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchName, setSearchName] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<string>('all');
@@ -22,13 +25,20 @@ export const useBranchList = () => {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const loadBranches = useCallback(async () => {
+  const filtersRef = useRef({ selectedStatus, searchName, selectedCompany });
+  useEffect(() => {
+    filtersRef.current = { selectedStatus, searchName, selectedCompany };
+  }, [selectedStatus, searchName, selectedCompany]);
+
+  const loadBranches = useCallback(async (overridePageIndex?: number) => {
+    const { selectedStatus, searchName, selectedCompany } = filtersRef.current;
+    const pageIndex = overridePageIndex ?? pagination.pageIndex;
     try {
       setLoading(true);
       setError(null);
       
       const params: ListBranchesParams = {
-        pageIndex: pagination.pageIndex,
+        pageIndex,
         pageSize: pagination.pageSize,
         // Não especificamos selectFields para receber dados completos da empresa via leftJoin
       };
@@ -62,7 +72,20 @@ export const useBranchList = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedStatus, searchName, selectedCompany, pagination.pageIndex, pagination.pageSize]);
+  }, [pagination.pageIndex, pagination.pageSize]);
+
+  const loadCompanies = useCallback(async () => {
+    try {
+      const response = await listCompanies({ pageSize: 500, sort: { fields: ['name'], order: ['ASC'] } });
+      setCompanies(response.data);
+    } catch {
+      setCompanies([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadCompanies();
+  }, [loadCompanies]);
 
   useEffect(() => {
     loadBranches();
@@ -101,6 +124,7 @@ export const useBranchList = () => {
 
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadBranches(0);
   };
 
   const handleClearSearch = () => {
@@ -108,10 +132,12 @@ export const useBranchList = () => {
     setSelectedCompany('all');
     setSelectedStatus('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setTimeout(() => loadBranches(0), 0);
   };
 
   return {
     branches,
+    companies,
     loading,
     error,
     selectedCompany,

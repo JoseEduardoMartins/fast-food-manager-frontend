@@ -3,7 +3,7 @@
  * Lists branch-ingredients (stock per branch)
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useBranches } from '@common/hooks';
 import { listBranchIngredients, deleteBranchIngredient } from '@services/branch-ingredients';
@@ -17,6 +17,11 @@ export const useStockList = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBranchId, setSelectedBranchId] = useState<string>('all');
+  const [selectedIngredientId, setSelectedIngredientId] = useState<string>('all');
+  const filtersRef = useRef({ selectedBranchId, selectedIngredientId });
+  useEffect(() => {
+    filtersRef.current = { selectedBranchId, selectedIngredientId };
+  }, [selectedBranchId, selectedIngredientId]);
   const [pagination, setPagination] = useState({
     total: 0,
     pageIndex: 0,
@@ -37,17 +42,22 @@ export const useStockList = () => {
     }
   }, []);
 
-  const loadStock = useCallback(async () => {
+  const loadStock = useCallback(async (overridePageIndex?: number) => {
+    const { selectedBranchId, selectedIngredientId } = filtersRef.current;
+    const pageIndex = overridePageIndex ?? pagination.pageIndex;
     try {
       setLoading(true);
       setError(null);
       const params: ListBranchIngredientsParams = {
-        pageIndex: pagination.pageIndex,
+        pageIndex,
         pageSize: pagination.pageSize,
         sort: { fields: ['branchId', 'ingredientId'], order: ['ASC', 'ASC'] },
       };
       if (selectedBranchId !== 'all') {
         params.branchId = selectedBranchId;
+      }
+      if (selectedIngredientId !== 'all') {
+        params.ingredientId = Number(selectedIngredientId);
       }
       const response = await listBranchIngredients(params);
       setItems(response.data);
@@ -64,7 +74,7 @@ export const useStockList = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, selectedBranchId]);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     loadIngredients();
@@ -96,11 +106,14 @@ export const useStockList = () => {
 
   const handleFilter = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadStock(0);
   };
 
   const handleClear = () => {
     setSelectedBranchId('all');
+    setSelectedIngredientId('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setTimeout(() => loadStock(0), 0);
   };
 
   const getIngredientName = (ingredientId: number) =>
@@ -114,6 +127,8 @@ export const useStockList = () => {
     error,
     selectedBranchId,
     setSelectedBranchId,
+    selectedIngredientId,
+    setSelectedIngredientId,
     pagination,
     handleDelete,
     handlePageChange,

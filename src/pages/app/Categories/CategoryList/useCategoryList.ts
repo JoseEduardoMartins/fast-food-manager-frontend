@@ -2,7 +2,7 @@
  * useCategoryList Hook
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { listCategories, deleteCategory } from '@services/categories';
 import { listMenus } from '@services/menus';
@@ -24,6 +24,11 @@ export const useCategoryList = () => {
   });
   const [error, setError] = useState<string | null>(null);
 
+  const filtersRef = useRef({ selectedMenuId, selectedStatus, searchName });
+  useEffect(() => {
+    filtersRef.current = { selectedMenuId, selectedStatus, searchName };
+  }, [selectedMenuId, selectedStatus, searchName]);
+
   const loadMenus = useCallback(async () => {
     try {
       const res = await listMenus({
@@ -36,12 +41,14 @@ export const useCategoryList = () => {
     }
   }, []);
 
-  const loadCategories = useCallback(async () => {
+  const loadCategories = useCallback(async (overridePageIndex?: number) => {
+    const { selectedMenuId, selectedStatus, searchName } = filtersRef.current;
+    const pageIndex = overridePageIndex ?? pagination.pageIndex;
     try {
       setLoading(true);
       setError(null);
       const params: ListCategoriesParams = {
-        pageIndex: pagination.pageIndex,
+        pageIndex,
         pageSize: pagination.pageSize,
         sort: { fields: ['order', 'name'], order: ['ASC', 'ASC'] },
       };
@@ -69,13 +76,7 @@ export const useCategoryList = () => {
     } finally {
       setLoading(false);
     }
-  }, [
-    pagination.pageIndex,
-    pagination.pageSize,
-    selectedMenuId,
-    selectedStatus,
-    searchName,
-  ]);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     loadMenus();
@@ -112,6 +113,7 @@ export const useCategoryList = () => {
 
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadCategories(0);
   };
 
   const handleClearSearch = () => {
@@ -119,6 +121,7 @@ export const useCategoryList = () => {
     setSelectedMenuId('');
     setSelectedStatus('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setTimeout(() => loadCategories(0), 0);
   };
 
   const getMenuNameById = (menuId: string) => {

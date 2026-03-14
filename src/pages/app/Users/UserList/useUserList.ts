@@ -3,7 +3,7 @@
  * Custom hook for user list page logic
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { listUsers, updateUser, deleteUser } from '@services/users';
 import type { User, UserRole, ListUsersParams } from '@services/users';
@@ -12,6 +12,7 @@ export const useUserList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedRole, setSelectedRole] = useState<UserRole | 'all'>('all');
+  const [selectedStatus, setSelectedStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [searchName, setSearchName] = useState('');
   const [searchEmail, setSearchEmail] = useState('');
   const [pagination, setPagination] = useState({
@@ -22,13 +23,20 @@ export const useUserList = () => {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const loadUsers = useCallback(async () => {
+  const filtersRef = useRef({ selectedRole, selectedStatus, searchName, searchEmail });
+  useEffect(() => {
+    filtersRef.current = { selectedRole, selectedStatus, searchName, searchEmail };
+  }, [selectedRole, selectedStatus, searchName, searchEmail]);
+
+  const loadUsers = useCallback(async (overridePageIndex?: number) => {
+    const { selectedRole, selectedStatus, searchName, searchEmail } = filtersRef.current;
+    const pageIndex = overridePageIndex ?? pagination.pageIndex;
     try {
       setLoading(true);
       setError(null);
       
       const params: ListUsersParams = {
-        pageIndex: pagination.pageIndex,
+        pageIndex,
         pageSize: pagination.pageSize,
         // Select only fields needed for list view
         selectFields: ['id', 'name', 'email', 'role', 'isActive', 'createdAt'],
@@ -44,6 +52,10 @@ export const useUserList = () => {
 
       if (searchEmail) {
         params.email = searchEmail;
+      }
+
+      if (selectedStatus !== 'all') {
+        params.isActive = selectedStatus === 'active';
       }
 
       const response = await listUsers(params);
@@ -63,7 +75,7 @@ export const useUserList = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedRole, searchName, searchEmail, pagination.pageIndex, pagination.pageSize]);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     loadUsers();
@@ -112,13 +124,16 @@ export const useUserList = () => {
 
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadUsers(0);
   };
 
   const handleClearSearch = () => {
     setSearchName('');
     setSearchEmail('');
     setSelectedRole('all');
+    setSelectedStatus('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setTimeout(() => loadUsers(0), 0);
   };
 
   return {
@@ -127,6 +142,8 @@ export const useUserList = () => {
     error,
     selectedRole,
     setSelectedRole,
+    selectedStatus,
+    setSelectedStatus,
     searchName,
     setSearchName,
     searchEmail,

@@ -33,6 +33,7 @@ const BranchList: React.FC = () => {
   
   const {
     branches,
+    companies,
     loading,
     error,
     selectedCompany,
@@ -175,7 +176,11 @@ const BranchList: React.FC = () => {
                 onChange={(e) => setSelectedCompany(e.target.value)}
               >
                 <option value="all">Todas</option>
-                {/* TODO: Carregar empresas dinamicamente */}
+                {companies.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
               </Select>
             </div>
             <div>

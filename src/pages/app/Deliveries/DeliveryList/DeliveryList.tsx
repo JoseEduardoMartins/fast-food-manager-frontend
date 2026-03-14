@@ -12,12 +12,14 @@ import {
   AppLayout,
   PageHeader,
   ErrorAlert,
+  FilterBar,
+  Label,
+  Select,
   Card,
   Table,
   Button,
   Icon,
   Badge,
-  Select,
 } from '@components';
 import { useAuth } from '@contexts';
 import type { Order } from '@services/orders';
@@ -31,7 +33,22 @@ import { useDeliveryList } from './useDeliveryList';
 const DeliveryList: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser, signOut } = useAuth();
-  const { orders, deliveryUsers, loading, error, setError, assigning, assignDelivery } = useDeliveryList();
+  const {
+    orders,
+    deliveryUsers,
+    branches,
+    loading,
+    error,
+    setError,
+    assigning,
+    assignDelivery,
+    selectedStatus,
+    setSelectedStatus,
+    selectedBranchId,
+    setSelectedBranchId,
+    handleFilter,
+    handleClear,
+  } = useDeliveryList();
 
   const columns = useMemo<ColumnDef<Order>[]>(
     () => [
@@ -152,6 +169,42 @@ const DeliveryList: React.FC = () => {
       />
 
       <ErrorAlert message={error ?? ''} onDismiss={() => setError(null)} dismissible />
+
+      <FilterBar
+        filterContent={
+          <>
+            <div>
+              <Label className="mb-2 block">Filial</Label>
+              <Select
+                value={selectedBranchId}
+                onChange={(e) => setSelectedBranchId(e.target.value)}
+              >
+                <option value="all">Todas</option>
+                {branches.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <Label className="mb-2 block">Status do pedido</Label>
+              <Select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+              >
+                <option value="all">Todos</option>
+                <option value="received">{ORDER_STATUS_LABELS.received}</option>
+                <option value="preparing">{ORDER_STATUS_LABELS.preparing}</option>
+                <option value="ready">{ORDER_STATUS_LABELS.ready}</option>
+              </Select>
+            </div>
+          </>
+        }
+        onFilter={handleFilter}
+        onClear={handleClear}
+        filterTitle="Filtros"
+      />
 
       <Card>
         <Table

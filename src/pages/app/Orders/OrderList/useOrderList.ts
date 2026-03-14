@@ -3,7 +3,7 @@
  * Custom hook for order list page logic
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { listOrders, deleteOrder } from '@services/orders';
 import type { Order, ListOrdersParams } from '@services/orders';
@@ -24,13 +24,30 @@ export const useOrderList = () => {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const loadOrders = useCallback(async () => {
+  const filtersRef = useRef({
+    selectedBranch,
+    selectedStatus,
+    selectedPayment,
+    selectedConsumption,
+  });
+  useEffect(() => {
+    filtersRef.current = {
+      selectedBranch,
+      selectedStatus,
+      selectedPayment,
+      selectedConsumption,
+    };
+  }, [selectedBranch, selectedStatus, selectedPayment, selectedConsumption]);
+
+  const loadOrders = useCallback(async (overridePageIndex?: number) => {
+    const { selectedBranch, selectedStatus, selectedPayment, selectedConsumption } = filtersRef.current;
+    const pageIndex = overridePageIndex ?? pagination.pageIndex;
     try {
       setLoading(true);
       setError(null);
 
       const params: ListOrdersParams = {
-        pageIndex: pagination.pageIndex,
+        pageIndex,
         pageSize: pagination.pageSize,
         sort: { fields: ['createdAt'], order: ['DESC'] },
       };
@@ -65,14 +82,7 @@ export const useOrderList = () => {
     } finally {
       setLoading(false);
     }
-  }, [
-    pagination.pageIndex,
-    pagination.pageSize,
-    selectedStatus,
-    selectedPayment,
-    selectedConsumption,
-    selectedBranch,
-  ]);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     loadOrders();
@@ -102,6 +112,7 @@ export const useOrderList = () => {
 
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadOrders(0);
   };
 
   const handleClearSearch = () => {
@@ -110,6 +121,7 @@ export const useOrderList = () => {
     setSelectedPayment('all');
     setSelectedConsumption('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setTimeout(() => loadOrders(0), 0);
   };
 
   return {

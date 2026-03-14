@@ -2,7 +2,7 @@
  * useMenuList Hook
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { listMenus, deleteMenu } from '@services/menus';
 import type { Menu, ListMenusParams } from '@services/menus';
@@ -20,12 +20,19 @@ export const useMenuList = () => {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const loadMenus = useCallback(async () => {
+  const filtersRef = useRef({ selectedStatus, searchName });
+  useEffect(() => {
+    filtersRef.current = { selectedStatus, searchName };
+  }, [selectedStatus, searchName]);
+
+  const loadMenus = useCallback(async (overridePageIndex?: number) => {
+    const { selectedStatus, searchName } = filtersRef.current;
+    const pageIndex = overridePageIndex ?? pagination.pageIndex;
     try {
       setLoading(true);
       setError(null);
       const params: ListMenusParams = {
-        pageIndex: pagination.pageIndex,
+        pageIndex,
         pageSize: pagination.pageSize,
         sort: { fields: ['name'], order: ['ASC'] },
       };
@@ -50,7 +57,7 @@ export const useMenuList = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.pageIndex, pagination.pageSize, selectedStatus, searchName]);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     loadMenus();
@@ -83,12 +90,14 @@ export const useMenuList = () => {
 
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadMenus(0);
   };
 
   const handleClearSearch = () => {
     setSearchName('');
     setSelectedStatus('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setTimeout(() => loadMenus(0), 0);
   };
 
   return {

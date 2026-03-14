@@ -3,7 +3,7 @@
  * Custom hook for company list page logic
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { listCompanies, deleteCompany } from '@services/companies';
 import type { Company, ListCompaniesParams } from '@services/companies';
@@ -22,13 +22,20 @@ export const useCompanyList = () => {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const loadCompanies = useCallback(async () => {
+  const filtersRef = useRef({ selectedStatus, searchName, searchCnpj });
+  useEffect(() => {
+    filtersRef.current = { selectedStatus, searchName, searchCnpj };
+  }, [selectedStatus, searchName, searchCnpj]);
+
+  const loadCompanies = useCallback(async (overridePageIndex?: number) => {
+    const { selectedStatus, searchName, searchCnpj } = filtersRef.current;
+    const pageIndex = overridePageIndex ?? pagination.pageIndex;
     try {
       setLoading(true);
       setError(null);
       
       const params: ListCompaniesParams = {
-        pageIndex: pagination.pageIndex,
+        pageIndex,
         pageSize: pagination.pageSize,
         selectFields: ['id', 'name', 'cnpj', 'phone', 'isActive', 'createdAt'],
       };
@@ -62,7 +69,7 @@ export const useCompanyList = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedStatus, searchName, searchCnpj, pagination.pageIndex, pagination.pageSize]);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   useEffect(() => {
     loadCompanies();
@@ -101,6 +108,7 @@ export const useCompanyList = () => {
 
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    loadCompanies(0);
   };
 
   const handleClearSearch = () => {
@@ -108,6 +116,7 @@ export const useCompanyList = () => {
     setSearchCnpj('');
     setSelectedStatus('all');
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setTimeout(() => loadCompanies(0), 0);
   };
 
   return {
